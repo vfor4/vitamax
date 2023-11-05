@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import reactor.test.StepVerifier;
 import se.magnus.microservices.core.recommendation.persistence.RecommendationEntity;
 import se.magnus.microservices.core.recommendation.persistence.RecommendationRepository;
 
@@ -41,10 +42,12 @@ class PersistenceTests extends MongoDbTestBase {
         RecommendationEntity newEntity = new RecommendationEntity(1, 3, "a", 3, "c");
         repository.save(newEntity);
 
-        RecommendationEntity foundEntity = repository.findById(newEntity.getId()).block();
+        RecommendationEntity foundEntity =
         assertEqualsRecommendation(newEntity, foundEntity);
 
         assertEquals(2, repository.count());
+        StepVerifier.create(repository.findById(newEntity.getId()))
+                .expectNextMatches(foundEntity -> are)
     }
 
     @Test

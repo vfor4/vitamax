@@ -3,11 +3,11 @@ package se.magnus.microservices.composite.product.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 import se.magnus.api.composite.product.*;
 import se.magnus.api.core.product.Product;
 import se.magnus.api.core.recommendation.Recommendation;
 import se.magnus.api.core.review.Review;
-import se.magnus.api.exceptions.NotFoundException;
 import se.magnus.util.http.ServiceUtil;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class ProductCompositeImpl implements ProductCompositeService {
     }
 
     @Override
-    public void createProduct(final ProductAggregate body) {
+    public Mono<Void> createProduct(final ProductAggregate body) {
         try {
 
             log.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.getProductId());
@@ -56,25 +56,18 @@ public class ProductCompositeImpl implements ProductCompositeService {
     }
 
     @Override
-    public ProductAggregate getProduct(final int productId) {
+    public Mono<ProductAggregate> getProduct(final int productId) {
         log.debug("getCompositeProduct: lookup a product aggregate for productId: {}", productId);
-
-        Product product = integration.getProduct(productId);
-        if (product == null) {
-            throw new NotFoundException("No product found for productId: " + productId);
-        }
-
-        List<Recommendation> recommendations = integration.getRecommendations(productId);
-
-        List<Review> reviews = integration.getReviews(productId);
-
-        log.debug("getCompositeProduct: aggregate entity found for productId: {}", productId);
-
-        return createProductAggregate(product, recommendations, reviews, serviceUtil.getServiceAddress());
+        return Mono.zip(values -> createProductAggregate(
+                        (Product) values[0], (List<Recommendation>) values[1],
+                        (List<Review>) values[2], serviceUtil.getServiceAddress()),
+                integration.getProduct(productId),
+                integration.getRecommendations(productId).collectList(),
+                integration.getReviews(productId).collectList());
     }
 
     @Override
-    public void deleteProduct(final int productId) {
+    public Mono<Void> deleteProduct(final int productId) {
         log.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
 
         integration.deleteProduct(productId);
