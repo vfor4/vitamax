@@ -1,11 +1,14 @@
 package se.magnus.api.event;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
+
 import java.time.ZonedDateTime;
 
 public class Event<K, T> {
     public enum Type {CREATE, DELETE};
 
-    private final Event.Type type;
+    private final Type type;
     private final K key;
     private final T data;
     private final ZonedDateTime eventCreatedAt;
@@ -29,6 +32,7 @@ public class Event<K, T> {
         return data;
     }
 
+    @JsonSerialize(using = ZonedDateTimeSerializer.class)
     public ZonedDateTime getEventCreatedAt() {
         return eventCreatedAt;
     }

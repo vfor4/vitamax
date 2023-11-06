@@ -10,8 +10,11 @@ import se.magnus.api.core.recommendation.Recommendation;
 import se.magnus.api.core.review.Review;
 import se.magnus.util.http.ServiceUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.logging.Level.FINE;
 
 @RestController
 public class ProductCompositeImpl implements ProductCompositeService {
@@ -29,26 +32,26 @@ public class ProductCompositeImpl implements ProductCompositeService {
         try {
 
             log.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.getProductId());
-
+            List<Mono> monos = new ArrayList<>();
             Product product = new Product(body.getProductId(), body.getName(), body.getWeight(), null);
-            integration.createProduct(product);
+            monos.add(integration.createProduct(product));
 
             if (body.getRecommendations() != null) {
                 body.getRecommendations().forEach(r -> {
                     Recommendation recommendation = new Recommendation(body.getProductId(), r.getRecommendationId(), r.getAuthor(), r.getRate(), r.getContent(), null);
-                    integration.createRecommendation(recommendation);
+                    monos.add(integration.createRecommendation(recommendation));
                 });
             }
 
             if (body.getReviews() != null) {
                 body.getReviews().forEach(r -> {
                     Review review = new Review(body.getProductId(), r.getReviewId(), r.getAuthor(), r.getSubject(), r.getContent(), null);
-                    integration.createReview(review);
+                    monos.add(integration.createReview(review));
                 });
             }
-
-            log.debug("createCompositeProduct: composite entities created for productId: {}", body.getProductId());
-
+            return Mono.zip(r -> "", monos.toArray(new Mono[0]))
+                    .doOnError(ex -> log.error("createCompositeProduct failed: {}", ex.toString()))
+                    .then();
         } catch (RuntimeException re) {
             log.warn("createCompositeProduct failed", re);
             throw re;
@@ -68,15 +71,20 @@ public class ProductCompositeImpl implements ProductCompositeService {
 
     @Override
     public Mono<Void> deleteProduct(final int productId) {
-        log.debug("deleteCompositeProduct: Deletes a product aggregate for productId: {}", productId);
+        try {
+            log.info("Will delete a product aggregate for product.id: {}", productId);
+            return Mono.zip(
+                            r -> "",
+                            integration.deleteProduct(productId),
+                            integration.deleteRecommendations(productId),
+                            integration.deleteReviews(productId))
+                    .doOnError(ex -> log.warn("delete failed: {}", ex.toString()))
+                    .log(log.getName(), FINE).then();
 
-        integration.deleteProduct(productId);
-
-        integration.deleteRecommendations(productId);
-
-        integration.deleteReviews(productId);
-
-        log.debug("deleteCompositeProduct: aggregate entities deleted for productId: {}", productId);
+        } catch (RuntimeException re) {
+            log.warn("deleteCompositeProduct failed: {}", re.toString());
+            throw re;
+        }
     }
 
     private ProductAggregate createProductAggregate(final Product pro, final List<Recommendation> recs, final List<Review> revs, final String serviceAddress) {

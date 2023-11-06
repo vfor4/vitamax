@@ -88,12 +88,42 @@ app:
   review-service:
     host: localhost
     port: 7003
+  threadPoolSize: 10
+  taskQueueSize: 100
 
 logging:
   level:
     root: INFO
     se.magnus: DEBUG
 
+spring:
+  cloud:
+    stream:
+      default-binder: rabbit
+      bindings:
+        products-out-0:
+          destination: products
+          producer:
+            requiredGroups:
+              - auditGroup
+        recommendations-out-0:
+          destination: recommendations
+          producer:
+            requiredGroups:
+              - auditGroup
+        reviews-out-0:
+          destination: reviews
+          producer:
+            requiredGroups:
+              - auditGroup
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
 ---
 spring.config.activate.on-profile: docker
 
@@ -109,3 +139,5 @@ app:
   review-service:
     host: review
     port: 8080
+spring.rabbitmq.host: rabbitmq
+spring.cloud.stream.kafka.binder.brokers: kafka

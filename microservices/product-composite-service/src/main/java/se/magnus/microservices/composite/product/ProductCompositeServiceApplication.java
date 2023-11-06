@@ -11,6 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 @ComponentScan("se.magnus")
 @SpringBootApplication
@@ -53,6 +55,11 @@ public class ProductCompositeServiceApplication {
                 .externalDocs(new ExternalDocumentation()
                         .description(apiExternalDocDesc)
                         .url(apiExternalDocUrl));
+    }
+
+    @Bean
+    Scheduler publishEventScheduler(@Value("${app.threadPoolSize}") int poolSize, @Value("${app.taskQueueSize}") int taskQueue) {
+        return Schedulers.newBoundedElastic(poolSize, taskQueue, "publish-event-pool");
     }
 
 }
