@@ -25,7 +25,7 @@ public class MessageConsumerConfig {
     }
 
     @Bean
-    public Consumer<Event<Integer, Review>> messageProcessor() {
+    public Consumer<Event<Integer, Review>> eventConsumer() {
         return event -> {
             log.info("Process message created at {}...", event.getEventCreatedAt());
 

@@ -105,7 +105,7 @@ spring:
           destination: products
           producer:
             requiredGroups:
-              - auditGroup
+              - auditGroup #be able to see what event have been published
         recommendations-out-0:
           destination: recommendations
           producer:

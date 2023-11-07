@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
@@ -59,9 +60,9 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         this.mapper = mapper;
         this.publishEventScheduler = publishEventScheduler;
 
-        productServiceUrl = "http://" + productServiceHost + ":" + productServicePort + "/product";
-        recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort + "/recommendation";
-        reviewServiceUrl = "http://" + reviewServiceHost + ":" + reviewServicePort + "/review";
+        productServiceUrl = "http://" + productServiceHost + ":" + productServicePort;
+        recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort;
+        reviewServiceUrl = "http://" + reviewServiceHost + ":" + reviewServicePort;
     }
 
     @Override
@@ -166,5 +167,20 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
                 .setHeader("partitionKey", event.getKey())
                 .build();
         streamBridge.send(bindingName, message);
+    }
+
+    public Mono<Health> getProductHealth() {
+        return getHeath(this.productServiceUrl);
+    }
+    public Mono<Health> getRecommendationHealth() {
+        return getHeath(this.recommendationServiceUrl);
+    }
+    public Mono<Health> getReviewHealth() {
+        return getHeath(this.reviewServiceUrl);
+    }
+    public Mono<Health> getHeath(String url) {
+        url += "/actuator/health";
+        return webClient.get().uri(url).retrieve()
+                .bodyToMono(String.class).map(s -> new Health.Builder().up().build());
     }
 }
