@@ -68,7 +68,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     @Override
     public Mono<Product> createProduct(Product body) {
         return Mono.fromCallable(() -> {
-            sendMessage("products", new Event(CREATE, body.getProductId(), body));
+            sendMessage("products-out-0", new Event(CREATE, body.getProductId(), body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
@@ -84,14 +84,14 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Mono<Void> deleteProduct(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("products", new Event(DELETE, productId, null)))
+        return Mono.fromRunnable(() -> sendMessage("products-out-0", new Event(DELETE, productId, null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
     @Override
     public Mono<Recommendation> createRecommendation(Recommendation body) {
         return Mono.fromCallable(() -> {
-            sendMessage("recommendations", new Event(CREATE, body.getProductId(), body));
+            sendMessage("recommendations-out-0", new Event(CREATE, body.getProductId(), body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
@@ -106,14 +106,14 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Mono<Void> deleteRecommendations(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("recommendations", new Event(DELETE, productId, null)))
+        return Mono.fromRunnable(() -> sendMessage("recommendations-out-0", new Event(DELETE, productId, null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
     @Override
     public Mono<Review> createReview(Review body) {
         return Mono.fromCallable(() -> {
-            sendMessage("reviews", new Event(CREATE, body.getProductId(), body));
+            sendMessage("reviews-out-0", new Event(CREATE, body.getProductId(), body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
@@ -128,7 +128,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Mono<Void> deleteReviews(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("reviews", new Event(DELETE, productId, null)))
+        return Mono.fromRunnable(() -> sendMessage("reviews-out-0", new Event(DELETE, productId, null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
