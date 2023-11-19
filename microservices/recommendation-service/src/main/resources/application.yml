@@ -11,7 +11,7 @@ spring.cloud.function.definition: eventConsumer
 spring.cloud.stream:
   defaultBinder: rabbit
   default.contentType: application/json
-  bindings.messageProcessor-in-0:
+  bindings.eventConsumer-in-0:
     destination: recommendations
     group: recommendationsGroup
 

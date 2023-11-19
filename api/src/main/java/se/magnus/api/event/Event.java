@@ -20,6 +20,13 @@ public class Event<K, T> {
         this.eventCreatedAt = ZonedDateTime.now();
     }
 
+    public Event() {
+        this.type = null;
+        this.key = null;
+        this.data = null;
+        this.eventCreatedAt = null;
+    }
+
     public Type getType() {
         return type;
     }

@@ -68,14 +68,14 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     @Override
     public Mono<Product> createProduct(Product body) {
         return Mono.fromCallable(() -> {
-            sendMessage("products-out-0", new Event(CREATE, body.getProductId(), body));
+            sendMessage("products-out-0", new Event<>(CREATE, body.getProductId(), body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
 
     @Override
     public Mono<Product> getProduct(int productId) {
-        String url = productServiceUrl + "/" + productId;
+        String url = productServiceUrl + "/product/" + productId;
         log.debug("Will call the getProduct API on URL: {}", url);
         return webClient.get().uri(url)
                 .retrieve().bodyToMono(Product.class)
@@ -84,21 +84,21 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Mono<Void> deleteProduct(int productId) {
-        return Mono.fromRunnable(() -> sendMessage("products-out-0", new Event(DELETE, productId, null)))
+        return Mono.fromRunnable(() -> sendMessage("products-out-0", new Event<>(DELETE, productId, null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
     @Override
     public Mono<Recommendation> createRecommendation(Recommendation body) {
         return Mono.fromCallable(() -> {
-            sendMessage("recommendations-out-0", new Event(CREATE, body.getProductId(), body));
+            sendMessage("recommendations-out-0", new Event<>(CREATE, body.getProductId(), body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
 
     @Override
     public Flux<Recommendation> getRecommendations(int productId) {
-        String url = recommendationServiceUrl + "?productId=" + productId;
+        String url = recommendationServiceUrl + "/recommendation?productId=" + productId;
         log.debug("Will call the getRecommendations API on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToFlux(Recommendation.class)
                 .onErrorResume(ex -> Flux.empty());
@@ -120,7 +120,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Flux<Review> getReviews(int productId) {
-        String url = reviewServiceUrl + "?productId=" + productId;
+        String url = reviewServiceUrl + "/review?productId=" + productId;
         log.debug("Will call the getReviews API on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToFlux(Review.class)
                 .onErrorResume(ex -> Flux.empty());
