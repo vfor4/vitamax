@@ -79,15 +79,6 @@ server.port: 7000
 server.error.include-message: always
 
 app:
-  product-service:
-    host: localhost
-    port: 7001
-  recommendation-service:
-    host: localhost
-    port: 7002
-  review-service:
-    host: localhost
-    port: 7003
   threadPoolSize: 10
   taskQueueSize: 100
 
@@ -124,6 +115,10 @@ spring:
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
+
+eureka:
+  client:
+
 ---
 spring.config.activate.on-profile: docker
 
