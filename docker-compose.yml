@@ -85,5 +85,3 @@ services:
     mem_limit: 512m
     ports:
       - "8761:8761"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker

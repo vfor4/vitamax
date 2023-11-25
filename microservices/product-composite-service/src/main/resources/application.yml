@@ -81,7 +81,7 @@ server.error.include-message: always
 app:
   threadPoolSize: 10
   taskQueueSize: 100
-
+  eureka-server: localhost
 logging:
   level:
     root: INFO
@@ -112,27 +112,27 @@ spring:
     port: 5672
     username: guest
     password: guest
+  application:
+    name: product-composite
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 
 eureka:
   client:
+    service-url:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initial-instance-info-replication-interval-seconds: 5
+    registry-fetch-interval-seconds: 5
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 5
 
 ---
 spring.config.activate.on-profile: docker
 
 server.port: 8080
 
-app:
-  product-service:
-    host: product
-    port: 8080
-  recommendation-service:
-    host: recommendation
-    port: 8080
-  review-service:
-    host: review
-    port: 8080
 spring.rabbitmq.host: rabbitmq
 spring.cloud.stream.kafka.binder.brokers: kafka
+app.eureka-server: eureka

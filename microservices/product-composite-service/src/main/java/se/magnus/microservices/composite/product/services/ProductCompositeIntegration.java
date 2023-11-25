@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
@@ -34,7 +33,9 @@ import static se.magnus.api.event.Event.Type.DELETE;
 
 @Component
 public class ProductCompositeIntegration implements ProductService, RecommendationService, ReviewService {
-
+    private static final String PRODUCT_SERVICE_URL = "http://product";
+    private static final String RECOMMENDATION_SERVICE_URL = "http://recommendation";
+    private static final String REVIEW_SERVICE_URL = "http://review";
     private static final Logger log = LoggerFactory.getLogger(ProductCompositeIntegration.class);
 
     private final StreamBridge streamBridge;
@@ -42,27 +43,14 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     private final ObjectMapper mapper;
     private final Scheduler publishEventScheduler;
 
-    private final String productServiceUrl;
-    private final String recommendationServiceUrl;
-    private final String reviewServiceUrl;
-
     @Autowired
     public ProductCompositeIntegration(
             final StreamBridge streamBridge, final WebClient.Builder webClientBuilder, ObjectMapper mapper,
-            final Scheduler publishEventScheduler, @Value("${app.product-service.host}") String productServiceHost,
-            @Value("${app.product-service.port}") int productServicePort,
-            @Value("${app.recommendation-service.host}") String recommendationServiceHost,
-            @Value("${app.recommendation-service.port}") int recommendationServicePort,
-            @Value("${app.review-service.host}") String reviewServiceHost,
-            @Value("${app.review-service.port}") int reviewServicePort) {
+            final Scheduler publishEventScheduler) {
         this.streamBridge = streamBridge;
         this.webClient = webClientBuilder.build();
         this.mapper = mapper;
         this.publishEventScheduler = publishEventScheduler;
-
-        productServiceUrl = "http://" + productServiceHost + ":" + productServicePort;
-        recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort;
-        reviewServiceUrl = "http://" + reviewServiceHost + ":" + reviewServicePort;
     }
 
     @Override
@@ -75,7 +63,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Mono<Product> getProduct(int productId) {
-        String url = productServiceUrl + "/product/" + productId;
+        String url = PRODUCT_SERVICE_URL + "/product/" + productId;
         log.debug("Will call the getProduct API on URL: {}", url);
         return webClient.get().uri(url)
                 .retrieve().bodyToMono(Product.class)
@@ -98,7 +86,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Flux<Recommendation> getRecommendations(int productId) {
-        String url = recommendationServiceUrl + "/recommendation?productId=" + productId;
+        String url = RECOMMENDATION_SERVICE_URL + "/recommendation?productId=" + productId;
         log.debug("Will call the getRecommendations API on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToFlux(Recommendation.class)
                 .onErrorResume(ex -> Flux.empty());
@@ -120,7 +108,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Flux<Review> getReviews(int productId) {
-        String url = reviewServiceUrl + "/review?productId=" + productId;
+        String url = REVIEW_SERVICE_URL + "/review?productId=" + productId;
         log.debug("Will call the getReviews API on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToFlux(Review.class)
                 .onErrorResume(ex -> Flux.empty());
@@ -170,14 +158,17 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     public Mono<Health> getProductHealth() {
-        return getHeath(this.productServiceUrl);
+        return getHeath(PRODUCT_SERVICE_URL);
     }
+
     public Mono<Health> getRecommendationHealth() {
-        return getHeath(this.recommendationServiceUrl);
+        return getHeath(RECOMMENDATION_SERVICE_URL);
     }
+
     public Mono<Health> getReviewHealth() {
-        return getHeath(this.reviewServiceUrl);
+        return getHeath(REVIEW_SERVICE_URL);
     }
+
     public Mono<Health> getHeath(String url) {
         url += "/actuator/health";
         return webClient.get().uri(url).retrieve()

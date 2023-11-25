@@ -1,3 +1,9 @@
+spring:
+  application:
+    name: recommendation
+
+app.eureka-server: localhost
+
 server.port: 7002
 server.error.include-message: always
 
@@ -44,9 +50,21 @@ logging:
     se.magnus: DEBUG
     org.springframework.data.mongodb.core.ReactiveMongoTemplate: DEBUG
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${app.eureka-server}:8761/eureka/
+    initial-instance-info-replication-interval-seconds: 5
+    registry-fetch-interval-seconds: 5
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 5
+
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 ---
+app.eureka-server: eureka
+
 spring.config.activate.on-profile: docker
 
 server.port: 8080

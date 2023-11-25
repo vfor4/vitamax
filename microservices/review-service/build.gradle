@@ -31,6 +31,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-stream-kafka'
     implementation 'com.mysql:mysql-connector-j'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     compileOnly "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
