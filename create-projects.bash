@@ -3,15 +3,16 @@
 cd spring-cloud
 
 spring init \
---boot-version=3.0.4 \
+--force \
+--boot-version=3.1.0 \
 --type=gradle-project \
 --java-version=17 \
 --packaging=jar \
---name=eureka-server \
+--name=gateway \
 --package-name=se.magnus.springcloud \
 --groupId=se.magnus.springcloud \
---dependencies=cloud-eureka-server \
+--dependencies=cloud-gateway,actuator \
 --version=1.0.0-SNAPSHOT \
-eureka-server
+gateway
 
 cd ..

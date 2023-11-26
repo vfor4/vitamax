@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.Health;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
@@ -155,23 +154,5 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
                 .setHeader("partitionKey", event.getKey())
                 .build();
         streamBridge.send(bindingName, message);
-    }
-
-    public Mono<Health> getProductHealth() {
-        return getHeath(PRODUCT_SERVICE_URL);
-    }
-
-    public Mono<Health> getRecommendationHealth() {
-        return getHeath(RECOMMENDATION_SERVICE_URL);
-    }
-
-    public Mono<Health> getReviewHealth() {
-        return getHeath(REVIEW_SERVICE_URL);
-    }
-
-    public Mono<Health> getHeath(String url) {
-        url += "/actuator/health";
-        return webClient.get().uri(url).retrieve()
-                .bodyToMono(String.class).map(s -> new Health.Builder().up().build());
     }
 }
