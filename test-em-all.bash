@@ -5,7 +5,7 @@
 #   HOST=localhost PORT=7000 ./test-em-all.bash
 #
 : ${HOST=localhost}
-: ${PORT=8080}
+: ${PORT=8443}
 : ${PROD_ID_REVS_RECS=1}
 : ${PROD_ID_NOT_FOUND=13}
 : ${PROD_ID_NO_RECS=113}

@@ -1,3 +1,10 @@
 ./gradlew :spring-cloud:eureka-server:build -x test
 
 ./gradlew :microservices:product-composite-service:build -x test
+
+keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -storetype
+PKCS12 -keystore edge.p12 -validity 3650
+
+// restart container
+docker-compose up -d --scale gateway=0
+docker-compose up -d --scale gateway=1

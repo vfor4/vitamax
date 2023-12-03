@@ -1,7 +1,10 @@
 spring:
   application:
     name: product
-app.eureka-server: localhost
+app:
+  eureka-server: localhost
+  eureka-username: u
+  eureka-password: p
 
 server.port: 7001
 server.error.include-message: always
@@ -55,7 +58,7 @@ management.endpoints.web.exposure.include: "*"
 eureka:
   client:
     service-url:
-      defaultZone: http://${app.eureka-server}:8761/eureka/
+      defaultZone: http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/
     initial-instance-info-replication-interval-seconds: 5
     registry-fetch-interval-seconds: 5
   instance:

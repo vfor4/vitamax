@@ -8,11 +8,11 @@ spring init \
 --type=gradle-project \
 --java-version=17 \
 --packaging=jar \
---name=gateway \
+--name=authorization-server \
 --package-name=se.magnus.springcloud \
 --groupId=se.magnus.springcloud \
---dependencies=cloud-gateway,actuator \
+--dependencies=oauth2-authorization-server,security \
 --version=1.0.0-SNAPSHOT \
-gateway
+authorization-server
 
 cd ..
