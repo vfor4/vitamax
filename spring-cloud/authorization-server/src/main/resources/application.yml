@@ -1,1 +1,67 @@
+server.port: 9999
+logging:
+  level:
+    org.springframwork.security: trace
 
+app:
+  eureka-server: localhost
+  eureka-username: u
+  eureka-password: p
+
+eureka:
+  client:
+    service-url:
+      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
+    registry-fetch-interval-seconds: 5
+    initial-instance-info-replication-interval-seconds: 5
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+
+spring:
+  security:
+    user:
+      name: u1
+      password: p
+    oauth2:
+      authorizationserver:
+        client:
+          vitamax-reader:
+            registration:
+              client-id: "reader"
+              client-secret: "{noop}reader-secret"
+              client-authentication-methods:
+                - "client_secret_basic"
+              authorization_grant_types:
+                - "authorization_code"
+                - "refresh_token"
+                - "client_credentials"
+              redirect-uris:
+                - "https://localhost:8443/openapi/webjars/swagger-ui/oauth2-redirect.html"
+                - "https://my.redirect.uri"
+              scopes:
+                - "product:read"
+            require-authorization-consent: true
+          vitamax-writer:
+            registration:
+              client-id: "writer"
+              client-secret: "{noop}writer-secret"
+              client-authentication-methods:
+                - "client_secret_basic"
+              authorization_grant_types:
+                - "authorization_code"
+                - "refresh_token"
+                - "client_credentials"
+              redirect-uris:
+                - "https://localhost:8443/openapi/webjars/swagger-ui/oauth2-redirect.html"
+                - "https://my.redirect.uri"
+              scopes:
+                - "product:read"
+                - "product:write"
+            require-authorization-consent: true
+  application:
+    name: auth-server
+---
+spring.config.activate.on-profile: docker
+app:
+  eureka-server: eureka

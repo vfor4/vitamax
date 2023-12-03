@@ -23,7 +23,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client. enabled=false"})
+@SpringBootTest(webEnvironment = RANDOM_PORT,
+        properties = {"eureka.client. enabled=false", "spring.main.allow-bean-definition-overriding=true"},
+        classes = {SecurityConfigTest.class})
 class ProductCompositeServiceApplicationTests {
 
     private static final int PRODUCT_ID_OK = 1;
@@ -51,6 +53,7 @@ class ProductCompositeServiceApplicationTests {
         when(compositeIntegration.getProduct(PRODUCT_ID_INVALID))
                 .thenThrow(new InvalidInputException("INVALID: " + PRODUCT_ID_INVALID));
     }
+
     @Test
     void testStepVerifier() {
         StepVerifier.create(Flux.just(1, 2, 3, 4)
@@ -59,6 +62,7 @@ class ProductCompositeServiceApplicationTests {
                         .log())
                 .expectNext(4, 8).verifyComplete();
     }
+
     @Test
     void contextLoads() {
     }

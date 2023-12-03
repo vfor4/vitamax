@@ -12,10 +12,12 @@ public class ResourceServerConfiguration {
 
     @Bean
     SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
-       http.authorizeExchange().pathMatchers("/actuator/**").permitAll()
-               .anyExchange().authenticated()
-               .and()
-               .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);
+        http.csrf().disable()
+                .authorizeExchange().pathMatchers("/actuator/**").permitAll()
+                .pathMatchers("/oauth2/**").permitAll()
+                .anyExchange().authenticated()
+                .and()
+                .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);
         return http.build();
     }
 }

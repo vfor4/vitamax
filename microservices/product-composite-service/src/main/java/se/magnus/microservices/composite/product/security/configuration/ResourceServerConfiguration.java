@@ -18,6 +18,8 @@ public class ResourceServerConfiguration {
                .pathMatchers(HttpMethod.GET, "product-composite/**").hasRole("SCOPE_product:read")
                .pathMatchers(HttpMethod.POST, "product-composite/**").hasRole("SCOPE_product:write")
                .pathMatchers(HttpMethod.DELETE, "product-composite/**").hasRole("SCOPE_product:write")
+               .pathMatchers("/openapi/**").permitAll()
+               .pathMatchers("/webjars/**").permitAll()
                .anyExchange().authenticated()
                .and()
                .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);

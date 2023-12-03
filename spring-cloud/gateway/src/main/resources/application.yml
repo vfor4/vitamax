@@ -56,13 +56,27 @@ spring.cloud.gateway.routes:
     predicates:
       - Path=/eureka/**
 
+  - id: oauth2-server
+    uri: lb://auth-server
+    predicates:
+      - Path=/oauth2/**
+
+  - id: oauth2-login
+    uri: lb://auth-server
+    predicates:
+      - Path=/login/**
+
+  - id: oauth2-error
+    uri: lb://auth-server
+    predicates:
+      - Path=/error/**
+
 management.endpoint.gateway.enabled: true
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 
 #Chap11: Security
 spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}:9999
-
 
 ---
 spring.config.activate.on-profile: docker
