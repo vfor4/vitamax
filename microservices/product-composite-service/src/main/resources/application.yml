@@ -14,6 +14,8 @@ springdoc:
     authorizationUrl: https://localhost:8443/oauth2/authorize
     tokenUrl: https://localhost:8443/oauth2/token
 
+server.forward-headers-strategy: framework
+
 api:
 
   common:
@@ -141,6 +143,7 @@ eureka:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 5
 
+spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}:9999
 ---
 spring.config.activate.on-profile: docker
 
@@ -148,4 +151,6 @@ server.port: 8080
 
 spring.rabbitmq.host: rabbitmq
 spring.cloud.stream.kafka.binder.brokers: kafka
-app.eureka-server: eureka
+app:
+  eureka-server: eureka
+  auth-server: auth-server

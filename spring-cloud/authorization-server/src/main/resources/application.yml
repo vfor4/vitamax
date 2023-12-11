@@ -2,7 +2,7 @@ server.port: 9999
 logging:
   level:
     org.springframwork.security: trace
-
+server.forward-headers-strategy: framework
 app:
   eureka-server: localhost
   eureka-username: u
@@ -25,6 +25,7 @@ spring:
       password: p
     oauth2:
       authorizationserver:
+        issuer: "http://${spring.application.name}:9999"
         client:
           vitamax-reader:
             registration:
@@ -61,6 +62,9 @@ spring:
             require-authorization-consent: true
   application:
     name: auth-server
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
 ---
 spring.config.activate.on-profile: docker
 app:

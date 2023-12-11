@@ -71,6 +71,11 @@ spring.cloud.gateway.routes:
     predicates:
       - Path=/error/**
 
+  - id: oauth2-openid
+    uri: lb://auth-server
+    predicates:
+      - Path=/.well-known/**
+
 management.endpoint.gateway.enabled: true
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"

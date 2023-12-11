@@ -15,11 +15,11 @@ public class ResourceServerConfiguration {
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
        http.authorizeExchange()
                .pathMatchers("/actuator/**").permitAll()
-               .pathMatchers(HttpMethod.GET, "product-composite/**").hasRole("SCOPE_product:read")
-               .pathMatchers(HttpMethod.POST, "product-composite/**").hasRole("SCOPE_product:write")
-               .pathMatchers(HttpMethod.DELETE, "product-composite/**").hasRole("SCOPE_product:write")
                .pathMatchers("/openapi/**").permitAll()
                .pathMatchers("/webjars/**").permitAll()
+               .pathMatchers(HttpMethod.GET, "/product-composite/**").hasAuthority("SCOPE_product:read")
+               .pathMatchers(HttpMethod.POST, "/product-composite/**").hasAuthority("SCOPE_product:write")
+               .pathMatchers(HttpMethod.DELETE, "/product-composite/**").hasAuthority("SCOPE_product:write")
                .anyExchange().authenticated()
                .and()
                .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);
