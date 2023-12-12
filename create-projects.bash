@@ -8,11 +8,11 @@ spring init \
 --type=gradle-project \
 --java-version=17 \
 --packaging=jar \
---name=authorization-server \
+--name=config-server \
 --package-name=se.magnus.springcloud \
 --groupId=se.magnus.springcloud \
---dependencies=oauth2-authorization-server,security \
+--dependencies=cloud-config-server,security \
 --version=1.0.0-SNAPSHOT \
-authorization-server
+config-server
 
 cd ..

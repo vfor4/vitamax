@@ -6,6 +6,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_USER}
+      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -78,6 +80,7 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
+
   eureka:
     build: spring-cloud/eureka-server
     mem_limit: 512m
@@ -104,3 +107,14 @@ services:
       retries: 60
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+
+  config-server:
+    build: spring-cloud/config-server
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,native
+      - ENCRYPT_KEY=${ENCRYPT_KEY}
+      - SPRING_SECURITY_USER_NAME=${CONFIG_USER}
+      - SPRING_SECURITY_USER_PASSWORD=${CONFIG_PASSWORD}
+    volumes:
+      - ~/coding/vitamax/config-repo:/config-repo
