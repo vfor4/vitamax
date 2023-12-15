@@ -19,6 +19,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_USER}
+      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -30,6 +32,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_USER}
+      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
     depends_on:
       mysql:
         condition: service_healthy
@@ -41,6 +45,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_USER}
+      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
 
   mongodb:
     image: mongo:6.0.4
@@ -69,6 +75,7 @@ services:
       interval: 5s
       timeout: 2s
       retries: 60
+
   rabbitmq:
     image: rabbitmq:3.11.8-management
     mem_limit: 512m
@@ -84,6 +91,9 @@ services:
   eureka:
     build: spring-cloud/eureka-server
     mem_limit: 512m
+    environment:
+      - CONFIG_SERVER_USR=${CONFIG_USER}
+      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
 
   gateway:
     build: spring-cloud/gateway
@@ -94,6 +104,8 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SERVER_SSL_KEY_STORE=file:/keystore/edge-test.p12
       - SERVER_SSL_KEY_STORE_PASSWORD=12345test
+      - CONFIG_SERVER_USR=${CONFIG_USER}
+      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
     volumes:
       - ~/coding/vitamax/keystore:/keystore
 
@@ -107,6 +119,8 @@ services:
       retries: 60
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_USR=${CONFIG_USER}
+      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
 
   config-server:
     build: spring-cloud/config-server

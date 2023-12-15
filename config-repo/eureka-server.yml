@@ -1,4 +1,4 @@
-serverapplication:
+server:
   port: 8761
 eureka:
   instance:

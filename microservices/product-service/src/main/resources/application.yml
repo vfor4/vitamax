@@ -1,4 +1,4 @@
-spring.cloud.import: "configserver:"
+spring.config.import: "configserver:"
 
 spring:
   application:
@@ -13,7 +13,7 @@ spring:
         max-attempts: 20
       uri:
         - http://localhost:8888
-      username: ${CONFIG_SERVER_USER}
+      username: ${CONFIG_SERVER_USR}
       password: ${CONFIG_SERVER_PWD}
 
 ---

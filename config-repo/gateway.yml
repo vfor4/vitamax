@@ -6,8 +6,6 @@ server:
     key-store-password: 123456
     key-alias: localhost
 
-spring.application.name: gateway
-
 app:
   eureka-server: localhost
   auth-server: localhost
