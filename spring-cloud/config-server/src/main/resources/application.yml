@@ -8,7 +8,7 @@ management.endpoint.web.exposure.include: "*"
 
 logging:
   level:
-    root: info
+    root: trace
 
 ---
 spring.config.activate.on-profile: docker

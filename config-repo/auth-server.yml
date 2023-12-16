@@ -60,8 +60,6 @@ spring:
                 - "product:read"
                 - "product:write"
             require-authorization-consent: true
-  application:
-    name: auth-server
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"

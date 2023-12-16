@@ -1,3 +1,5 @@
+spring.config.import: "configserver:"
+
 spring:
   application:
     name: review
@@ -14,7 +16,7 @@ spring:
       username: ${CONFIG_SERVER_USR}
       password: ${CONFIG_SERVER_PWD}
 
-spring.config.import: "configserver:"
+
 
 ---
 spring:
