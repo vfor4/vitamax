@@ -76,7 +76,7 @@ spring.cloud.gateway.routes:
       - Path=/.well-known/**
 
   - id: config-server
-    uri: http://${app.config-server}:8888
+    uri: ${spring.cloud.config.uri}
     predicates:
       - Path=/config/**
     filters:
