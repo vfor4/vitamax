@@ -1,7 +1,7 @@
 server.port: 9999
 logging:
   level:
-    org.springframwork.security: trace
+    org.springframework.security: debug
 server.forward-headers-strategy: framework
 app:
   eureka-server: localhost
@@ -21,7 +21,7 @@ eureka:
 spring:
   security:
     user:
-      name: u1
+      name: u
       password: p
     oauth2:
       authorizationserver:

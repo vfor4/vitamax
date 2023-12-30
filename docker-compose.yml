@@ -6,8 +6,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_USER}
-      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -19,8 +19,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_USER}
-      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     depends_on:
       mongodb:
         condition: service_healthy
@@ -32,8 +32,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_USER}
-      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     depends_on:
       mysql:
         condition: service_healthy
@@ -45,8 +45,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_USER}
-      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
 
   mongodb:
     image: mongo:6.0.4
@@ -93,20 +93,23 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_USER}
-      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
 
   gateway:
     build: spring-cloud/gateway
     mem_limit: 512m
-    ports:
-      - "8443:8443"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SERVER_SSL_KEY_STORE=file:/keystore/edge-test.p12
       - SERVER_SSL_KEY_STORE_PASSWORD=12345test
-      - CONFIG_SERVER_USR=${CONFIG_USER}
-      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
+    ports:
+      - "8443:8443"
+    depends_on:
+      auth-server:
+        condition: service_healthy
     volumes:
       - ~/coding/vitamax/keystore:/keystore
 
@@ -115,8 +118,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_USER}
-      - CONFIG_SERVER_PWD=${CONFIG_PASSWORD}
+      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
+      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     healthcheck:
       test: [ "CMD", "curl", "-fs", "http://localhost:9999/actuator/health" ]
       interval: 5s
@@ -129,8 +132,8 @@ services:
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,native
-      - ENCRYPT_KEY=${ENCRYPT_KEY}
-      - SPRING_SECURITY_USER_NAME=${CONFIG_USER}
-      - SPRING_SECURITY_USER_PASSWORD=${CONFIG_PASSWORD}
+      - ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY}
+      - SPRING_SECURITY_USER_NAME=${CONFIG_SERVER_USR}
+      - SPRING_SECURITY_USER_PASSWORD=${CONFIG_SERVER_PWD}
     volumes:
       - ~/coding/vitamax/config-repo:/config-repo

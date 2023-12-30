@@ -1,9 +1,9 @@
-spring.config.import: "configserver:http://config-server:8888"
+spring.config.import: "configserver:"
 
 spring:
   application.name: eureka-server
   cloud.config:
-    failFast: false
+    failFast: true
     retry:
       initialInterval: 3000
       multiplier: 1.3
