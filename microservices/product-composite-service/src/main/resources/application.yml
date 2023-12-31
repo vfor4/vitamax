@@ -16,6 +16,28 @@ spring:
       username: ${CONFIG_SERVER_USR}
       password: ${CONFIG_SERVER_PWD}
 
+management.health.circuitbreakers.enabled: true
+resilience4j:
+  circuitbreaker:
+    instances:
+      product:
+        allowHealthIndicatorToFail: false
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        automaticTransitionFromOpenToHalfOpenEnabled: false
+        permittedNumberOfCallsInHalfOpenState: 3
+        ignoreExceptions:
+          - se.magnus.api.exceptions.NotFoundException
+          - se.magnus.api.exceptions.InvalidInputException
+  timelimiter:
+    instances:
+      product:
+        timeoutDuration: 2s
+
+
 ---
 spring.config.activate.on-profile: docker
 spring.cloud.config.uri: http://config-server:8888

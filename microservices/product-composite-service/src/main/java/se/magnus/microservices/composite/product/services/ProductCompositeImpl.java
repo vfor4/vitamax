@@ -59,14 +59,14 @@ public class ProductCompositeImpl implements ProductCompositeService {
     }
 
     @Override
-    public Mono<ProductAggregate> getProduct(final int productId) {
+    public Mono<ProductAggregate> getProduct(final int productId, final int delay, final int faultPercent) {
         log.debug("getCompositeProduct: lookup a product aggregate for productId: {}", productId);
         return Mono.zip(values -> createProductAggregate(
                         (Product) values[0],
                         (List<Recommendation>) values[1],
                         (List<Review>) values[2],
                         serviceUtil.getServiceAddress()),
-                integration.getProduct(productId),
+                integration.getProduct(productId, delay, faultPercent),
                 integration.getRecommendations(productId).collectList(),
                 integration.getReviews(productId).collectList());
     }

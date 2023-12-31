@@ -1,6 +1,9 @@
 package se.magnus.microservices.composite.product.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -26,6 +30,7 @@ import se.magnus.api.exceptions.NotFoundException;
 import se.magnus.util.http.HttpErrorInfo;
 
 import java.io.IOException;
+import java.net.URI;
 
 import static se.magnus.api.event.Event.Type.CREATE;
 import static se.magnus.api.event.Event.Type.DELETE;
@@ -60,23 +65,36 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         }).subscribeOn(publishEventScheduler);
     }
 
+//    @Retry(name = "product")
+    @CircuitBreaker(name = "product", fallbackMethod = "fallBackGetProduct")
+    @TimeLimiter(name = "product")
     @Override
-    public Mono<Product> getProduct(int productId) {
-        String url = PRODUCT_SERVICE_URL + "/product/" + productId;
+    public Mono<Product> getProduct(final int productId, final int delay, final int faultPercent) {
+        final URI url = UriComponentsBuilder.fromUriString(
+                PRODUCT_SERVICE_URL + "/product/{productId}?delay={delay}&faultPercent={faultPercent}"
+        ).build(productId, delay, faultPercent);
         log.debug("Will call the getProduct API on URL: {}", url);
         return webClient.get().uri(url)
                 .retrieve().bodyToMono(Product.class)
                 .onErrorMap(this::handleHttpClientException);
     }
 
+    private Mono<Product> fallBackGetProduct(final int productId, final int delay, final int faultPercent, final CallNotPermittedException ex) {
+        if (productId == 13) {
+            log.debug("Product id 13 not found in fallback cache");
+            throw new NotFoundException("product id 13 not found");
+        }
+        return Mono.just(new Product(productId, "name-cache", 10, "service-address-cache"));
+    }
+
     @Override
-    public Mono<Void> deleteProduct(int productId) {
+    public Mono<Void> deleteProduct(final int productId) {
         return Mono.fromRunnable(() -> sendMessage("products-out-0", new Event<>(DELETE, productId, null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
     @Override
-    public Mono<Recommendation> createRecommendation(Recommendation body) {
+    public Mono<Recommendation> createRecommendation(final Recommendation body) {
         return Mono.fromCallable(() -> {
             sendMessage("recommendations-out-0", new Event<>(CREATE, body.getProductId(), body));
             return body;
