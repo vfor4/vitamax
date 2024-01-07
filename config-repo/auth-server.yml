@@ -1,22 +1,8 @@
 server.port: 9999
 logging:
   level:
-    org.springframework.security: debug
+    org.springframework.security: INFO
 server.forward-headers-strategy: framework
-app:
-  eureka-server: localhost
-  eureka-username: u
-  eureka-password: p
-
-eureka:
-  client:
-    service-url:
-      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
-    registry-fetch-interval-seconds: 5
-    initial-instance-info-replication-interval-seconds: 5
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
 
 spring:
   security:

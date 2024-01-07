@@ -27,7 +27,7 @@ resilience4j:
         slidingWindowSize: 5
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
-        automaticTransitionFromOpenToHalfOpenEnabled: false
+        automaticTransitionFromOpenToHalfOpenEnabled: true
         permittedNumberOfCallsInHalfOpenState: 3
         ignoreExceptions:
           - se.magnus.api.exceptions.NotFoundException
@@ -36,7 +36,6 @@ resilience4j:
     instances:
       product:
         timeoutDuration: 2s
-
 
 ---
 spring.config.activate.on-profile: docker

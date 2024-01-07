@@ -7,21 +7,8 @@ server:
     key-alias: localhost
 
 app:
-  eureka-server: localhost
   auth-server: localhost
   config-server: localhost
-  eureka-username: u
-  eureka-password: p
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/
-    initialInstanceInfoReplicationIntervalSeconds: 5
-    registryFetchIntervalSeconds: 5
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
 
 logging:
   level:

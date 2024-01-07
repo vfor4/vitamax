@@ -1,8 +1,3 @@
-app:
-  eureka-server: localhost
-  eureka-username: u
-  eureka-password: p
-
 server.port: 7003
 server.error.include-message: always
 
@@ -47,19 +42,9 @@ spring.rabbitmq:
 logging:
   level:
     root: INFO
-    se.magnus: DEBUG
+    se.magnus: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/
-    initial-instance-info-replication-interval-seconds: 5
-    registry-fetch-interval-seconds: 5
-  instance:
-    lease-renewal-interval-in-seconds: 5
-    lease-expiration-duration-in-seconds: 5
 
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"

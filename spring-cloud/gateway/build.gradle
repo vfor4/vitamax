@@ -27,6 +27,8 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-oauth2-resource-server'
 	implementation 'org.springframework.security:spring-security-oauth2-jose'
 	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	implementation 'io.opentelemetry:opentelemetry-exporter-zipkin'
 	implementation 'org.springframework.retry:spring-retry'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
