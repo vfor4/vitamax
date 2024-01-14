@@ -55,3 +55,6 @@ dependencyManagement {
 tasks.named('test') {
     useJUnitPlatform()
 }
+springBoot {
+    buildInfo()
+}

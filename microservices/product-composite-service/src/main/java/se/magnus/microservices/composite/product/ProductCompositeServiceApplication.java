@@ -5,14 +5,16 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Hooks;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
@@ -31,9 +33,9 @@ public class ProductCompositeServiceApplication {
     @Value("${api.common.contact.url}")String apiContactUrl;
     @Value("${api.common.contact.email}")String apiContactEmail;
 
-    public static void main(String[] args) {
-        SpringApplication.run(ProductCompositeServiceApplication.class, args);
-    }
+    @Autowired
+    private ReactorLoadBalancerExchangeFilterFunction lbFunction;
+
 
     @Bean
     RestTemplate getRestemplate() {
@@ -65,8 +67,12 @@ public class ProductCompositeServiceApplication {
     }
 
     @Bean
-    @LoadBalanced
-    WebClient.Builder webClientBuilder(){
-        return WebClient.builder();
+    WebClient webClient(final WebClient.Builder builder) {
+        return builder.filter(lbFunction).build();
+    }
+
+    public static void main(String[] args) {
+        Hooks.enableAutomaticContextPropagation();
+        SpringApplication.run(ProductCompositeServiceApplication.class, args);
     }
 }

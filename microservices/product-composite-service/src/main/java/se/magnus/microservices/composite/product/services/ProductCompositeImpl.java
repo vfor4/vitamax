@@ -8,10 +8,12 @@ import se.magnus.api.composite.product.*;
 import se.magnus.api.core.product.Product;
 import se.magnus.api.core.recommendation.Recommendation;
 import se.magnus.api.core.review.Review;
+import se.magnus.microservices.composite.product.services.tracing.ObservationUtil;
 import se.magnus.util.http.ServiceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.logging.Level.FINE;
@@ -21,38 +23,44 @@ public class ProductCompositeImpl implements ProductCompositeService {
     private static final Logger log = LoggerFactory.getLogger(ProductCompositeImpl.class);
     private final ProductCompositeIntegration integration;
     private final ServiceUtil serviceUtil;
+    private final ObservationUtil observationUtil;
 
-    public ProductCompositeImpl(final ProductCompositeIntegration integration, final ServiceUtil serviceUtil) {
+    public ProductCompositeImpl(final ProductCompositeIntegration integration, final ServiceUtil serviceUtil, final ObservationUtil observationUtil) {
         this.integration = integration;
         this.serviceUtil = serviceUtil;
+        this.observationUtil = observationUtil;
     }
 
     @Override
     public Mono<Void> createProduct(final ProductAggregate body) {
+        return observeWithProductInfo(body.getProductId(), () -> createProductInternal(body));
+    }
+
+    private Mono<Void> createProductInternal(final ProductAggregate body) {
         try {
 
             log.debug("createCompositeProduct: creates a new composite entity for productId: {}", body.getProductId());
-            List<Mono> monos = new ArrayList<>();
-            Product product = new Product(body.getProductId(), body.getName(), body.getWeight(), null);
+            final List<Mono> monos = new ArrayList<>();
+            final Product product = new Product(body.getProductId(), body.getName(), body.getWeight(), null);
             monos.add(integration.createProduct(product));
 
             if (body.getRecommendations() != null) {
                 body.getRecommendations().forEach(r -> {
-                    Recommendation recommendation = new Recommendation(body.getProductId(), r.getRecommendationId(), r.getAuthor(), r.getRate(), r.getContent(), null);
+                    final Recommendation recommendation = new Recommendation(body.getProductId(), r.getRecommendationId(), r.getAuthor(), r.getRate(), r.getContent(), null);
                     monos.add(integration.createRecommendation(recommendation));
                 });
             }
 
             if (body.getReviews() != null) {
                 body.getReviews().forEach(r -> {
-                    Review review = new Review(body.getProductId(), r.getReviewId(), r.getAuthor(), r.getSubject(), r.getContent(), null);
+                    final Review review = new Review(body.getProductId(), r.getReviewId(), r.getAuthor(), r.getSubject(), r.getContent(), null);
                     monos.add(integration.createReview(review));
                 });
             }
             return Mono.zip(r -> "", monos.toArray(new Mono[0]))
                     .doOnError(ex -> log.error("createCompositeProduct failed: {}", ex.toString()))
                     .then();
-        } catch (RuntimeException re) {
+        } catch (final RuntimeException re) {
             log.warn("createCompositeProduct failed", re);
             throw re;
         }
@@ -60,6 +68,10 @@ public class ProductCompositeImpl implements ProductCompositeService {
 
     @Override
     public Mono<ProductAggregate> getProduct(final int productId, final int delay, final int faultPercent) {
+        return observeWithProductInfo(productId, () -> getProductInternal(productId, delay, faultPercent));
+    }
+
+    private Mono<ProductAggregate> getProductInternal(final int productId, final int delay, final int faultPercent) {
         log.debug("getCompositeProduct: lookup a product aggregate for productId: {}", productId);
         return Mono.zip(values -> createProductAggregate(
                         (Product) values[0],
@@ -73,6 +85,10 @@ public class ProductCompositeImpl implements ProductCompositeService {
 
     @Override
     public Mono<Void> deleteProduct(final int productId) {
+        return observeWithProductInfo(productId, () -> deleteProductInternal(productId));
+    }
+
+    private Mono<Void> deleteProductInternal(final int productId) {
         try {
             log.info("Will delete a product aggregate for product.id: {}", productId);
             return Mono.zip(
@@ -83,36 +99,40 @@ public class ProductCompositeImpl implements ProductCompositeService {
                     .doOnError(ex -> log.warn("delete failed: {}", ex.toString()))
                     .log(log.getName(), FINE).then();
 
-        } catch (RuntimeException re) {
+        } catch (final RuntimeException re) {
             log.warn("deleteCompositeProduct failed: {}", re.toString());
             throw re;
         }
     }
-
     private ProductAggregate createProductAggregate(final Product pro, final List<Recommendation> recs, final List<Review> revs, final String serviceAddress) {
         // 1. Setup product info
-        int productId = pro.getProductId();
-        String name = pro.getName();
-        int weight = pro.getWeight();
+        final int productId = pro.getProductId();
+        final String name = pro.getName();
+        final int weight = pro.getWeight();
 
         // 2. Copy summary recommendation info, if available
-        List<RecommendationSummary> recommendationSummaries =
+        final List<RecommendationSummary> recommendationSummaries =
                 (recs == null) ? null : recs.stream()
                         .map(r -> new RecommendationSummary(r.getRecommendationId(), r.getAuthor(), r.getRate(), r.getContent()))
                         .collect(Collectors.toList());
 
         // 3. Copy summary review info, if available
-        List<ReviewSummary> reviewSummaries =
+        final List<ReviewSummary> reviewSummaries =
                 (revs == null) ? null : revs.stream()
                         .map(r -> new ReviewSummary(r.getReviewId(), r.getAuthor(), r.getSubject(), r.getContent()))
                         .collect(Collectors.toList());
 
         // 4. Create info regarding the involved microservices addresses
-        String productAddress = pro.getServiceAddress();
-        String reviewAddress = (revs != null && !revs.isEmpty()) ? revs.get(0).getServiceAddress() : "";
-        String recommendationAddress = (recs != null && !recs.isEmpty()) ? recs.get(0).getServiceAddress() : "";
-        var serviceAddresses = new ServiceAddresses(serviceAddress, productAddress, reviewAddress, recommendationAddress);
+        final String productAddress = pro.getServiceAddress();
+        final String reviewAddress = (revs != null && !revs.isEmpty()) ? revs.get(0).getServiceAddress() : "";
+        final String recommendationAddress = (recs != null && !recs.isEmpty()) ? recs.get(0).getServiceAddress() : "";
+        final var serviceAddresses = new ServiceAddresses(serviceAddress, productAddress, reviewAddress, recommendationAddress);
 
         return new ProductAggregate(productId, name, weight, recommendationSummaries, reviewSummaries, serviceAddresses);
+    }
+
+    private <T> T observeWithProductInfo(final int productInfo, final Supplier<T> supplier) {
+        return observationUtil.observe("composite observation", "product info",
+                "productId", String.valueOf(productInfo), supplier);
     }
 }

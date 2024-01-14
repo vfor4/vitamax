@@ -27,6 +27,7 @@ import se.magnus.api.core.review.ReviewService;
 import se.magnus.api.event.Event;
 import se.magnus.api.exceptions.InvalidInputException;
 import se.magnus.api.exceptions.NotFoundException;
+import se.magnus.microservices.composite.product.services.tracing.ObservationUtil;
 import se.magnus.util.http.HttpErrorInfo;
 
 import java.io.IOException;
@@ -49,23 +50,23 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Autowired
     public ProductCompositeIntegration(
-            final StreamBridge streamBridge, final WebClient.Builder webClientBuilder, ObjectMapper mapper,
-            final Scheduler publishEventScheduler) {
+            final StreamBridge streamBridge, final WebClient webClient, final ObjectMapper mapper,
+            final Scheduler publishEventScheduler, final ObservationUtil observationUtil) {
         this.streamBridge = streamBridge;
-        this.webClient = webClientBuilder.build();
+        this.webClient = webClient;
         this.mapper = mapper;
         this.publishEventScheduler = publishEventScheduler;
     }
 
     @Override
-    public Mono<Product> createProduct(Product body) {
+    public Mono<Product> createProduct(final Product body) {
         return Mono.fromCallable(() -> {
             sendMessage("products-out-0", new Event<>(CREATE, body.getProductId(), body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
 
-//    @Retry(name = "product")
+    //    @Retry(name = "product")
     @CircuitBreaker(name = "product", fallbackMethod = "fallBackGetProduct")
     @TimeLimiter(name = "product")
     @Override
@@ -102,21 +103,21 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
-    public Flux<Recommendation> getRecommendations(int productId) {
-        String url = RECOMMENDATION_SERVICE_URL + "/recommendation?productId=" + productId;
+    public Flux<Recommendation> getRecommendations(final int productId) {
+        final String url = RECOMMENDATION_SERVICE_URL + "/recommendation?productId=" + productId;
         log.debug("Will call the getRecommendations API on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToFlux(Recommendation.class)
                 .onErrorResume(ex -> Flux.empty());
     }
 
     @Override
-    public Mono<Void> deleteRecommendations(int productId) {
+    public Mono<Void> deleteRecommendations(final int productId) {
         return Mono.fromRunnable(() -> sendMessage("recommendations-out-0", new Event(DELETE, productId, null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
     @Override
-    public Mono<Review> createReview(Review body) {
+    public Mono<Review> createReview(final Review body) {
         return Mono.fromCallable(() -> {
             sendMessage("reviews-out-0", new Event(CREATE, body.getProductId(), body));
             return body;
@@ -124,25 +125,24 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
-    public Flux<Review> getReviews(int productId) {
-        String url = REVIEW_SERVICE_URL + "/review?productId=" + productId;
+    public Flux<Review> getReviews(final int productId) {
+        final String url = REVIEW_SERVICE_URL + "/review?productId=" + productId;
         log.debug("Will call the getReviews API on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToFlux(Review.class)
                 .onErrorResume(ex -> Flux.empty());
     }
 
     @Override
-    public Mono<Void> deleteReviews(int productId) {
+    public Mono<Void> deleteReviews(final int productId) {
         return Mono.fromRunnable(() -> sendMessage("reviews-out-0", new Event(DELETE, productId, null)))
                 .subscribeOn(publishEventScheduler).then();
     }
 
-    private Throwable handleHttpClientException(Throwable ex) {
-        if (!(ex instanceof WebClientResponseException)) {
+    private Throwable handleHttpClientException(final Throwable ex) {
+        if (!(ex instanceof final WebClientResponseException wcre)) {
             log.warn("Got a unexpected error: {}, will rethrow it", ex.toString());
             return ex;
         }
-        WebClientResponseException wcre = (WebClientResponseException) ex;
         switch (HttpStatus.resolve(wcre.getStatusCode().value())) {
             case NOT_FOUND -> {
                 return new NotFoundException(getErrorMessage(wcre));
@@ -158,17 +158,17 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         }
     }
 
-    private String getErrorMessage(WebClientResponseException ex) {
+    private String getErrorMessage(final WebClientResponseException ex) {
         try {
             return mapper.readValue(ex.getResponseBodyAsString(), HttpErrorInfo.class).getMessage();
-        } catch (IOException ioex) {
+        } catch (final IOException ioex) {
             return ex.getMessage();
         }
     }
 
-    private void sendMessage(String bindingName, Event event) {
+    private void sendMessage(final String bindingName, final Event event) {
         log.debug("Sending a {} message to {}", event.getType(), bindingName);
-        Message message = MessageBuilder.withPayload(event)
+        final Message message = MessageBuilder.withPayload(event)
                 .setHeader("partitionKey", event.getKey())
                 .build();
         streamBridge.send(bindingName, message);
