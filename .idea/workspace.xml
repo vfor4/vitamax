@@ -5,168 +5,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3cb59d92-3bc6-4e4b-a8a3-e2167c89f5b1" name="Changes" comment="day27: add span and custom tags">
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/ProductAggregate.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/ProductCompositeService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/RecommendationSummary.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/ReviewSummary.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/ServiceAddresses.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/product/Product.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/product/ProductService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/recommendation/Recommendation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/recommendation/RecommendationService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/review/Review.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/review/ReviewService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/event/Event.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/exceptions/BadRequestException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/exceptions/EventProcessingException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/exceptions/InvalidInputException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/exceptions/NotFoundException.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build-by-name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config-repo/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config-repo/auth-server.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config-repo/eureka-server.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config-repo/gateway.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config-repo/product-composite.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config-repo/product.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config-repo/recommendation.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config-repo/review.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/create-projects.bash" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/keystore/edge-test.p12" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/ProductCompositeServiceApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/security/configuration/OpenApiConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/security/configuration/ResourceServerConfiguration.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/ProductCompositeImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/ProductCompositeIntegration.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/tracing/BuildInfoObservationFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/tracing/ObservationRegistryConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/tracing/ObservationUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/IsSameEvent.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/IsSameEventTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/MessageTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/ProductCompositeServiceApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/SecurityConfigTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/ProductServiceApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/persistence/ProductEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/persistence/ProductRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/services/MessageConsumerConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/services/ProductMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/services/ProductServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/java/se/magnus/microservices/core/product/MapperTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/java/se/magnus/microservices/core/product/MongoDbTestBase.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/java/se/magnus/microservices/core/product/PersistenceTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/java/se/magnus/microservices/core/product/ProductServiceApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/resources/logback-test.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/RecommendationServiceApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/persistence/RecommendationEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/persistence/RecommendationRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/services/MessageConsumerConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/services/RecommendationMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/services/RecommendationServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/java/se/magnus/microservices/core/recommendation/MapperTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/java/se/magnus/microservices/core/recommendation/MongoDbTestBase.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/java/se/magnus/microservices/core/recommendation/PersistenceTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/java/se/magnus/microservices/core/recommendation/RecommendationServiceApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/resources/logback-test.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/ReviewServiceApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/persistence/ReviewEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/persistence/ReviewRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/services/MessageConsumerConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/services/ReviewMapper.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/services/ReviewServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/java/se/magnus/microservices/core/review/MapperTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/java/se/magnus/microservices/core/review/MySqlTestBase.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/java/se/magnus/microservices/core/review/PersistenceTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/java/se/magnus/microservices/core/review/ReviewServiceApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/resources/logback-test.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/run-em-all.bash" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/src/main/java/se/magnus/springcloud/AuthorizationServerApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/src/test/java/se/magnus/springcloud/AuthorizationServerApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/src/main/java/se/magnus/springcloud/ConfigServerApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/src/main/java/se/magnus/springcloud/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/src/test/java/se/magnus/springcloud/ConfigServerApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/src/main/java/se/magnus/springcloud/EurekaServerApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/src/main/java/se/magnus/springcloud/security/SecurityConfiguration.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/src/test/java/se/magnus/springcloud/EurekaServerApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/java/se/magnus/springcloud/GatewayApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/java/se/magnus/springcloud/HealthCheckConfiguration.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/java/se/magnus/springcloud/ResourceServerConfiguration.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/resources/keystore/edge.p12" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/test/java/se/magnus/springcloud/GatewayApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test-em-all.bash" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/hi.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/src/main/java/se/magnus/util/http/GlobalControllerExceptionHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/src/main/java/se/magnus/util/http/HttpErrorInfo.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/src/main/java/se/magnus/util/http/ServiceUtil.java" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-composite-service/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-composite-service/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-composite-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-composite-service/src/main/java/com/vitamax/course_composite_service/CourseCompositeServiceApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-composite-service/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-composite-service/src/test/java/com/vitamax/course_composite_service/CourseCompositeServiceApplicationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-service/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-service/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-service/src/main/java/com/vitamax/course_service/CourseServiceApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-service/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/course-service/src/test/java/com/vitamax/course_service/CourseServiceApplicationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/recommendation-service/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/recommendation-service/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/recommendation-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/com/vitamax/recommendation_service/RecommendationServiceApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/recommendation-service/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/recommendation-service/src/test/java/com/vitamax/recommendation_service/RecommendationServiceApplicationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/review-service/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/review-service/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/review-service/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/review-service/src/main/java/com/vitamax/review_service/ReviewServiceApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/review-service/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/microservices/review-service/src/test/java/com/vitamax/review_service/ReviewServiceApplicationTests.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/projects-init.bash" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -269,9 +142,13 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Maven.vitamax-parent [install].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/vu/coding/vitamax",
