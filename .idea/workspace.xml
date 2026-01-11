@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3cb59d92-3bc6-4e4b-a8a3-e2167c89f5b1" name="Changes" comment="day27: add span and custom tags">
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/ProductAggregate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/ProductCompositeService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/RecommendationSummary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/ReviewSummary.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/composite/product/ServiceAddresses.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/product/Product.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/product/ProductService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/recommendation/Recommendation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/recommendation/RecommendationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/review/Review.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/core/review/ReviewService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/event/Event.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/exceptions/BadRequestException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/exceptions/EventProcessingException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/exceptions/InvalidInputException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/src/main/java/se/magnus/api/exceptions/NotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-by-name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-repo/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-repo/auth-server.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-repo/eureka-server.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-repo/gateway.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-repo/product-composite.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-repo/product.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-repo/recommendation.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config-repo/review.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/create-projects.bash" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/keystore/edge-test.p12" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/ProductCompositeServiceApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/security/configuration/OpenApiConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/security/configuration/ResourceServerConfiguration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/ProductCompositeImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/ProductCompositeIntegration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/tracing/BuildInfoObservationFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/tracing/ObservationRegistryConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/java/se/magnus/microservices/composite/product/services/tracing/ObservationUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/IsSameEvent.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/IsSameEventTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/MessageTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/ProductCompositeServiceApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-composite-service/src/test/java/se/magnus/microservices/composite/product/SecurityConfigTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/ProductServiceApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/persistence/ProductEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/persistence/ProductRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/services/MessageConsumerConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/services/ProductMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/java/se/magnus/microservices/core/product/services/ProductServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/java/se/magnus/microservices/core/product/MapperTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/java/se/magnus/microservices/core/product/MongoDbTestBase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/java/se/magnus/microservices/core/product/PersistenceTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/java/se/magnus/microservices/core/product/ProductServiceApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/product-service/src/test/resources/logback-test.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/RecommendationServiceApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/persistence/RecommendationEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/persistence/RecommendationRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/services/MessageConsumerConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/services/RecommendationMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/java/se/magnus/microservices/core/recommendation/services/RecommendationServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/java/se/magnus/microservices/core/recommendation/MapperTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/java/se/magnus/microservices/core/recommendation/MongoDbTestBase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/java/se/magnus/microservices/core/recommendation/PersistenceTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/java/se/magnus/microservices/core/recommendation/RecommendationServiceApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/test/resources/logback-test.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/ReviewServiceApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/persistence/ReviewEntity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/persistence/ReviewRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/services/MessageConsumerConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/services/ReviewMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/java/se/magnus/microservices/core/review/services/ReviewServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/java/se/magnus/microservices/core/review/MapperTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/java/se/magnus/microservices/core/review/MySqlTestBase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/java/se/magnus/microservices/core/review/PersistenceTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/java/se/magnus/microservices/core/review/ReviewServiceApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/test/resources/logback-test.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-em-all.bash" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/src/main/java/se/magnus/springcloud/AuthorizationServerApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/authorization-server/src/test/java/se/magnus/springcloud/AuthorizationServerApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/src/main/java/se/magnus/springcloud/ConfigServerApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/src/main/java/se/magnus/springcloud/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/config-server/src/test/java/se/magnus/springcloud/ConfigServerApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/src/main/java/se/magnus/springcloud/EurekaServerApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/src/main/java/se/magnus/springcloud/security/SecurityConfiguration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/eureka-server/src/test/java/se/magnus/springcloud/EurekaServerApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/java/se/magnus/springcloud/GatewayApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/java/se/magnus/springcloud/HealthCheckConfiguration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/java/se/magnus/springcloud/ResourceServerConfiguration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/main/resources/keystore/edge.p12" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-cloud/gateway/src/test/java/se/magnus/springcloud/GatewayApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-em-all.bash" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/hi.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/src/main/java/se/magnus/util/http/GlobalControllerExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/src/main/java/se/magnus/util/http/HttpErrorInfo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/src/main/java/se/magnus/util/http/ServiceUtil.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+    <projectState path="$PROJECT_DIR$/api">
+      <ProjectState />
+    </projectState>
+    <projectState path="$PROJECT_DIR$/util">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/api">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/microservices/product-service">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/microservices/review-service">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/spring-cloud">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/spring-cloud/eureka-server">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/eureka-server">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/spring-cloud/gateway">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/spring-cloud/authorization-server">
+          <activation />
+        </task>
+        <task path="$PROJECT_DIR$/microservices/product-composite-service">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="MIXED" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.projectreactor/reactor-core/3.5.3/71f15cae398e87261802ab3dbe6c0da6c5fa29ea/reactor-core-3.5.3-sources.jar!/reactor/core/publisher/Mono.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-web/6.0.6/586c3d242ee077271a0d80a439eb011cb32689c1/spring-web-6.0.6-sources.jar!/org/springframework/web/method/HandlerMethod.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-webflux/6.0.6/cca36f6a30e37670131dcc6d39f380c223c65cd5/spring-webflux-6.0.6-sources.jar!/org/springframework/web/reactive/result/method/InvocableHandlerMethod.java" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/test-em-all.bash" root0="SKIP_INSPECTION" />
+    <setting file="jar:///usr/temurin-17.0.8/lib/src.zip!/java.base/java/util/Collections.java" root0="SKIP_INSPECTION" />
+    <setting file="jar:///usr/temurin-17.0.8/lib/src.zip!/java.base/java/util/function/Supplier.java" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2WzMfUtvYp4h5Xph26wQLpEl2Lr" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showScratchesAndConsoles" value="false" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/vu/coding/vitamax",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.24151696",
+    "settings.editor.selected.configurable": "vcs.Git"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/spring-cloud/gateway/src/main/resources" />
+      <recent name="$PROJECT_DIR$/spring-cloud/eureka-server/src/main/resources" />
+      <recent name="$PROJECT_DIR$/spring-cloud/authorization-server/src/main/resources" />
+      <recent name="$PROJECT_DIR$/config-repo" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/spring-cloud/gateway/src/main/resources/keystore" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="se.magnus.springcloud" />
+      <recent name="se.magnus.microservices.core.product.services" />
+      <recent name="se.magnus.microservices.core.review.services" />
+      <recent name="se.magnus.microservices.core.recommendation.services" />
+      <recent name="se.magnus.api.exceptions" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Shell Script.run-em-all.bash">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="vitamax.microservices.product-service" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="vitamax.microservices.product-service" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="drafftest.bash" type="ShConfigurationType" temporary="true">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/drafftest.bash" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/usr/bin/env" />
+      <option name="INTERPRETER_OPTIONS" value="bash" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="draft-test.bash" type="ShConfigurationType" temporary="true">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/drafttest-broke.bash" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/usr/bin/zsh" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="run-em-all.bash" type="ShConfigurationType" temporary="true">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/run-em-all.bash" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/usr/bin/zsh" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="test-em-all.bash" type="ShConfigurationType" temporary="true">
+      <option name="SCRIPT_TEXT" value="" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/test-em-all.bash" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/usr/bin/env" />
+      <option name="INTERPRETER_OPTIONS" value="bash" />
+      <option name="EXECUTE_IN_TERMINAL" value="true" />
+      <option name="EXECUTE_SCRIPT_FILE" value="true" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="docker-compose.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value="docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Shell Script.run-em-all.bash" />
+        <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
+        <item itemvalue="Shell Script.test-em-all.bash" />
+        <item itemvalue="Shell Script.draft-test.bash" />
+        <item itemvalue="Shell Script.drafftest.bash" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-cffe25b9f5b3-intellij.indexing.shared.core-IU-253.28294.334" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3cb59d92-3bc6-4e4b-a8a3-e2167c89f5b1" name="Changes" comment="" />
+      <created>1697731060829</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1697731060829</updated>
+    </task>
+    <task id="LOCAL-00001" summary="day2">
+      <option name="closed" value="true" />
+      <created>1697818697650</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1697818697650</updated>
+    </task>
+    <task id="LOCAL-00002" summary="day3">
+      <option name="closed" value="true" />
+      <created>1697905660226</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1697905660226</updated>
+    </task>
+    <task id="LOCAL-00003" summary="day4">
+      <option name="closed" value="true" />
+      <created>1698595866338</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1698595866338</updated>
+    </task>
+    <task id="LOCAL-00004" summary="day5">
+      <option name="closed" value="true" />
+      <created>1698766712934</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1698766712934</updated>
+    </task>
+    <task id="LOCAL-00005" summary="day6">
+      <option name="closed" value="true" />
+      <created>1699199693452</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1699199693452</updated>
+    </task>
+    <task id="LOCAL-00006" summary="day7">
+      <option name="closed" value="true" />
+      <created>1699288566556</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1699288566556</updated>
+    </task>
+    <task id="LOCAL-00007" summary="day8">
+      <option name="closed" value="true" />
+      <created>1699368621892</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1699368621892</updated>
+    </task>
+    <task id="LOCAL-00008" summary="day9">
+      <option name="closed" value="true" />
+      <created>1699545240287</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1699545240287</updated>
+    </task>
+    <task id="LOCAL-00009" summary="day10">
+      <option name="closed" value="true" />
+      <created>1700409406319</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1700409406319</updated>
+    </task>
+    <task id="LOCAL-00010" summary="day11">
+      <option name="closed" value="true" />
+      <created>1700670638530</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1700670638530</updated>
+    </task>
+    <task id="LOCAL-00011" summary="day12">
+      <option name="closed" value="true" />
+      <created>1700754775291</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1700754775291</updated>
+    </task>
+    <task id="LOCAL-00012" summary="day13">
+      <option name="closed" value="true" />
+      <created>1700919859919</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1700919859919</updated>
+    </task>
+    <task id="LOCAL-00013" summary="day14">
+      <option name="closed" value="true" />
+      <created>1700991137145</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1700991137145</updated>
+    </task>
+    <task id="LOCAL-00014" summary="day15">
+      <option name="closed" value="true" />
+      <created>1701570555812</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1701570555812</updated>
+    </task>
+    <task id="LOCAL-00015" summary="day16">
+      <option name="closed" value="true" />
+      <created>1701600706155</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1701600706155</updated>
+    </task>
+    <task id="LOCAL-00016" summary="day17">
+      <option name="closed" value="true" />
+      <created>1702308002461</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1702308002461</updated>
+    </task>
+    <task id="LOCAL-00017" summary="day18">
+      <option name="closed" value="true" />
+      <created>1702397832487</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1702397832487</updated>
+    </task>
+    <task id="LOCAL-00018" summary="day19">
+      <option name="closed" value="true" />
+      <created>1702659117982</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1702659117982</updated>
+    </task>
+    <task id="LOCAL-00019" summary="day20">
+      <option name="closed" value="true" />
+      <created>1702704548321</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1702704548321</updated>
+    </task>
+    <task id="LOCAL-00020" summary="day21">
+      <option name="closed" value="true" />
+      <created>1703171742833</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1703171742833</updated>
+    </task>
+    <task id="LOCAL-00021" summary="day 22; rollback spring-client-config to 4.0.2 because 4.0.4 is suck. #2293">
+      <option name="closed" value="true" />
+      <created>1703948547488</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1703948547488</updated>
+    </task>
+    <task id="LOCAL-00022" summary="day 22; rollback spring-client-config to 4.0.2 because 4.0.4 is suck. #2293">
+      <option name="closed" value="true" />
+      <created>1704000871010</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1704000871010</updated>
+    </task>
+    <task id="LOCAL-00023" summary="day24: add circuit breaker">
+      <option name="closed" value="true" />
+      <created>1704037987278</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1704037987278</updated>
+    </task>
+    <task id="LOCAL-00024" summary="day25: add test for breaker">
+      <option name="closed" value="true" />
+      <created>1704114645304</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1704114645304</updated>
+    </task>
+    <task id="LOCAL-00025" summary="day26: add zipkin + micrometer tracer">
+      <option name="closed" value="true" />
+      <created>1704597972251</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1704597972251</updated>
+    </task>
+    <task id="LOCAL-00026" summary="day27: add span and custom tags">
+      <option name="closed" value="true" />
+      <created>1705243626166</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1705243626166</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
+    <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="day3" />
+    <MESSAGE value="day4" />
+    <MESSAGE value="day5" />
+    <MESSAGE value="day6" />
+    <MESSAGE value="day7" />
+    <MESSAGE value="day8" />
+    <MESSAGE value="day9" />
+    <MESSAGE value="day10" />
+    <MESSAGE value="day11" />
+    <MESSAGE value="day12" />
+    <MESSAGE value="day13" />
+    <MESSAGE value="day14" />
+    <MESSAGE value="day1" />
+    <MESSAGE value="day15" />
+    <MESSAGE value="day16" />
+    <MESSAGE value="day17" />
+    <MESSAGE value="day18" />
+    <MESSAGE value="day19" />
+    <MESSAGE value="day20" />
+    <MESSAGE value="day21" />
+    <MESSAGE value="day 22; rollback spring-client-config to 4.0.2 because 4.0.4 is suck. #2293" />
+    <MESSAGE value="day24: add circuit breaker" />
+    <MESSAGE value="day25: add test for breaker" />
+    <MESSAGE value="day26: add zipkin + micrometer tracer" />
+    <MESSAGE value="day27: add span and custom tags" />
+    <option name="LAST_COMMIT_MESSAGE" value="day27: add span and custom tags" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-webflux/6.0.6/cca36f6a30e37670131dcc6d39f380c223c65cd5/spring-webflux-6.0.6-sources.jar!/org/springframework/web/reactive/result/method/InvocableHandlerMethod.java</url>
+          <line>161</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.cloud/spring-cloud-config-client/4.0.4/1b992a8f5ab9ff58abac06ff6830f178f9417ac5/spring-cloud-config-client-4.0.4-sources.jar!/org/springframework/cloud/config/client/ConfigServerConfigDataLoader.java</url>
+          <line>260</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
