@@ -8,6 +8,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="course-service" />
         <module name="course-composite-service" />
+        <module name="api" />
+        <module name="util" />
         <module name="review-service" />
         <module name="recommendation-service" />
       </profile>
@@ -15,10 +17,12 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api" options="-parameters" />
       <module name="course-composite-service" options="-parameters" />
       <module name="course-service" options="-parameters" />
       <module name="recommendation-service" options="-parameters" />
       <module name="review-service" options="-parameters" />
+      <module name="util" options="-parameters" />
       <module name="vitamax-parent" options="" />
     </option>
   </component>

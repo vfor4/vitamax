@@ -14,5 +14,8 @@
 		<module>microservices/recommendation-service</module>
 		<module>microservices/review-service</module>
 		<module>microservices/course-composite-service</module>
+		<module>api</module>
+		<module>util</module>
 	</modules>
+
 </project>

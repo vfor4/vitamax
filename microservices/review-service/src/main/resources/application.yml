@@ -1,0 +1,2 @@
+server.port: 7004
+spring.application.name: review-service
