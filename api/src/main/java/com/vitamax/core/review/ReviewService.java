@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ReviewService {
 
-    @GetMapping(value = "/rev/{courseId}", produces = "application/json")
+    @GetMapping(value = "/review/{courseId}", produces = "application/json")
     List<Review> getReviews(@PathVariable int courseId);
 }

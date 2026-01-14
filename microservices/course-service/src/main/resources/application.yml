@@ -1,4 +1,5 @@
 server.port: 7002
+spring.application.name: course-service
 ---
 spring.config.active.on-profile: docker
 server.port: 8080

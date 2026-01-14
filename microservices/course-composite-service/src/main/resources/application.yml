@@ -1,4 +1,5 @@
 server.port: 7005
+spring.application.name: course-composite-service
 ---
 spring.config.active.on-profile: docker
 server.port: 8080
