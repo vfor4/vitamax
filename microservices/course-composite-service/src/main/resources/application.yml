@@ -1,4 +1,8 @@
 server.port: 7005
+services:
+  course.port: 7002
+  recommendation.port: 7003
+  review.port: 7004
 spring.application.name: course-composite-service
 ---
 spring.config.active.on-profile: docker

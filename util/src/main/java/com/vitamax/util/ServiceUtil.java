@@ -13,8 +13,11 @@ public class ServiceUtil {
     private String serviceAddress = null;
 
     public ServiceUtil(final String port) {
-
         this.port = port;
+    }
+
+    public String getPort() {
+        return this.port;
     }
 
     public String getServiceAddress() {

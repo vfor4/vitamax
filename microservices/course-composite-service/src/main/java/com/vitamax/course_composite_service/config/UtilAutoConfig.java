@@ -10,7 +10,17 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class UtilAutoConfig {
     @Bean
-    public ServiceUtil serviceUtil(@Value("${server.port}") String port) {
+    public ServiceUtil courseServiceUtil(@Value("${services.course.port}") String port) {
+        return new ServiceUtil(port);
+    }
+
+    @Bean
+    public ServiceUtil recommendationServiceUtil(@Value("${services.recommendation.port}") String port) {
+        return new ServiceUtil(port);
+    }
+
+    @Bean
+    public ServiceUtil reviewServiceUtil(@Value("${services.review.port}") String port) {
         return new ServiceUtil(port);
     }
 
