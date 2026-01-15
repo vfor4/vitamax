@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3cb59d92-3bc6-4e4b-a8a3-e2167c89f5b1" name="Changes" comment="Deploying services using Docker">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/course-composite-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/microservices/course-composite-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/course-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/microservices/course-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/recommendation-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/microservices/recommendation-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/microservices/review-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/microservices/review-service/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,38 +117,38 @@
     <option name="showLibraryContents" value="true" />
     <option name="showScratchesAndConsoles" value="false" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;Docker.course-service/Dockerfile.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.microservices/course-service/Dockerfile builder.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.api [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.api [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.course-service [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.course-service [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.util [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.util [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.vitamax-parent [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.vitamax-parent [install].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SHELLCHECK.PATH&quot;: &quot;/home/vu/.local/share/JetBrains/IdeaIC2023.2/Shell Script/shellcheck&quot;,
-    &quot;Spring Boot.CourseServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.RecommendationServiceApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Spring Boot.ReviewServiceApplication.executor&quot;: &quot;Debug&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;pr__2&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/vu/coding/vitamax/microservices/review-service&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.24151696&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Docker.course-service/Dockerfile.executor": "Run",
+    "Docker.microservices/course-service/Dockerfile builder.executor": "Run",
+    "Maven.api [clean].executor": "Run",
+    "Maven.api [install].executor": "Run",
+    "Maven.course-service [clean].executor": "Run",
+    "Maven.course-service [install].executor": "Run",
+    "Maven.util [clean].executor": "Run",
+    "Maven.util [install].executor": "Run",
+    "Maven.vitamax-parent [clean].executor": "Run",
+    "Maven.vitamax-parent [install].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SHELLCHECK.PATH": "/home/vu/.local/share/JetBrains/IdeaIC2023.2/Shell Script/shellcheck",
+    "Spring Boot.CourseServiceApplication.executor": "Run",
+    "Spring Boot.RecommendationServiceApplication.executor": "Run",
+    "Spring Boot.ReviewServiceApplication.executor": "Debug",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/vu/coding/vitamax/microservices/review-service",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.24151696",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/microservices/review-service" />

@@ -1,4 +1,4 @@
 server.port: 7004
 ---
-spring.config.active.on-profile: docker
+spring.config.activate.on-profile: docker
 server.port: 8080
