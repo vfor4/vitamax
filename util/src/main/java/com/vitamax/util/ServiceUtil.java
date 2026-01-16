@@ -27,7 +27,7 @@ public class ServiceUtil {
         return serviceAddress;
     }
 
-    private String findMyHostname() {
+    public String findMyHostname() {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
