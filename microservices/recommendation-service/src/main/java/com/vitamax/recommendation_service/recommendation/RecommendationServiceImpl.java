@@ -5,6 +5,7 @@ import com.vitamax.core.recommendation.RecommendationCreateCommand;
 import com.vitamax.core.recommendation.RecommendationService;
 import com.vitamax.core.recommendation.RecommendationUpdateCommand;
 import com.vitamax.util.ServiceUtil;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -14,15 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class RecommendationServiceImpl implements RecommendationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RecommendationServiceImpl.class);
 
     private final ServiceUtil serviceUtil;
-
-    public RecommendationServiceImpl(ServiceUtil serviceUtil) {
-        this.serviceUtil = serviceUtil;
-    }
+    private final RecommendationRepository repository;
 
     @Override
     public ResponseEntity<List<Recommendation>> getRecommendations(final int courseId) {

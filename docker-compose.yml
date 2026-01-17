@@ -8,14 +8,23 @@ services:
     build: microservices/course-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - spring_profiles_active=docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
   recommendation:
     build: microservices/recommendation-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      mongodb:
+        condition: service_healthy
   review:
     build: microservices/review-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      postgresql:
+        condition: service_healthy
