@@ -1,4 +1,11 @@
 server.port: 7003
+spring:
+  application:
+    name: recommendation-service
+  data:
+    mongodb:
+      host: "127.0.0.1"
+      port: 27017
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080

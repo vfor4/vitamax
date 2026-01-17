@@ -1,4 +1,14 @@
 server.port: 7004
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/postgres"
+    username: "postgres"
+    password: "postgres"
+  jpa:
+    database-platform: "org.hibernate.dialect.PostgreSQLDialect"
+    hibernate:
+      ddl-auto: "none"
+
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080

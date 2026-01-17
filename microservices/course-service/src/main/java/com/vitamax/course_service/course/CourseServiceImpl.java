@@ -16,9 +16,11 @@ public class CourseServiceImpl implements CourseService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CourseServiceImpl.class);
 
+    private final CourseRepository repository;
     private final ServiceUtil serviceUtil;
 
-    public CourseServiceImpl(ServiceUtil serviceUtil) {
+    public CourseServiceImpl(final CourseRepository repository, final ServiceUtil serviceUtil) {
+        this.repository = repository;
         this.serviceUtil = serviceUtil;
     }
 
