@@ -1,8 +1,11 @@
 server.port: 7005
 services:
-  course.port: 7002
-  recommendation.port: 7003
-  review.port: 7004
+  course:
+    base-url: http://localhost:7002
+  recommendation:
+    base-url: http://localhost:7003
+  review:
+    base-url: http://localhost:7004
 spring.application.name: course-composite-service
 ---
 spring.config.activate.on-profile: docker
