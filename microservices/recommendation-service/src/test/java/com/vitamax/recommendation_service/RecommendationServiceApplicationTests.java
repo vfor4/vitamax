@@ -8,6 +8,7 @@ class RecommendationServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//
 	}
 
 }
