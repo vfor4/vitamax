@@ -34,4 +34,33 @@
             <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <scope>provided</scope>
+                <version>1.18.42</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
