@@ -2,7 +2,6 @@ services:
   mongodb:
     image: mongo:noble
     mem_limit: 512m
-    restart: always
     ports:
       - "27017:27017"
     healthcheck:
@@ -25,7 +24,6 @@ services:
       - ./data-init/postgresql:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
-    restart: unless-stopped
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 5s
