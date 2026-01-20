@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -15,23 +17,23 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
     private final CourseCompositeIntegration courseCompositeIntegration;
 
     @Override
-    public ResponseEntity<CourseAggregate> getCourseComposite(final int courseId) {
+    public ResponseEntity<CourseAggregate> getCourseComposite(final UUID courseId) {
         log.debug("get course composite for courseId={}", courseId);
 
         final var course = courseCompositeIntegration.getCourse(courseId);
-        final var recommendation = courseCompositeIntegration.getRecommendations(courseId);
-        final var review = courseCompositeIntegration.getReviews(courseId);
+        final var recommendation = courseCompositeIntegration.getRecommendations(1); // TODO
+        final var review = courseCompositeIntegration.getReviews(1); // TODO
 
         return ResponseEntity.ok(new CourseAggregate(course.getBody(), recommendation.getBody(), review.getBody()));
     }
 
     @Override
-    public ResponseEntity<Void> deleteCourseComposite(final int courseId) {
+    public ResponseEntity<Void> deleteCourseComposite(final UUID courseId) {
         log.debug("delete course composite for courseId={}", courseId);
 
         courseCompositeIntegration.deleteCourse(courseId);
-        courseCompositeIntegration.deleteRecommendation(courseId);
-        courseCompositeIntegration.deleteReview(courseId);
+        courseCompositeIntegration.deleteRecommendation(1); // TODO
+        courseCompositeIntegration.deleteReview(1); // TODO
 
         return ResponseEntity.noContent().build();
     }

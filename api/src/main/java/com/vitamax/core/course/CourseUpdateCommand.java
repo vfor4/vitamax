@@ -1,7 +1,9 @@
 package com.vitamax.core.course;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotNull;
 
-public record CourseUpdateCommand(@Positive int courseId, @NotBlank String name) {
+import java.util.UUID;
+
+public record CourseUpdateCommand(@NotNull UUID courseId, @NotBlank String name) {
 }
