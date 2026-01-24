@@ -1,17 +1,19 @@
 package com.vitamax.recommendation_service.recommendation.entities;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Document(value = "recommendation")
-@AllArgsConstructor
+@Builder
+@Getter
 public class RecommendationEntity {
     @Id
     private String id;
-    private int courseId;
-    private int recommendationId;
+    private String courseId;
+    private String recommendationId;
     private String author;
     private int rate;
     private String content;

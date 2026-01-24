@@ -21,7 +21,7 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
         log.debug("get course composite for courseId={}", courseId);
 
         final var course = courseCompositeIntegration.getCourse(courseId);
-        final var recommendation = courseCompositeIntegration.getRecommendations(1); // TODO
+        final var recommendation = courseCompositeIntegration.getRecommendations(courseId);
         final var review = courseCompositeIntegration.getReviews(1); // TODO
 
         return ResponseEntity.ok(new CourseAggregate(course.getBody(), recommendation.getBody(), review.getBody()));
@@ -32,7 +32,7 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
         log.debug("delete course composite for courseId={}", courseId);
 
         courseCompositeIntegration.deleteCourse(courseId);
-        courseCompositeIntegration.deleteRecommendation(1); // TODO
+        courseCompositeIntegration.deleteRecommendation(courseId);
         courseCompositeIntegration.deleteReview(1); // TODO
 
         return ResponseEntity.noContent().build();

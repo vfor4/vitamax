@@ -16,10 +16,6 @@ public class ServiceUtil {
         this.port = port;
     }
 
-    public String getPort() {
-        return this.port;
-    }
-
     public String getServiceAddress() {
         if (serviceAddress == null) {
             serviceAddress = findMyHostname() + "/" + findMyIpAddress() + ":" + port;
