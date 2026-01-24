@@ -12,8 +12,7 @@ import com.vitamax.core.review.ReviewCreateCommand;
 import com.vitamax.core.review.ReviewUpdateCommand;
 import com.vitamax.course_composite_service.config.ServiceProperties;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +27,8 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CourseCompositeIntegrationImpl implements CourseCompositeIntegration {
-    private static final Logger LOG = LoggerFactory.getLogger(CourseCompositeIntegrationImpl.class);
-
     private static final String API_COURSE = "/api/v1/course";
     private static final String API_RECOMMENDATION = "/api/v1/recommendation";
     private static final String API_REVIEW = "/api/v1/review";
@@ -64,12 +62,12 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     }
 
     @Override
-    public ResponseEntity<List<Recommendation>> getRecommendations(final int courseId) {
+    public ResponseEntity<List<Recommendation>> getRecommendations(final UUID courseId) {
         try {
             final var recommendations = restTemplate.exchange(properties.getServices().get(RECOMMENDATION).baseUrl() + API_RECOMMENDATION + COURSE_ID, HttpMethod.GET, null, Recommendation[].class, String.valueOf(courseId));
             return ResponseEntity.of(Optional.ofNullable(recommendations.getBody()).map(r -> Arrays.stream(r).toList()));
         } catch (final RestClientException e) {
-            LOG.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return ResponseEntity.ok(List.of());
         }
     }
@@ -85,7 +83,7 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     }
 
     @Override
-    public ResponseEntity<Void> deleteRecommendation(int courseId) {
+    public ResponseEntity<Void> deleteRecommendation(UUID courseId) {
         return restTemplate.exchange(properties.getServices().get(RECOMMENDATION).baseUrl() + API_RECOMMENDATION + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
     }
 
@@ -95,7 +93,7 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
             final var reviews = restTemplate.exchange(properties.getServices().get(REVIEW).baseUrl() + API_REVIEW + COURSE_ID, HttpMethod.GET, null, Review[].class, String.valueOf(courseId));
             return ResponseEntity.of(Optional.ofNullable(reviews.getBody()).map(r -> Arrays.stream(r).toList()));
         } catch (final RestClientException e) {
-            LOG.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return ResponseEntity.ok(List.of());
         }
     }

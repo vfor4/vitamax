@@ -19,20 +19,22 @@ import java.util.UUID;
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository repository;
     private final ServiceUtil serviceUtil;
-    private final CourseMapper courseMapper;
+    private final CourseMapper mapper;
 
     @Override
     public ResponseEntity<Course> getCourse(final UUID courseId) {
         log.debug("get found course for courseId={}", courseId);
+
         return repository.findByCourseId(courseId.toString())
-                .map(c -> ResponseEntity.ok(courseMapper.toCourse(c, serviceUtil.getServiceAddress())))
+                .map(c -> ResponseEntity.ok(mapper.toCourse(c, serviceUtil.getServiceAddress())))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @Override
     public ResponseEntity<Course> createCourse(final CourseCreateCommand command) {
         log.debug("create course for command={}", command);
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseMapper.toCourse(repository.save(courseMapper.toCourseEntity(command)), serviceUtil.getServiceAddress()));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toCourse(repository.save(mapper.toCourseEntity(command)), serviceUtil.getServiceAddress()));
     }
 
     @Override
@@ -43,13 +45,15 @@ public class CourseServiceImpl implements CourseService {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(courseMapper.toCourse(repository.save(courseMapper.toCourseEntity(command)), serviceUtil.getServiceAddress()));
+        return ResponseEntity.ok(mapper.toCourse(repository.save(mapper.toCourseEntity(command)), serviceUtil.getServiceAddress()));
     }
 
     @Override
     public ResponseEntity<Void> deleteCourse(final UUID courseId) {
         log.debug("delete course for courseId={}", courseId);
+
         repository.deleteByCourseId(courseId.toString());
+
         return ResponseEntity.noContent().build();
     }
 }
