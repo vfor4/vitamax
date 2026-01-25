@@ -3,10 +3,7 @@ package com.vitamax.composite.course;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -17,4 +14,7 @@ public interface CourseCompositeService {
 
     @DeleteMapping(value = "/{courseId}")
     ResponseEntity<Void> deleteCourseComposite(@PathVariable @NotNull UUID courseId);
+
+    @PostMapping(produces = "application/json")
+    ResponseEntity<Void> createCourseComposite(@RequestBody CourseAggregateCreateCommand createCommand);
 }

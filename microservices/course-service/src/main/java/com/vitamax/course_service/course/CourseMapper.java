@@ -15,5 +15,6 @@ public interface CourseMapper {
     @Mapping(target = "courseId", expression = "java(java.util.UUID.randomUUID().toString())")
     CourseEntity toCourseEntity(final CourseCreateCommand command);
 
+    @Mapping(target = "id", ignore = true)
     CourseEntity toCourseEntity(final CourseUpdateCommand command);
 }

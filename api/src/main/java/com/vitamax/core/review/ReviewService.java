@@ -20,5 +20,5 @@ public interface ReviewService {
     ResponseEntity<Review> updateReview(@RequestBody @Valid ReviewUpdateCommand command);
 
     @DeleteMapping(value = "/{courseId}", produces = "application/json")
-    ResponseEntity<Void> deleteReview(@PathVariable @Positive int courseId);
+    ResponseEntity<Void> deleteReview(@PathVariable String courseId);
 }

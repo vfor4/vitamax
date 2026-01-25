@@ -10,5 +10,10 @@ spring:
       ddl-auto: "none"
 
 ---
-spring.config.activate.on-profile: docker
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: "jdbc:postgresql://postgresql:5432/postgres"
 server.port: 8080
