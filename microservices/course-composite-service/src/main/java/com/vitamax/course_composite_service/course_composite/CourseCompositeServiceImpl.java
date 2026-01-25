@@ -1,12 +1,16 @@
 package com.vitamax.course_composite_service.course_composite;
 
 import com.vitamax.composite.course.CourseAggregate;
+import com.vitamax.composite.course.CourseAggregateCreateCommand;
 import com.vitamax.composite.course.CourseCompositeIntegration;
 import com.vitamax.composite.course.CourseCompositeService;
+import com.vitamax.core.recommendation.RecommendationCreateCommand;
+import com.vitamax.core.review.ReviewCreateCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.UUID;
 
@@ -33,8 +37,27 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
 
         courseCompositeIntegration.deleteCourse(courseId);
         courseCompositeIntegration.deleteRecommendation(courseId);
-        courseCompositeIntegration.deleteReview(1); // TODO
+        courseCompositeIntegration.deleteReview("1"); // TODO
 
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> createCourseComposite(final CourseAggregateCreateCommand createCommand) {
+
+        final var course = courseCompositeIntegration.createCourse(createCommand.course()).getBody();
+
+        createCommand.reviews().forEach(review ->
+                courseCompositeIntegration.createReview(new ReviewCreateCommand(1, review.author(), review.subject(), review.content())));
+
+        createCommand.recommendations().forEach(
+                red -> courseCompositeIntegration.createRecommendation(new RecommendationCreateCommand(UUID.fromString(course.courseId()), red.author(), red.rate(), red.content()))
+        );
+
+        var location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(course.courseId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 }

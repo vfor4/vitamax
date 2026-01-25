@@ -7,5 +7,12 @@ spring:
       host: "127.0.0.1"
       port: 27017
 ---
-spring.config.activate.on-profile: docker
+spring:
+  config:
+    activate:
+      on-profile: docker
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
 server.port: 8080

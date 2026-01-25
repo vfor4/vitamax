@@ -11,4 +11,9 @@ logging:
     root: DEBUG
 ---
 spring.config.activate.on-profile: docker
+spring:
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
 server.port: 8080

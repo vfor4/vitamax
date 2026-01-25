@@ -47,7 +47,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteReview(int courseId) {
+    public ResponseEntity<Void> deleteReview(String courseId) {
         LOG.debug("delete review with courseId={}", courseId);
         return ResponseEntity.noContent().build();
     }
