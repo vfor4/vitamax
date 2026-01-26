@@ -53,7 +53,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteRecommendation(final UUID courseId) {
+    public ResponseEntity<Void> deleteRecommendations(final UUID courseId) {
         log.debug("delete recommendation for courseId={}", courseId);
 
         repository.deleteByCourseId(courseId.toString());
