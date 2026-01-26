@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vitamax.core.course.Course;
 import com.vitamax.course_service.course.CourseRepository;
 import com.vitamax.course_service.course.entities.CourseEntity;
-import com.vitamax.test.AbstractIntegrationTest;
+import com.vitamax.test.MongoIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-class CourseServiceApplicationTests extends AbstractIntegrationTest {
+class CourseServiceApplicationTests extends MongoIntegrationTest {
     public static final String API_COURSE_ID = "/api/v1/course/{courseId}";
     public static final String API_COURSE = "/api/v1/course";
 

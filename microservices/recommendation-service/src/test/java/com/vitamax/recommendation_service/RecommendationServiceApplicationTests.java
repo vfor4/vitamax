@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vitamax.core.recommendation.Recommendation;
 import com.vitamax.recommendation_service.recommendation.RecommendationRepository;
 import com.vitamax.recommendation_service.recommendation.entities.RecommendationEntity;
-import com.vitamax.test.AbstractIntegrationTest;
+import com.vitamax.test.MongoIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-class RecommendationServiceApplicationTests extends AbstractIntegrationTest {
+class RecommendationServiceApplicationTests extends MongoIntegrationTest {
     private static final String COURSE_ID = UUID.randomUUID().toString();
 
     @Autowired
@@ -47,21 +47,95 @@ class RecommendationServiceApplicationTests extends AbstractIntegrationTest {
 
     static Stream<Arguments> invalidCreateRecommendationRequests() {
         return Stream.of(
-                Arguments.of("missing name", "{}"),
-                Arguments.of("empty name", """
-                        { "name": "" }
-                        """),
-                Arguments.of("blank name", """
-                        { "name": "   " }
-                        """),
-                Arguments.of("name too long", """
-                        { "name": "%s" }
-                        """.formatted("A".repeat(256))),
-                Arguments.of("invalid json", """
-                        { "name": "Test Recommendation"
-                        """)
+                Arguments.of(
+                        "courseId is null",
+                        """
+                                {
+                                  "courseId": null,
+                                  "author": "John",
+                                  "rate": 5,
+                                  "content": "Good course"
+                                }
+                                """
+                ),
+                Arguments.of(
+                        "author is blank",
+                        """
+                                {
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
+                                  "author": "",
+                                  "rate": 5,
+                                  "content": "Good course"
+                                }
+                                """
+                ),
+                Arguments.of(
+                        "author is missing",
+                        """
+                                {
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
+                                  "rate": 5,
+                                  "content": "Good course"
+                                }
+                                """
+                ),
+                Arguments.of(
+                        "rate is zero",
+                        """
+                                {
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
+                                  "author": "John",
+                                  "rate": 0,
+                                  "content": "Good course"
+                                }
+                                """
+                ),
+                Arguments.of(
+                        "rate is negative",
+                        """
+                                {
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
+                                  "author": "John",
+                                  "rate": -1,
+                                  "content": "Good course"
+                                }
+                                """
+                ),
+                Arguments.of(
+                        "content is blank",
+                        """
+                                {
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
+                                  "author": "John",
+                                  "rate": 5,
+                                  "content": ""
+                                }
+                                """
+                ),
+                Arguments.of(
+                        "content is missing",
+                        """
+                                {
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
+                                  "author": "John",
+                                  "rate": 5
+                                }
+                                """
+                ),
+                Arguments.of(
+                        "courseId is invalid UUID",
+                        """
+                                {
+                                  "courseId": "not-a-uuid",
+                                  "author": "John",
+                                  "rate": 5,
+                                  "content": "Good course"
+                                }
+                                """
+                )
         );
     }
+
 
     static Stream<Arguments> invalidUpdateRecommendationRequests() {
         return Stream.of(
@@ -295,7 +369,7 @@ class RecommendationServiceApplicationTests extends AbstractIntegrationTest {
     }
 
     @Test
-    void deleteRecommendation_success_return204() throws Exception {
+    void deleteRecommendations_success_return204() throws Exception {
         final var entity = createRecommendation();
 
         final var uri = delete("/api/v1/recommendation/{courseId}", entity.getRecommendationId());
@@ -304,7 +378,7 @@ class RecommendationServiceApplicationTests extends AbstractIntegrationTest {
 
     @ParameterizedTest(name = "invalid courseId = {0}")
     @ValueSource(strings = {"   ", "abc", "-1", "0", "550e8400-e29b-41d4-a716-44665544000Z"})
-    void deleteRecommendation_invalidId_returns400(String courseId) throws Exception {
+    void deleteRecommendations_invalidId_returns400(String courseId) throws Exception {
         mockMvc.perform(delete("/api/v1/recommendation/{courseId}", courseId))
                 .andExpect(status().isBadRequest());
     }

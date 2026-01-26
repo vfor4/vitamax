@@ -83,12 +83,12 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     }
 
     @Override
-    public ResponseEntity<Void> deleteRecommendation(UUID courseId) {
+    public ResponseEntity<Void> deleteRecommendations(final UUID courseId) {
         return restTemplate.exchange(properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
     }
 
     @Override
-    public ResponseEntity<List<Review>> getReviews(int courseId) {
+    public ResponseEntity<List<Review>> getReviews(final UUID courseId) {
         try {
             final var reviews = restTemplate.exchange(properties.toUrl(REVIEW) + API_REVIEW + COURSE_ID, HttpMethod.GET, null, Review[].class, String.valueOf(courseId));
             return ResponseEntity.of(Optional.ofNullable(reviews.getBody()).map(r -> Arrays.stream(r).toList()));
@@ -99,17 +99,17 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     }
 
     @Override
-    public ResponseEntity<Review> createReview(ReviewCreateCommand command) {
+    public ResponseEntity<Review> createReview(final ReviewCreateCommand command) {
         return restTemplate.exchange(properties.toUrl(REVIEW) + API_REVIEW, HttpMethod.POST, new HttpEntity<>(command), Review.class);
     }
 
     @Override
-    public ResponseEntity<Review> updateReview(ReviewUpdateCommand command) {
+    public ResponseEntity<Review> updateReview(final ReviewUpdateCommand command) {
         return restTemplate.exchange(properties.toUrl(REVIEW) + API_REVIEW, HttpMethod.PUT, new HttpEntity<>(command), Review.class);
     }
 
     @Override
-    public ResponseEntity<Void> deleteReview(String courseId) {
+    public ResponseEntity<Void> deleteReviews(final UUID courseId) {
         return restTemplate.exchange(properties.toUrl(REVIEW) + API_REVIEW + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
     }
 }
