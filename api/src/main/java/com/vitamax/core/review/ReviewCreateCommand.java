@@ -1,7 +1,10 @@
 package com.vitamax.core.review;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotNull;
 
-public record ReviewCreateCommand(@Positive int courseId, @NotBlank String author, @NotBlank String subject, @NotBlank String content) {
+import java.util.UUID;
+
+public record ReviewCreateCommand(@NotNull UUID courseId, @NotBlank String author, @NotBlank String subject,
+                                  @NotBlank String content) {
 }

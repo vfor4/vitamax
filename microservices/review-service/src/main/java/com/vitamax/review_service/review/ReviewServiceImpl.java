@@ -6,49 +6,58 @@ import com.vitamax.core.review.ReviewService;
 import com.vitamax.core.review.ReviewUpdateCommand;
 import com.vitamax.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewServiceImpl implements ReviewService {
-    private static final Logger LOG = LoggerFactory.getLogger(ReviewServiceImpl.class);
 
     private final ServiceUtil serviceUtil;
     private final ReviewRepository repository;
+    private final ReviewMapper mapper;
 
     @Override
-    public ResponseEntity<List<Review>> getReviews(int courseId) {
+    public ResponseEntity<List<Review>> getReviews(final UUID courseId) {
+        log.debug("get found reviews for courseId={}", courseId);
 
-        List<Review> result = new ArrayList<>();
-        result.add(new Review(courseId, 1, "Author 1", "Subject 1", "Content 1", serviceUtil.getServiceAddress()));
-        result.add(new Review(courseId, 2, "Author 2", "Subject 2", "Content 2", serviceUtil.getServiceAddress()));
-        result.add(new Review(courseId, 3, "Author 3", "Subject 3", "Content 3", serviceUtil.getServiceAddress()));
-        LOG.debug("/reviews response size: {}", result.size());
+        final var result = repository.findByCourseId(courseId.toString());
+        if (result.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(mapper.toReviews(result, serviceUtil.getServiceAddress()));
     }
 
     @Override
     public ResponseEntity<Review> createReview(final ReviewCreateCommand command) {
-        LOG.debug("create review with command={}", command);
-        return ResponseEntity.ok(new Review(command.courseId(), 1, command.author(), command.subject(), command.content(), serviceUtil.getServiceAddress()));
+        log.debug("create review with command={}", command);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toReview(repository.save(mapper.toEntity(command)), serviceUtil.getServiceAddress()));
     }
 
     @Override
-    public ResponseEntity<Review> updateReview(ReviewUpdateCommand command) {
-        LOG.debug("update review with command={}", command);
-        return ResponseEntity.ok(new Review(command.courseId(), command.reviewId(), command.author(), command.subject(), command.content(), serviceUtil.getServiceAddress()));
+    public ResponseEntity<Review> updateReview(final ReviewUpdateCommand command) {
+        log.debug("update review with command={}", command);
+
+        if (!repository.existsByReviewId(command.reviewId().toString())) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(mapper.toReview(repository.save(mapper.toEntity(command)), serviceUtil.getServiceAddress()));
     }
 
     @Override
-    public ResponseEntity<Void> deleteReview(String courseId) {
-        LOG.debug("delete review with courseId={}", courseId);
+    public ResponseEntity<Void> deleteReviews(final UUID courseId) {
+        log.debug("delete review with courseId={}", courseId);
+
+        repository.deleteByCourseId(courseId.toString());
+
         return ResponseEntity.noContent().build();
     }
 }

@@ -8,9 +8,9 @@ import com.vitamax.core.recommendation.RecommendationCreateCommand;
 import com.vitamax.core.review.ReviewCreateCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.UUID;
 
@@ -26,7 +26,7 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
 
         final var course = courseCompositeIntegration.getCourse(courseId);
         final var recommendation = courseCompositeIntegration.getRecommendations(courseId);
-        final var review = courseCompositeIntegration.getReviews(1); // TODO
+        final var review = courseCompositeIntegration.getReviews(courseId);
 
         return ResponseEntity.ok(new CourseAggregate(course.getBody(), recommendation.getBody(), review.getBody()));
     }
@@ -36,8 +36,8 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
         log.debug("delete course composite for courseId={}", courseId);
 
         courseCompositeIntegration.deleteCourse(courseId);
-        courseCompositeIntegration.deleteRecommendation(courseId);
-        courseCompositeIntegration.deleteReview("1"); // TODO
+        courseCompositeIntegration.deleteRecommendations(courseId);
+        courseCompositeIntegration.deleteReviews(courseId);
 
         return ResponseEntity.noContent().build();
     }
@@ -48,16 +48,12 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
         final var course = courseCompositeIntegration.createCourse(createCommand.course()).getBody();
 
         createCommand.reviews().forEach(review ->
-                courseCompositeIntegration.createReview(new ReviewCreateCommand(1, review.author(), review.subject(), review.content())));
+                courseCompositeIntegration.createReview(new ReviewCreateCommand(UUID.fromString(course.courseId()), review.author(), review.subject(), review.content())));
 
         createCommand.recommendations().forEach(
                 red -> courseCompositeIntegration.createRecommendation(new RecommendationCreateCommand(UUID.fromString(course.courseId()), red.author(), red.rate(), red.content()))
         );
 
-        var location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(course.courseId())
-                .toUri();
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
