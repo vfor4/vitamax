@@ -4,6 +4,7 @@ import com.vitamax.core.course.Course;
 import com.vitamax.core.course.CourseCreateCommand;
 import com.vitamax.core.course.CourseService;
 import com.vitamax.core.course.CourseUpdateCommand;
+import com.vitamax.exceptions.NotFoundException;
 import com.vitamax.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class CourseServiceImpl implements CourseService {
 
         return repository.findByCourseId(courseId.toString())
                 .map(c -> ResponseEntity.ok(mapper.toCourse(c, serviceUtil.getServiceAddress())))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new NotFoundException("course not found with id=" + courseId));
     }
 
     @Override

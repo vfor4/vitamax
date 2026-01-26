@@ -28,5 +28,5 @@ public interface RecommendationService {
     ResponseEntity<Recommendation> updateRecommendation(@RequestBody @Valid RecommendationUpdateCommand command);
 
     @DeleteMapping(value = "/{courseId}")
-    ResponseEntity<Void> deleteRecommendation(@PathVariable @NotNull UUID courseId);
+    ResponseEntity<Void> deleteRecommendations(@PathVariable @NotNull UUID courseId);
 }
