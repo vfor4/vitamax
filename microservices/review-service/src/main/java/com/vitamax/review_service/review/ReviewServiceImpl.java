@@ -7,7 +7,6 @@ import com.vitamax.core.review.ReviewUpdateCommand;
 import com.vitamax.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,18 +37,17 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ResponseEntity<Review> createReview(final ReviewCreateCommand command) {
         log.debug("create review with command={}", command);
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toReview(repository.save(mapper.toEntity(command)), serviceUtil.getServiceAddress()));
+
+        return ResponseEntity.created(serviceUtil.buildCreatedLocation(repository.save(mapper.toEntity(command)).getReviewId())).build();
     }
 
     @Override
     public ResponseEntity<Review> updateReview(final ReviewUpdateCommand command) {
         log.debug("update review with command={}", command);
 
-        if (!repository.existsByReviewId(command.reviewId().toString())) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(mapper.toReview(repository.save(mapper.toEntity(command)), serviceUtil.getServiceAddress()));
+        return repository.findById(command.reviewId().toString())
+                .map(entity -> ResponseEntity.ok(mapper.toReview(repository.save(mapper.toEntity(command, entity)), serviceUtil.getServiceAddress())))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Override

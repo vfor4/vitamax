@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS review (
     course_id VARCHAR(36) NOT NULL,
     author VARCHAR(255),
     subject VARCHAR(255),
-content TEXT );
+    content TEXT,
+    version int4);
 
 INSERT INTO review (id, course_id, author, subject, content) VALUES
  ('aab16e17-63c3-4248-9731-248b58592b60', 'fab16e17-63c3-4248-9731-248b58592b61', 'Alice Nguyen', 'Great course', 'The course was very well structured and easy to follow.'),

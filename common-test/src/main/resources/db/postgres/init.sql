@@ -3,4 +3,5 @@ CREATE TABLE IF NOT EXISTS review (
     course_id VARCHAR(36) NOT NULL,
     author VARCHAR(255),
     subject VARCHAR(255),
-    content TEXT );
+    content TEXT,
+    version int4);

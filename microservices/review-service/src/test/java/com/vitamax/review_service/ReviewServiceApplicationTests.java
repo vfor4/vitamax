@@ -2,8 +2,8 @@ package com.vitamax.review_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vitamax.core.review.Review;
+import com.vitamax.review_service.review.ReviewEntity;
 import com.vitamax.review_service.review.ReviewRepository;
-import com.vitamax.review_service.review.enities.ReviewEntity;
 import com.vitamax.test.PostgresIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,7 +32,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+//        "spring.jpa.show-sql=true",
+//        "spring.jpa.properties.hibernate.format_sql=true",
+//        "logging.level.org.hibernate.SQL=DEBUG",
+//        "logging.level.org.hibernate.orm.jdbc.bind=TRACE"
+})
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 class ReviewServiceApplicationTests extends PostgresIntegrationTest {
@@ -38,10 +45,8 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ReviewRepository repository;
 
@@ -133,7 +138,7 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                         "reviewId is null",
                         """
                                 {
-                                  "courseId": "%s",
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
                                   "reviewId": null,
                                   "author": "John",
                                   "subject": "Good",
@@ -231,13 +236,7 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                             "content": "Content is here"
                         }
                         """.formatted(COURSE_ID));
-        final var response = mockMvc.perform(uri).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
-        final var result = objectMapper.readValue(response, Review.class);
-
-        assertEquals(COURSE_ID, result.courseId());
-        assertEquals("Phuoc Nguyen", result.author());
-        assertEquals("Subject is here", result.subject());
-        assertEquals("Content is here", result.content());
+        mockMvc.perform(uri).andExpect(status().isCreated());
     }
 
     @ParameterizedTest(name = "{0}")
@@ -319,15 +318,38 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void optimisticLockError() {
+        final var entity = createReview();
+        // Store the saved entity in two separate entity objects
+        final var entity1 = repository.findById(entity.getReviewId()).get();
+        final var entity2 = repository.findById(entity.getReviewId()).get();
+
+        // Update the entity using the first entity object
+        entity1.setAuthor("n1");
+        repository.save(entity1);
+
+        // Update the entity using the second entity object.
+        // This should fail since the second entity now holds an old version
+        // number, that is, an Optimistic Lock Error
+        assertThrows(OptimisticLockingFailureException.class, () -> {
+            entity2.setAuthor("n2");
+            repository.save(entity2);
+        });
+
+        // Get the updated entity from the database and verify its new state
+        final var updatedEntity = repository.findById(entity.getReviewId()).get();
+        assertEquals("n1", updatedEntity.getAuthor());
+    }
+
     private ReviewEntity createReview() {
-        final var entity = ReviewEntity.builder()
-                .courseId(COURSE_ID)
-                .reviewId(UUID.randomUUID().toString())
-                .author(UUID.randomUUID().toString())
-                .subject(UUID.randomUUID().toString())
-                .content(UUID.randomUUID().toString())
-                .build();
-        return repository.save(entity);
+        return repository.save(new ReviewEntity(
+                COURSE_ID,
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString()
+        ));
     }
 
     private void assertResult(final ReviewEntity entity, final Review result) {

@@ -1,5 +1,6 @@
 package com.vitamax.composite.course;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,16 +10,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import java.util.UUID;
 
 @RequestMapping(value = "/api/v1/aggregate/course", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface CourseCompositeService {
-    @GetMapping(value = "/{courseId}")
+    @GetMapping("/{courseId}")
     ResponseEntity<CourseAggregate> getCourseComposite(@PathVariable @NotNull UUID courseId);
 
-    @DeleteMapping(value = "/{courseId}")
+    @DeleteMapping("/{courseId}")
     ResponseEntity<Void> deleteCourseComposite(@PathVariable @NotNull UUID courseId);
 
-    @PostMapping()
-    ResponseEntity<Void> createCourseComposite(@RequestBody CourseAggregateCreateCommand createCommand);
+    @PostMapping
+    ResponseEntity<Void> createCourseComposite(@RequestBody @Valid CourseAggregateCreateCommand createCommand);
 }

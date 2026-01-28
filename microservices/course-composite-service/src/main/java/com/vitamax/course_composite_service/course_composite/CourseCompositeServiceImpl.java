@@ -6,9 +6,9 @@ import com.vitamax.composite.course.CourseCompositeIntegration;
 import com.vitamax.composite.course.CourseCompositeService;
 import com.vitamax.core.recommendation.RecommendationCreateCommand;
 import com.vitamax.core.review.ReviewCreateCommand;
+import com.vitamax.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +19,7 @@ import java.util.UUID;
 @Slf4j
 public class CourseCompositeServiceImpl implements CourseCompositeService {
     private final CourseCompositeIntegration courseCompositeIntegration;
+    private final ServiceUtil serviceUtil;
 
     @Override
     public ResponseEntity<CourseAggregate> getCourseComposite(final UUID courseId) {
@@ -54,6 +55,6 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
                 red -> courseCompositeIntegration.createRecommendation(new RecommendationCreateCommand(UUID.fromString(course.courseId()), red.author(), red.rate(), red.content()))
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.created(serviceUtil.buildCreatedLocation(course.courseId())).build();
     }
 }

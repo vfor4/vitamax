@@ -8,7 +8,6 @@ import com.vitamax.exceptions.NotFoundException;
 import com.vitamax.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,18 +34,17 @@ public class CourseServiceImpl implements CourseService {
     public ResponseEntity<Course> createCourse(final CourseCreateCommand command) {
         log.debug("create course for command={}", command);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toCourse(repository.save(mapper.toCourseEntity(command)), serviceUtil.getServiceAddress()));
+        return ResponseEntity.created(serviceUtil.buildCreatedLocation(repository.save(mapper.toEntity(command)).getCourseId())).build();
     }
 
     @Override
     public ResponseEntity<Course> updateCourse(final CourseUpdateCommand command) {
         log.debug("update course for command={}", command);
 
-        if (!repository.existsByCourseId(command.courseId().toString())) {
-            return ResponseEntity.notFound().build();
-        }
+        return repository.findByCourseId(command.courseId().toString())
+                .map(entity -> ResponseEntity.ok(mapper.toCourse(repository.save(mapper.toEntity(command, entity)), serviceUtil.getServiceAddress())))
+                .orElse(ResponseEntity.notFound().build());
 
-        return ResponseEntity.ok(mapper.toCourse(repository.save(mapper.toCourseEntity(command)), serviceUtil.getServiceAddress()));
     }
 
     @Override

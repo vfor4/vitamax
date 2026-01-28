@@ -2,8 +2,8 @@ package com.vitamax.recommendation_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vitamax.core.recommendation.Recommendation;
+import com.vitamax.recommendation_service.recommendation.RecommendationEntity;
 import com.vitamax.recommendation_service.recommendation.RecommendationRepository;
-import com.vitamax.recommendation_service.recommendation.entities.RecommendationEntity;
 import com.vitamax.test.MongoIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +24,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -295,13 +297,7 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
                             "content": "Content is here"
                         }
                         """.formatted(COURSE_ID));
-        final var response = mockMvc.perform(uri).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
-        final var result = objectMapper.readValue(response, Recommendation.class);
-
-        assertEquals(COURSE_ID, result.courseId());
-        assertEquals("Phuoc Nguyen", result.author());
-        assertEquals(5, result.rate());
-        assertEquals("Content is here", result.content());
+        mockMvc.perform(uri).andExpect(status().isCreated());
     }
 
     @ParameterizedTest(name = "{0}")
@@ -383,15 +379,37 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void optimisticLockError() {
+        final var entity = createRecommendation();
+        // Store the saved entity in two separate entity objects
+        final var entity1 = repository.findById(entity.getId()).get();
+        final var entity2 = repository.findById(entity.getId()).get();
+
+        // Update the entity using the first entity object
+        entity1.setAuthor("n1");
+        repository.save(entity1);
+
+        // Update the entity using the second entity object.
+        // This should fail since the second entity now holds an old version
+        // number, that is, an Optimistic Lock Error
+        assertThrows(OptimisticLockingFailureException.class, () -> {
+            entity2.setAuthor("n2");
+            repository.save(entity2);
+        });
+
+        // Get the updated entity from the database and verify its new state
+        final var updatedEntity = repository.findById(entity.getId()).get();
+        assertEquals("n1", updatedEntity.getAuthor());
+    }
+
     private RecommendationEntity createRecommendation() {
-        final var entity = RecommendationEntity.builder()
-                .courseId(COURSE_ID)
-                .recommendationId(UUID.randomUUID().toString())
-                .author(UUID.randomUUID().toString())
-                .rate(10)
-                .content(UUID.randomUUID().toString())
-                .build();
-        return repository.save(entity);
+        return repository.save(new RecommendationEntity(
+                COURSE_ID,
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                10,
+                UUID.randomUUID().toString()));
     }
 
     private void assertResult(final RecommendationEntity entity, final Recommendation result) {
