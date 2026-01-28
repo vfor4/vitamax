@@ -2,8 +2,8 @@ package com.vitamax.course_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vitamax.core.course.Course;
+import com.vitamax.course_service.course.CourseEntity;
 import com.vitamax.course_service.course.CourseRepository;
-import com.vitamax.course_service.course.entities.CourseEntity;
 import com.vitamax.test.MongoIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +23,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -121,9 +123,7 @@ class CourseServiceApplicationTests extends MongoIntegrationTest {
                             "name": "Test Course"
                         }
                         """);
-        final var response = mockMvc.perform(uri).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
-        final var result = objectMapper.readValue(response, Course.class);
-        assertEquals("Test Course", result.name());
+        mockMvc.perform(uri).andExpect(status().isCreated());
     }
 
     @ParameterizedTest(name = "{0}")
@@ -193,11 +193,32 @@ class CourseServiceApplicationTests extends MongoIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void optimisticLockError() {
+        final var entity = createCourse();
+        // Store the saved entity in two separate entity objects
+        final var entity1 = repository.findById(entity.getId()).get();
+        final var entity2 = repository.findById(entity.getId()).get();
+
+        // Update the entity using the first entity object
+        entity1.setName("n1");
+        repository.save(entity1);
+
+        // Update the entity using the second entity object.
+        // This should fail since the second entity now holds an old version
+        // number, that is, an Optimistic Lock Error
+        assertThrows(OptimisticLockingFailureException.class, () -> {
+            entity2.setName("n2");
+            repository.save(entity2);
+        });
+
+        // Get the updated entity from the database and verify its new state
+        final var updatedEntity = repository.findById(entity.getId()).get();
+        assertEquals("n1", updatedEntity.getName());
+    }
+
+
     private CourseEntity createCourse() {
-        final var entity = CourseEntity.builder()
-                .courseId(UUID.randomUUID().toString())
-                .name("Test Course Name")
-                .build();
-        return repository.save(entity);
+        return repository.save(new CourseEntity(UUID.randomUUID().toString(), "Test Course Name"));
     }
 }

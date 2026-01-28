@@ -3,10 +3,10 @@ package com.vitamax.recommendation_service.recommendation;
 import com.vitamax.core.recommendation.Recommendation;
 import com.vitamax.core.recommendation.RecommendationCreateCommand;
 import com.vitamax.core.recommendation.RecommendationUpdateCommand;
-import com.vitamax.recommendation_service.recommendation.entities.RecommendationEntity;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -22,6 +22,7 @@ public interface RecommendationMapper {
     RecommendationEntity toEntity(final RecommendationCreateCommand command);
 
     @Mapping(target = "id", ignore = true)
-    RecommendationEntity toEntity(final RecommendationUpdateCommand command);
-
+    @Mapping(target = "courseId", ignore = true)
+    @Mapping(target = "recommendationId", ignore = true)
+    RecommendationEntity toEntity(final RecommendationUpdateCommand command, @MappingTarget RecommendationEntity entity);
 }

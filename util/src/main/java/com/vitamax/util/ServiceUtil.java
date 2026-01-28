@@ -1,8 +1,10 @@
 package com.vitamax.util;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 
 @Component
@@ -21,6 +23,13 @@ public class ServiceUtil {
             serviceAddress = findMyHostname() + "/" + findMyIpAddress() + ":" + port;
         }
         return serviceAddress;
+    }
+
+    public URI buildCreatedLocation(final String id) {
+        return ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(id)
+                .toUri();
     }
 
     public String findMyHostname() {

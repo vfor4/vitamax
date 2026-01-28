@@ -7,7 +7,6 @@ import com.vitamax.core.recommendation.RecommendationUpdateCommand;
 import com.vitamax.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,18 +37,16 @@ public class RecommendationServiceImpl implements RecommendationService {
     public ResponseEntity<Recommendation> createRecommendation(final RecommendationCreateCommand command) {
         log.debug("create recommendation for command={}", command);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toRecommendation(repository.save(mapper.toEntity(command)), serviceUtil.getServiceAddress()));
+        return ResponseEntity.created(serviceUtil.buildCreatedLocation(repository.save(mapper.toEntity(command)).getRecommendationId())).build();
     }
 
     @Override
     public ResponseEntity<Recommendation> updateRecommendation(final RecommendationUpdateCommand command) {
         log.debug("update recommendation for command={}", command);
 
-        if (!repository.existsByRecommendationId(command.recommendationId().toString())) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(mapper.toRecommendation(repository.save(mapper.toEntity(command)), serviceUtil.getServiceAddress()));
+        return repository.findByRecommendationId(command.recommendationId().toString())
+                .map(entity -> ResponseEntity.ok(mapper.toRecommendation(repository.save(mapper.toEntity(command, entity)), serviceUtil.getServiceAddress())))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Override

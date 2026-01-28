@@ -3,10 +3,10 @@ package com.vitamax.review_service.review;
 import com.vitamax.core.review.Review;
 import com.vitamax.core.review.ReviewCreateCommand;
 import com.vitamax.core.review.ReviewUpdateCommand;
-import com.vitamax.review_service.review.enities.ReviewEntity;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ public interface ReviewMapper {
     @Mapping(target = "reviewId", expression = "java(java.util.UUID.randomUUID().toString())")
     ReviewEntity toEntity(final ReviewCreateCommand command);
 
-    ReviewEntity toEntity(final ReviewUpdateCommand command);
-
+    @Mapping(target = "reviewId", ignore = true)
+    @Mapping(target = "courseId", ignore = true)
+    ReviewEntity toEntity(final ReviewUpdateCommand command, @MappingTarget ReviewEntity entity);
 }
