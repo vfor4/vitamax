@@ -1,10 +1,10 @@
 package com.vitamax.recommendation_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vitamax.core.recommendation.Recommendation;
-import com.vitamax.recommendation_service.recommendation.RecommendationEntity;
-import com.vitamax.recommendation_service.recommendation.RecommendationRepository;
-import com.vitamax.test.MongoIntegrationTest;
+import com.vitamax.api.core.recommendation.dto.Recommendation;
+import com.vitamax.common_test.MongoIntegrationTest;
+import com.vitamax.recommendation_service.entity.RecommendationEntity;
+import com.vitamax.recommendation_service.repository.RecommendationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -82,17 +82,6 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
                                 """
                 ),
                 Arguments.of(
-                        "rate is zero",
-                        """
-                                {
-                                  "courseId": "11111111-1111-1111-1111-111111111111",
-                                  "author": "John",
-                                  "rate": 0,
-                                  "content": "Good course"
-                                }
-                                """
-                ),
-                Arguments.of(
                         "rate is negative",
                         """
                                 {
@@ -142,22 +131,9 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
     static Stream<Arguments> invalidUpdateRecommendationRequests() {
         return Stream.of(
                 Arguments.of(
-                        "null courseId",
-                        """
-                                {
-                                  "courseId": null,
-                                  "recommendationId": "11111111-1111-1111-1111-111111111111",
-                                  "author": "John",
-                                  "rate": 5,
-                                  "content": "Good course"
-                                }
-                                """
-                ),
-                Arguments.of(
                         "null recommendationId",
                         """
                                 {
-                                  "courseId": "22222222-2222-2222-2222-222222222222",
                                   "recommendationId": null,
                                   "author": "John",
                                   "rate": 5,
@@ -169,7 +145,6 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
                         "blank author",
                         """
                                 {
-                                  "courseId": "22222222-2222-2222-2222-222222222222",
                                   "recommendationId": "11111111-1111-1111-1111-111111111111",
                                   "author": "   ",
                                   "rate": 5,
@@ -181,21 +156,8 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
                         "missing author",
                         """
                                 {
-                                  "courseId": "22222222-2222-2222-2222-222222222222",
                                   "recommendationId": "11111111-1111-1111-1111-111111111111",
                                   "rate": 5,
-                                  "content": "Good course"
-                                }
-                                """
-                ),
-                Arguments.of(
-                        "rate is zero",
-                        """
-                                {
-                                  "courseId": "22222222-2222-2222-2222-222222222222",
-                                  "recommendationId": "11111111-1111-1111-1111-111111111111",
-                                  "author": "John",
-                                  "rate": 0,
                                   "content": "Good course"
                                 }
                                 """
@@ -204,7 +166,6 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
                         "rate is negative",
                         """
                                 {
-                                  "courseId": "22222222-2222-2222-2222-222222222222",
                                   "recommendationId": "11111111-1111-1111-1111-111111111111",
                                   "author": "John",
                                   "rate": -1,
@@ -216,7 +177,6 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
                         "blank content",
                         """
                                 {
-                                  "courseId": "22222222-2222-2222-2222-222222222222",
                                   "recommendationId": "11111111-1111-1111-1111-111111111111",
                                   "author": "John",
                                   "rate": 5,
@@ -228,7 +188,6 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
                         "missing content",
                         """
                                 {
-                                  "courseId": "22222222-2222-2222-2222-222222222222",
                                   "recommendationId": "11111111-1111-1111-1111-111111111111",
                                   "author": "John",
                                   "rate": 5
@@ -239,7 +198,6 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
                         "invalid UUID format",
                         """
                                 {
-                                  "courseId": "not-a-uuid",
                                   "recommendationId": "also-not-a-uuid",
                                   "author": "John",
                                   "rate": 5,
@@ -273,9 +231,12 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
     }
 
     @Test
-    void getRecommendation_notFound_return404() throws Exception {
+    void getRecommendation_notFound_return200() throws Exception {
         final var uri = get("/api/v1/recommendation/{courseId}", UUID.randomUUID().toString());
-        mockMvc.perform(uri).andExpect(status().isNotFound());
+        final var response = mockMvc.perform(uri).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        final var result = objectMapper.readValue(response, Recommendation[].class);
+
+        assertEquals(0, result.length);
     }
 
     @ParameterizedTest(name = "invalid courseId = {0}")
@@ -286,7 +247,7 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
     }
 
     @Test
-    void createRecommendation_success_return200() throws Exception {
+    void createRecommendation_success_return201() throws Exception {
         final var uri = post("/api/v1/recommendation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""

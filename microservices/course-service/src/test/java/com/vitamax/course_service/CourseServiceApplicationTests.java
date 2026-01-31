@@ -1,10 +1,10 @@
 package com.vitamax.course_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vitamax.core.course.Course;
-import com.vitamax.course_service.course.CourseEntity;
-import com.vitamax.course_service.course.CourseRepository;
-import com.vitamax.test.MongoIntegrationTest;
+import com.vitamax.api.core.course.dto.Course;
+import com.vitamax.common_test.MongoIntegrationTest;
+import com.vitamax.course_service.entity.CourseEntity;
+import com.vitamax.course_service.repository.CourseRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -115,7 +115,7 @@ class CourseServiceApplicationTests extends MongoIntegrationTest {
     }
 
     @Test
-    void createCourse_success_return200() throws Exception {
+    void createCourse_success_return201() throws Exception {
         final var uri = post(API_COURSE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""

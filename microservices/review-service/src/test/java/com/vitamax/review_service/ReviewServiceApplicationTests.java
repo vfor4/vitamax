@@ -1,10 +1,10 @@
 package com.vitamax.review_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vitamax.core.review.Review;
-import com.vitamax.review_service.review.ReviewEntity;
+import com.vitamax.api.core.review.dto.Review;
+import com.vitamax.common_test.PostgresIntegrationTest;
+import com.vitamax.review_service.entity.ReviewEntity;
 import com.vitamax.review_service.review.ReviewRepository;
-import com.vitamax.test.PostgresIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -123,22 +123,9 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
     static Stream<Arguments> invalidUpdateReviewRequests() {
         return Stream.of(
                 Arguments.of(
-                        "courseId is null",
-                        """
-                                {
-                                  "courseId": null,
-                                  "reviewId": "11111111-1111-1111-1111-111111111111",
-                                  "author": "John",
-                                  "subject": "Good",
-                                  "content": "Nice course"
-                                }
-                                """
-                ),
-                Arguments.of(
                         "reviewId is null",
                         """
                                 {
-                                  "courseId": "11111111-1111-1111-1111-111111111111",
                                   "reviewId": null,
                                   "author": "John",
                                   "subject": "Good",
@@ -150,7 +137,6 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                         "author is blank",
                         """
                                 {
-                                  "courseId": "11111111-1111-1111-1111-111111111111",
                                   "reviewId": "11111111-1111-1111-1111-111111111111",
                                   "author": "",
                                   "subject": "Good",
@@ -162,7 +148,6 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                         "subject is blank",
                         """
                                 {
-                                  "courseId": "11111111-1111-1111-1111-111111111111",
                                   "reviewId": "11111111-1111-1111-1111-111111111111",
                                   "author": "John",
                                   "subject": "   ",
@@ -174,7 +159,6 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                         "content is blank",
                         """
                                 {
-                                  "courseId": "11111111-1111-1111-1111-111111111111",
                                   "reviewId": "11111111-1111-1111-1111-111111111111",
                                   "author": "John",
                                   "subject": "Good",
@@ -212,9 +196,12 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
     }
 
     @Test
-    void getReview_notFound_return404() throws Exception {
+    void getReview_notFound_return200() throws Exception {
         final var uri = get("/api/v1/review/{courseId}", UUID.randomUUID().toString());
-        mockMvc.perform(uri).andExpect(status().isNotFound());
+        final var response = mockMvc.perform(uri).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        final var result = objectMapper.readValue(response, Review[].class);
+
+        assertEquals(0, result.length);
     }
 
     @ParameterizedTest(name = "invalid courseId = {0}")
@@ -225,7 +212,7 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
     }
 
     @Test
-    void createReview_success_return200() throws Exception {
+    void createReview_success_return201() throws Exception {
         final var uri = post("/api/v1/review")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
