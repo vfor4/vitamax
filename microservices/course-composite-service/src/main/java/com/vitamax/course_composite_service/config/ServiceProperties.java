@@ -18,12 +18,12 @@ import java.util.Optional;
 public final class ServiceProperties {
     private final Map<String, ServiceConfig> services;
 
-    public record ServiceConfig(@NotBlank String host, @NotBlank String port) {
-    }
-
     public String toUrl(final String serviceName) {
         return Optional.ofNullable(services.get(serviceName))//
                 .map(sc -> "http://" + sc.host() + ":" + sc.port())//
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public record ServiceConfig(@NotBlank String host, @NotBlank String port) {
     }
 }
