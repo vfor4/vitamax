@@ -12,14 +12,10 @@
 
     <artifactId>course-service</artifactId>
 
-    <properties>
-        <java.version>21</java.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.vitamax</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>api-web-mvc</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>

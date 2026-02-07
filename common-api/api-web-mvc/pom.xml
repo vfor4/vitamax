@@ -10,33 +10,20 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>course-composite-service</artifactId>
+    <artifactId>api-web-mvc</artifactId>
+
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>com.vitamax</groupId>
-            <artifactId>api-web-mvc</artifactId>
+            <artifactId>api</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
-            <groupId>com.vitamax</groupId>
-            <artifactId>util</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vitamax</groupId>
-            <artifactId>common-test</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
