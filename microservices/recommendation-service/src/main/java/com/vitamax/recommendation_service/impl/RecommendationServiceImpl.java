@@ -4,7 +4,7 @@ import com.vitamax.api.core.recommendation.RecommendationService;
 import com.vitamax.api.core.recommendation.dto.Recommendation;
 import com.vitamax.api.core.recommendation.dto.RecommendationCreateCommand;
 import com.vitamax.api.core.recommendation.dto.RecommendationUpdateCommand;
-import com.vitamax.api.exception.dto.NotFoundException;
+import com.vitamax.api.exception.NotFoundException;
 import com.vitamax.api.util.ApiUtil;
 import com.vitamax.recommendation_service.mapper.RecommendationMapper;
 import com.vitamax.recommendation_service.repository.RecommendationRepository;

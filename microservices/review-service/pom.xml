@@ -13,14 +13,13 @@
     <artifactId>review-service</artifactId>
 
     <properties>
-        <java.version>21</java.version>
         <postgresql.version>42.7.3</postgresql.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.vitamax</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>api-web-mvc</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>

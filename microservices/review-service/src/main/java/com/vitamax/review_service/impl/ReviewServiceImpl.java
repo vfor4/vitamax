@@ -4,7 +4,7 @@ import com.vitamax.api.core.review.ReviewService;
 import com.vitamax.api.core.review.dto.Review;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewUpdateCommand;
-import com.vitamax.api.exception.dto.NotFoundException;
+import com.vitamax.api.exception.NotFoundException;
 import com.vitamax.api.util.ApiUtil;
 import com.vitamax.review_service.mapper.ReviewMapper;
 import com.vitamax.review_service.review.ReviewRepository;

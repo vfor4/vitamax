@@ -26,7 +26,9 @@
         <module>microservices/recommendation-service</module>
         <module>microservices/review-service</module>
         <module>microservices/course-composite-service</module>
-        <module>api</module>
+        <module>common-api/api</module>
+        <module>common-api/api-web-mvc</module>
+        <module>common-api/api-web-flux</module>
         <module>util</module>
         <module>common-test</module>
     </modules>
@@ -35,7 +37,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional>
             <scope>provided</scope>
         </dependency>
         <dependency>

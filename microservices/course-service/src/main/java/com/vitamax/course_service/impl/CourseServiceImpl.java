@@ -4,7 +4,7 @@ import com.vitamax.api.core.course.CourseService;
 import com.vitamax.api.core.course.dto.Course;
 import com.vitamax.api.core.course.dto.CourseCreateCommand;
 import com.vitamax.api.core.course.dto.CourseUpdateCommand;
-import com.vitamax.api.exception.dto.NotFoundException;
+import com.vitamax.api.exception.NotFoundException;
 import com.vitamax.api.util.ApiUtil;
 import com.vitamax.course_service.mapper.CourseMapper;
 import com.vitamax.course_service.repository.CourseRepository;
