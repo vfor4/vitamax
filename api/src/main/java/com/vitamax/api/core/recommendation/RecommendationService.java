@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 @RequestMapping(value = "/api/v1/recommendation", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +60,7 @@ public interface RecommendationService {
             )
     })
     @GetMapping("/{courseId}")
-    ResponseEntity<List<Recommendation>> getRecommendations(
+    Flux<Recommendation> getRecommendations(
             @Parameter(description = "Unique identifier of the course", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable @NotNull UUID courseId
     );
@@ -86,7 +86,7 @@ public interface RecommendationService {
             )
     })
     @PostMapping
-    ResponseEntity<Void> createRecommendation(
+    Mono<Void> createRecommendation(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Recommendation creation command with all required fields",
                     required = true,
@@ -125,7 +125,7 @@ public interface RecommendationService {
             )
     })
     @PutMapping
-    ResponseEntity<Recommendation> updateRecommendation(
+    Mono<Recommendation> updateRecommendation(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Recommendation update command with fields to update",
                     required = true,
@@ -150,7 +150,7 @@ public interface RecommendationService {
             )
     })
     @DeleteMapping("/{courseId}")
-    ResponseEntity<Void> deleteRecommendations(
+    Mono<Void> deleteRecommendations(
             @Parameter(description = "Unique identifier of the course whose recommendations should be deleted", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable @NotNull UUID courseId
     );

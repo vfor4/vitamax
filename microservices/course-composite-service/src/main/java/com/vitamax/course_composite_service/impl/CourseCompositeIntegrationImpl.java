@@ -11,22 +11,21 @@ import com.vitamax.api.core.review.dto.Review;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewUpdateCommand;
 import com.vitamax.course_composite_service.config.ServiceProperties;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
+import static com.vitamax.api.event.EventConstants.COURSE_QUEUE_NAME;
+import static com.vitamax.api.event.EventConstants.RECOMMENDATION_QUEUE_NAME;
+import static com.vitamax.api.event.EventConstants.REVIEW_QUEUE_NAME;
+
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class CourseCompositeIntegrationImpl implements CourseCompositeIntegration {
     private static final String API_COURSE = "/api/v1/course";
@@ -37,79 +36,95 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     private static final String REVIEW = "review";
     private static final String COURSE_ID = "/{courseId}";
 
-    private final RestTemplate restTemplate;
-
+    private final WebClient webClient;
+    private final RabbitTemplate rabbitTemplate;
     private final ServiceProperties properties;
+    private final Scheduler publishScheduler;
 
-    @Override
-    public ResponseEntity<Course> getCourse(final UUID courseId) {
-        return restTemplate.exchange(properties.toUrl(COURSE) + API_COURSE + COURSE_ID, HttpMethod.GET, null, Course.class, String.valueOf(courseId));
+    public CourseCompositeIntegrationImpl(final RabbitTemplate rabbitTemplate, final ServiceProperties properties, final Scheduler publishScheduler) {
+        this.rabbitTemplate = rabbitTemplate;
+        this.publishScheduler = publishScheduler;
+        this.webClient = WebClient.builder().build();
+        this.properties = properties;
     }
 
     @Override
-    public ResponseEntity<Void> createCourse(final CourseCreateCommand command) {
-        return restTemplate.exchange(properties.toUrl(COURSE) + API_COURSE, HttpMethod.POST, new HttpEntity<>(command), Void.class);
+    public Mono<Course> getCourse(final UUID courseId) {
+        log.info("getCourse {}", courseId);
+        final var url = properties.toUrl(COURSE) + API_COURSE + COURSE_ID;
+        return webClient.get().uri(url, courseId).retrieve().bodyToMono(Course.class);
     }
 
     @Override
-    public ResponseEntity<Course> updateCourse(final CourseUpdateCommand command) {
-        return restTemplate.exchange(properties.toUrl(COURSE) + API_COURSE, HttpMethod.PUT, new HttpEntity<>(command), Course.class);
+    public Mono<Void> createCourse(final CourseCreateCommand command) {
+        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(COURSE_QUEUE_NAME, command))
+                .subscribeOn(publishScheduler)
+                .then();
     }
 
     @Override
-    public ResponseEntity<Void> deleteCourse(final UUID courseId) {
-        return restTemplate.exchange(properties.toUrl(COURSE) + API_COURSE + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
+    public Mono<Void> updateCourse(final CourseUpdateCommand command) {
+        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(COURSE_QUEUE_NAME, command))
+                .subscribeOn(publishScheduler)
+                .then();
     }
 
     @Override
-    public ResponseEntity<List<Recommendation>> getRecommendations(final UUID courseId) {
-        try {
-            final var recommendations = restTemplate.exchange(properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION + COURSE_ID, HttpMethod.GET, null, Recommendation[].class, String.valueOf(courseId));
-            return ResponseEntity.of(Optional.ofNullable(recommendations.getBody()).map(r -> Arrays.stream(r).toList()));
-        } catch (final RestClientException e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.ok(List.of());
-        }
+    public Mono<Void> deleteCourse(final UUID courseId) {
+        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(COURSE_QUEUE_NAME, courseId.toString()))
+                .subscribeOn(publishScheduler)
+                .then();
     }
 
     @Override
-    public ResponseEntity<Void> createRecommendation(final RecommendationCreateCommand command) {
-        return restTemplate.exchange(properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION, HttpMethod.POST, new HttpEntity<>(command), Void.class);
+    public Flux<Recommendation> getRecommendations(final UUID courseId) {
+        log.info("getRecommendations {}", courseId);
+        final var url = properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION + COURSE_ID;
+        return webClient.get().uri(url, courseId).retrieve().bodyToFlux(Recommendation.class);
     }
 
     @Override
-    public ResponseEntity<Recommendation> updateRecommendation(final RecommendationUpdateCommand command) {
-        return restTemplate.exchange(properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION, HttpMethod.PUT, new HttpEntity<>(command), Recommendation.class);
+    public Mono<Void> createRecommendation(final RecommendationCreateCommand command) {
+        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(RECOMMENDATION_QUEUE_NAME, command))
+                .subscribeOn(publishScheduler)
+                .then();
     }
 
     @Override
-    public ResponseEntity<Void> deleteRecommendations(final UUID courseId) {
-        return restTemplate.exchange(properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
+    public Mono<Recommendation> updateRecommendation(final RecommendationUpdateCommand command) {
+//        return webClient.exchange(properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION, HttpMethod.PUT, new HttpEntity<>(command), Recommendation.class);
+        return null;
     }
 
     @Override
-    public ResponseEntity<List<Review>> getReviews(final UUID courseId) {
-        try {
-            final var reviews = restTemplate.exchange(properties.toUrl(REVIEW) + API_REVIEW + COURSE_ID, HttpMethod.GET, null, Review[].class, String.valueOf(courseId));
-            return ResponseEntity.of(Optional.ofNullable(reviews.getBody()).map(r -> Arrays.stream(r).toList()));
-        } catch (final RestClientException e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.ok(List.of());
-        }
+    public Mono<Void> deleteRecommendations(final UUID courseId) {
+//        return webClient.exchange(properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
+        return null;
     }
 
     @Override
-    public ResponseEntity<Void> createReview(final ReviewCreateCommand command) {
-        return restTemplate.exchange(properties.toUrl(REVIEW) + API_REVIEW, HttpMethod.POST, new HttpEntity<>(command), Void.class);
+    public Flux<Review> getReviews(final UUID courseId) {
+        log.info("getReviews {}", courseId);
+        final var url = properties.toUrl(REVIEW) + API_REVIEW + COURSE_ID;
+        return webClient.get().uri(url, courseId).retrieve().bodyToFlux(Review.class);
     }
 
     @Override
-    public ResponseEntity<Review> updateReview(final ReviewUpdateCommand command) {
-        return restTemplate.exchange(properties.toUrl(REVIEW) + API_REVIEW, HttpMethod.PUT, new HttpEntity<>(command), Review.class);
+    public Mono<Void> createReview(final ReviewCreateCommand command) {
+        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(REVIEW_QUEUE_NAME, command))
+                .subscribeOn(publishScheduler)
+                .then();
     }
 
     @Override
-    public ResponseEntity<Void> deleteReviews(final UUID courseId) {
-        return restTemplate.exchange(properties.toUrl(REVIEW) + API_REVIEW + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
+    public Mono<Review> updateReview(final ReviewUpdateCommand command) {
+//        return webClient.exchange(properties.toUrl(REVIEW) + API_REVIEW, HttpMethod.PUT, new HttpEntity<>(command), Review.class);
+        return null;
+    }
+
+    @Override
+    public Mono<Void> deleteReviews(final UUID courseId) {
+//        return webClient.exchange(properties.toUrl(REVIEW) + API_REVIEW + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
+        return null;
     }
 }

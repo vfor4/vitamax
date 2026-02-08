@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,35 +30,38 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMapper mapper;
 
     @Override
-    public ResponseEntity<List<Review>> getReviews(final UUID courseId) {
+    public Flux<Review> getReviews(final UUID courseId) {
         log.debug("get found reviews for courseId={}", courseId);
-
-        return ResponseEntity.ok(mapper.toReviews(repository.findByCourseId(courseId.toString()), serviceUtil.getServiceAddress()));
+        final var reviewEntities = repository.findByCourseId(courseId.toString());
+        final var reviews = mapper.toReviews(reviewEntities, serviceUtil.getServiceAddress());
+        return Flux.fromIterable(reviews);
     }
 
     @Override
-    public ResponseEntity<Void> createReview(final ReviewCreateCommand command) {
+    public Mono<Void> createReview(final ReviewCreateCommand command) {
         log.debug("create review with command={}", command);
 
-        return ResponseEntity.created(ApiUtil.buildCreatedLocation(repository.save(mapper.toEntity(command)).getReviewId())).build();
+        repository.save(mapper.toEntity(command));
+        return Mono.empty();
     }
 
     @Override
-    public ResponseEntity<Review> updateReview(final ReviewUpdateCommand command) {
+    public Mono<Review> updateReview(final ReviewUpdateCommand command) {
         log.debug("update review with command={}", command);
 
-        return repository.findById(command.reviewId().toString())
+        repository.findById(command.reviewId().toString())
                 .map(entity -> ResponseEntity.ok(mapper.toReview(repository.save(mapper.toEntity(command, entity)), serviceUtil.getServiceAddress())))
                 .orElseThrow(() -> new NotFoundException("Review not found by reviewId=" + command.reviewId()));
+        return Mono.empty();
     }
 
     @Override
     @Transactional
-    public ResponseEntity<Void> deleteReviews(final UUID courseId) {
+    public Mono<Void> deleteReviews(final UUID courseId) {
         log.debug("delete review with courseId={}", courseId);
 
         repository.deleteByCourseId(courseId.toString());
 
-        return ResponseEntity.noContent().build();
+        return Mono.empty();
     }
 }
