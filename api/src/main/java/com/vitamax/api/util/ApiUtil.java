@@ -1,22 +1,18 @@
 package com.vitamax.api.util;
 
 import lombok.experimental.UtilityClass;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @UtilityClass
 public class ApiUtil {
-    public URI buildCreatedLocation(final String id) {
+    public URI buildCreatedLocation(final UUID id) {
         return ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(id)
+                .buildAndExpand(id.toString())
                 .toUri();
     }
 
-    public String extractIdFromHeader(final HttpHeaders headers) {
-        final var path = headers.getLocation().getPath();
-        return path.substring(path.lastIndexOf('/') + 1);
-    }
 }

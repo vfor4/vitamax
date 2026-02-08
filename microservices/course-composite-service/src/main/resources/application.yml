@@ -10,6 +10,9 @@ services:
     host: localhost
     port: 7004
 spring.application.name: course-composite-service
+logging:
+  level:
+    org: DEBUG
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080

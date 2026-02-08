@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 @RequestMapping(value = "/api/v1/review", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -61,7 +61,7 @@ public interface ReviewService {
             )
     })
     @GetMapping("/{courseId}")
-    ResponseEntity<List<Review>> getReviews(
+    Flux<Review> getReviews(
             @Parameter(description = "UUID of the course", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable @NotNull UUID courseId
     );
@@ -91,7 +91,7 @@ public interface ReviewService {
             )
     })
     @PostMapping
-    ResponseEntity<Void> createReview(
+    Mono<Void> createReview(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Review creation data",
                     required = true,
@@ -130,7 +130,7 @@ public interface ReviewService {
             )
     })
     @PutMapping
-    ResponseEntity<Review> updateReview(
+    Mono<Review> updateReview(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Review update data",
                     required = true,
@@ -155,7 +155,7 @@ public interface ReviewService {
             )
     })
     @DeleteMapping("/{courseId}")
-    ResponseEntity<Void> deleteReviews(
+    Mono<Void> deleteReviews(
             @Parameter(description = "UUID of the course", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable @NotNull UUID courseId
     );

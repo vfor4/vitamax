@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -54,7 +54,7 @@ public interface CourseService {
             )
     })
     @GetMapping("/{courseId}")
-    ResponseEntity<Course> getCourse(
+    Mono<Course> getCourse(
             @Parameter(description = "Unique identifier of the course", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable @NotNull UUID courseId
     );
@@ -79,7 +79,7 @@ public interface CourseService {
             )
     })
     @PostMapping
-    ResponseEntity<Void> createCourse(
+    Mono<Course> createCourse(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Course creation command with all required fields",
                     required = true,
@@ -113,7 +113,7 @@ public interface CourseService {
             )
     })
     @PutMapping
-    ResponseEntity<Course> updateCourse(
+    Mono<Void> updateCourse(
             @Parameter(description = "Course update command with fields to update", required = true)
             @RequestBody @Valid CourseUpdateCommand command
     );
@@ -129,7 +129,7 @@ public interface CourseService {
             )
     })
     @DeleteMapping("/{courseId}")
-    ResponseEntity<Void> deleteCourse(
+    Mono<Void> deleteCourse(
             @Parameter(description = "Unique identifier of the course to delete", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable @NotNull UUID courseId
     );

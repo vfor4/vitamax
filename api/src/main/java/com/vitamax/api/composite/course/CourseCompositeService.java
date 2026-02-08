@@ -1,5 +1,6 @@
 package com.vitamax.api.composite.course;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vitamax.api.composite.course.dto.CourseAggregate;
 import com.vitamax.api.composite.course.dto.CourseAggregateCreateCommand;
 import com.vitamax.api.exception.dto.HttpErrorInfo;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -56,7 +58,7 @@ public interface CourseCompositeService {
             )
     })
     @GetMapping("/{courseId}")
-    ResponseEntity<CourseAggregate> getCourseComposite(
+    Mono<CourseAggregate> getCourseComposite(
             @Parameter(description = "Unique identifier of the course", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable @NotNull UUID courseId
     );
@@ -116,5 +118,5 @@ public interface CourseCompositeService {
     ResponseEntity<Void> createCourseComposite(
             @Parameter(description = "Course creation command containing all required course data", required = true)
             @RequestBody @Valid CourseAggregateCreateCommand createCommand
-    );
+    ) throws JsonProcessingException;
 }

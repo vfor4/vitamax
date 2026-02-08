@@ -32,6 +32,18 @@
             <artifactId>common-test</artifactId>
             <version>1.0.0</version>
         </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework/spring-webflux -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+            <version>7.0.3</version>
+        </dependency>
     </dependencies>
 
     <build>
