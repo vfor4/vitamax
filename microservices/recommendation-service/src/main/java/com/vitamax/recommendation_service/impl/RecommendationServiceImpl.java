@@ -35,26 +35,23 @@ public class RecommendationServiceImpl implements RecommendationService {
     public Mono<Void> createRecommendation(final RecommendationCreateCommand command) {
         log.debug("create recommendation for command={}", command);
 
-        return repository.save(mapper.toEntity(command)).then();
+        return repository.save(mapper.toEntity(command))
+                .then();
     }
 
     @Override
-    public Mono<Recommendation> updateRecommendation(final RecommendationUpdateCommand command) {
+    public Mono<Void> updateRecommendation(final RecommendationUpdateCommand command) {
         log.debug("update recommendation for command={}", command);
 
-//        return repository.findByRecommendationId(command.recommendationId().toString())
-//                .map(entity -> ResponseEntity.ok(mapper.toRecommendation(repository.save(mapper.toEntity(command, entity)), serviceUtil.getServiceAddress())))
-//                .orElseThrow(() -> new NotFoundException("Recommendation not found by recommendationId=" + command.recommendationId()));
-        return Mono.empty();
+        return repository.findByRecommendationId(command.recommendationId().toString())
+                .flatMap(entity -> repository.save(mapper.toEntity(command, entity)))
+                .then();
     }
 
     @Override
     public Mono<Void> deleteRecommendations(final UUID courseId) {
         log.debug("delete recommendation for courseId={}", courseId);
 
-        repository.deleteByCourseId(courseId.toString());
-
-//        return ResponseEntity.noContent().build();
-        return Mono.empty();
+        return repository.deleteByCourseId(courseId.toString()).then();
     }
 }

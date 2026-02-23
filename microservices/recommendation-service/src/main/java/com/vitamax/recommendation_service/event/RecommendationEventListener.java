@@ -4,22 +4,25 @@ import com.vitamax.api.core.recommendation.RecommendationService;
 import com.vitamax.api.core.recommendation.dto.RecommendationCreateCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Flux;
 
-import static com.vitamax.api.event.EventConstants.RECOMMENDATION_QUEUE_NAME;
+import java.util.function.Consumer;
 
-@Service
-@RabbitListener(queues = RECOMMENDATION_QUEUE_NAME)
-@Slf4j
+@Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class RecommendationEventListener {
 
     private final RecommendationService recommendationService;
 
-    @RabbitHandler
-    public void onCreate(RecommendationCreateCommand command) {
-        recommendationService.createRecommendation(command).subscribe();
+    @Bean
+    public Consumer<Flux<RecommendationCreateCommand>> recommendation() {
+        return flux -> flux
+                .flatMap(recommendationService::createRecommendation)
+                .doOnError(e -> log.error("Failed to process recommendation event", e))
+                .retry()
+                .subscribe();
     }
 }

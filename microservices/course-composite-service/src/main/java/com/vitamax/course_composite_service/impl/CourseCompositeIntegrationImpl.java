@@ -11,7 +11,7 @@ import com.vitamax.api.core.review.dto.Review;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewUpdateCommand;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -20,9 +20,9 @@ import reactor.core.scheduler.Scheduler;
 
 import java.util.UUID;
 
-import static com.vitamax.api.event.EventConstants.COURSE_QUEUE_NAME;
-import static com.vitamax.api.event.EventConstants.RECOMMENDATION_QUEUE_NAME;
-import static com.vitamax.api.event.EventConstants.REVIEW_QUEUE_NAME;
+import static com.vitamax.api.event.EventConstants.COURSE_BINDING_OUT;
+import static com.vitamax.api.event.EventConstants.RECOMMENDATION_BINDING_OUT;
+import static com.vitamax.api.event.EventConstants.REVIEW_BINDING_OUT;
 import static com.vitamax.api.constants.ServiceConstants.COURSE_API_V1_URL;
 import static com.vitamax.api.constants.ServiceConstants.RECOMMENDATION_API_V1_URL;
 import static com.vitamax.api.constants.ServiceConstants.REVIEW_API_V1_URL;
@@ -31,14 +31,14 @@ import static com.vitamax.api.constants.ServiceConstants.REVIEW_API_V1_URL;
 @Slf4j
 public class CourseCompositeIntegrationImpl implements CourseCompositeIntegration {
     private final WebClient webClient;
-    private final RabbitTemplate rabbitTemplate;
+    private final StreamBridge streamBridge;
     private final Scheduler publishScheduler;
 
     public CourseCompositeIntegrationImpl(
             final WebClient.Builder webClientBuilder,
-            final RabbitTemplate rabbitTemplate,
+            final StreamBridge streamBridge,
             final Scheduler publishScheduler) {
-        this.rabbitTemplate = rabbitTemplate;
+        this.streamBridge = streamBridge;
         this.publishScheduler = publishScheduler;
         this.webClient = webClientBuilder.build();
     }
@@ -51,21 +51,21 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
 
     @Override
     public Mono<Void> createCourse(final CourseCreateCommand command) {
-        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(COURSE_QUEUE_NAME, command))
+        return Mono.fromRunnable(() -> streamBridge.send(COURSE_BINDING_OUT, command))
                 .subscribeOn(publishScheduler)
                 .then();
     }
 
     @Override
     public Mono<Void> updateCourse(final CourseUpdateCommand command) {
-        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(COURSE_QUEUE_NAME, command))
+        return Mono.fromRunnable(() -> streamBridge.send(COURSE_BINDING_OUT, command))
                 .subscribeOn(publishScheduler)
                 .then();
     }
 
     @Override
     public Mono<Void> deleteCourse(final UUID courseId) {
-        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(COURSE_QUEUE_NAME, courseId.toString()))
+        return Mono.fromRunnable(() -> streamBridge.send(COURSE_BINDING_OUT, courseId.toString()))
                 .subscribeOn(publishScheduler)
                 .then();
     }
@@ -78,21 +78,23 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
 
     @Override
     public Mono<Void> createRecommendation(final RecommendationCreateCommand command) {
-        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(RECOMMENDATION_QUEUE_NAME, command))
+        return Mono.fromRunnable(() -> streamBridge.send(RECOMMENDATION_BINDING_OUT, command))
                 .subscribeOn(publishScheduler)
                 .then();
     }
 
     @Override
-    public Mono<Recommendation> updateRecommendation(final RecommendationUpdateCommand command) {
-//        return webClient.exchange(properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION, HttpMethod.PUT, new HttpEntity<>(command), Recommendation.class);
-        return null;
+    public Mono<Void> updateRecommendation(final RecommendationUpdateCommand command) {
+        return Mono.fromRunnable(() -> streamBridge.send(RECOMMENDATION_BINDING_OUT, command))
+                .subscribeOn(publishScheduler)
+                .then();
     }
 
     @Override
     public Mono<Void> deleteRecommendations(final UUID courseId) {
-//        return webClient.exchange(properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
-        return null;
+        return Mono.fromRunnable(() -> streamBridge.send(RECOMMENDATION_BINDING_OUT, courseId.toString()))
+                .subscribeOn(publishScheduler)
+                .then();
     }
 
     @Override
@@ -103,20 +105,22 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
 
     @Override
     public Mono<Void> createReview(final ReviewCreateCommand command) {
-        return Mono.fromRunnable(() -> rabbitTemplate.convertAndSend(REVIEW_QUEUE_NAME, command))
+        return Mono.fromRunnable(() -> streamBridge.send(REVIEW_BINDING_OUT, command))
                 .subscribeOn(publishScheduler)
                 .then();
     }
 
     @Override
-    public Mono<Review> updateReview(final ReviewUpdateCommand command) {
-//        return webClient.exchange(properties.toUrl(REVIEW) + API_REVIEW, HttpMethod.PUT, new HttpEntity<>(command), Review.class);
-        return null;
+    public Mono<Void> updateReview(final ReviewUpdateCommand command) {
+        return Mono.fromRunnable(() -> streamBridge.send(REVIEW_BINDING_OUT, command))
+                .subscribeOn(publishScheduler)
+                .then();
     }
 
     @Override
     public Mono<Void> deleteReviews(final UUID courseId) {
-//        return webClient.exchange(properties.toUrl(REVIEW) + API_REVIEW + COURSE_ID, HttpMethod.DELETE, null, Void.class, String.valueOf(courseId));
-        return null;
+        return Mono.fromRunnable(() -> streamBridge.send(REVIEW_BINDING_OUT, courseId.toString()))
+                .subscribeOn(publishScheduler)
+                .then();
     }
 }

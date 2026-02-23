@@ -115,7 +115,7 @@ public interface CourseCompositeService {
             )
     })
     @PostMapping
-    ResponseEntity<Void> createCourseComposite(
+    Mono<Void> createCourseComposite(
             @Parameter(description = "Course creation command containing all required course data", required = true)
             @RequestBody @Valid CourseAggregateCreateCommand createCommand
     ) throws JsonProcessingException;

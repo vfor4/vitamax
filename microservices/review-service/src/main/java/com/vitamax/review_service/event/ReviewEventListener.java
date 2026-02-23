@@ -4,22 +4,25 @@ import com.vitamax.api.core.review.ReviewService;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Flux;
 
-import static com.vitamax.api.event.EventConstants.REVIEW_QUEUE_NAME;
+import java.util.function.Consumer;
 
-@Service
-@RabbitListener(queues = REVIEW_QUEUE_NAME)
-@Slf4j
+@Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewEventListener {
 
     private final ReviewService reviewService;
 
-    @RabbitHandler
-    public void onCreate(ReviewCreateCommand command) {
-        reviewService.createReview(command).subscribe();
+    @Bean
+    public Consumer<Flux<ReviewCreateCommand>> review() {
+        return flux -> flux
+                .flatMap(reviewService::createReview)
+                .doOnError(e -> log.error("Failed to process review event", e))
+                .retry()
+                .subscribe();
     }
 }

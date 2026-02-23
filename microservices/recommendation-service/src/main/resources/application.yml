@@ -6,6 +6,17 @@ spring:
     mongodb:
       host: "127.0.0.1"
       port: 27017
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
+  cloud:
+    stream:
+      bindings:
+        recommendation-in-0:
+          destination: recommendation
+          group: recommendation-service
 eureka:
   instance:
     appname: ${spring.application.name}

@@ -130,7 +130,7 @@ public interface ReviewService {
             )
     })
     @PutMapping
-    Mono<Review> updateReview(
+    Mono<Void> updateReview(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Review update data",
                     required = true,

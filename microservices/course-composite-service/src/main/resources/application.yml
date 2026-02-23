@@ -1,5 +1,21 @@
 server.port: 7005
-spring.application.name: course-composite-service
+spring:
+  application:
+    name: course-composite-service
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
+  cloud:
+    stream:
+      bindings:
+        course-out-0:
+          destination: course
+        review-out-0:
+          destination: review
+        recommendation-out-0:
+          destination: recommendation
 logging.level.org: debug
 eureka:
   client:

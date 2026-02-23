@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 public interface CourseRepository extends ReactiveMongoRepository<CourseEntity, String> {
     Mono<CourseEntity> findByCourseId(String courseId);
 
-    void deleteByCourseId(String courseId);
+    Mono<Void> deleteByCourseId(String courseId);
 }

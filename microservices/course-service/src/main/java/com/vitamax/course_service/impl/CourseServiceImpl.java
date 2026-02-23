@@ -34,26 +34,24 @@ public class CourseServiceImpl implements CourseService {
     public Mono<Void> createCourse(final CourseCreateCommand command) {
         log.debug("create course for command={}", command);
 
-        return repository.save(mapper.toEntity(command)).then();
+        return repository.save(mapper.toEntity(command))
+                .then();
     }
 
     @Override
     public Mono<Void> updateCourse(final CourseUpdateCommand command) {
         log.debug("update course for command={}", command);
 
-//        return repository.findByCourseId(command.courseId().toString())
-//                .map(entity -> ResponseEntity.ok(mapper.toCourse(repository.save(mapper.toEntity(command, entity)), serviceUtil.getServiceAddress())))
-//                .orElseThrow(() -> new NotFoundException("course not found"));
-        return Mono.empty();
+        return repository.findByCourseId(command.courseId().toString())
+                .flatMap(entity -> repository.save(mapper.toEntity(command, entity)))
+                .then();
     }
 
     @Override
     public Mono<Void> deleteCourse(final UUID courseId) {
         log.debug("delete course for courseId={}", courseId);
 
-        repository.deleteByCourseId(courseId.toString());
-
-//        return ResponseEntity.noContent().build();
-        return Mono.empty();
+        return repository.deleteByCourseId(courseId.toString())
+                .then();
     }
 }
