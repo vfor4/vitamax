@@ -2,14 +2,21 @@ server.port: 7004
 spring:
   application:
     name: review-service
-  datasource:
-    url: "jdbc:postgresql://localhost:5432/postgres"
+  r2dbc:
+    url: "r2dbc:postgresql://localhost:5432/postgres"
     username: "postgres"
     password: "postgres"
-  jpa:
-    database-platform: "org.hibernate.dialect.PostgreSQLDialect"
-    hibernate:
-      ddl-auto: "none"
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: password
+  cloud:
+    stream:
+      bindings:
+        review-in-0:
+          destination: review
+          group: review-service
 eureka:
   instance:
     appname: ${spring.application.name}

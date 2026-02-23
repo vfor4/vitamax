@@ -1,5 +1,7 @@
 package com.vitamax.api.core.recommendation.dto;
 
+import java.io.Serializable;
+
 public record Recommendation(String courseId, String recommendationId, String author, int rate, String content,
-                             String serviceAddress) {
+                             String serviceAddress) implements Serializable {
 }

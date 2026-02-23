@@ -125,7 +125,7 @@ public interface RecommendationService {
             )
     })
     @PutMapping
-    Mono<Recommendation> updateRecommendation(
+    Mono<Void> updateRecommendation(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Recommendation update command with fields to update",
                     required = true,

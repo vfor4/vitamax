@@ -18,6 +18,12 @@ spring:
     username: user
     password: password
     port: 5672
+  cloud:
+    stream:
+      bindings:
+        course-in-0:
+          destination: course
+          group: course-service
 eureka:
   instance:
     appname: ${spring.application.name}

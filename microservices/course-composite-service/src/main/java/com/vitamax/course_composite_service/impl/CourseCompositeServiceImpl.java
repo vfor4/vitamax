@@ -8,14 +8,16 @@ import com.vitamax.api.core.course.dto.CourseCreateCommand;
 import com.vitamax.api.core.recommendation.dto.RecommendationCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import com.vitamax.api.exception.dto.NotFoundException;
-import com.vitamax.api.util.ApiUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -62,21 +64,20 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
 
 
     @Override
-    public ResponseEntity<Void> createCourseComposite(final CourseAggregateCreateCommand command) {
+    public Mono<Void> createCourseComposite(final CourseAggregateCreateCommand command) {
         log.debug("create course composite for command={}", command);
         final var courseId = UUID.randomUUID();
-        integrationService.createCourse(new CourseCreateCommand(courseId, command.course().name())).subscribe();
 
-        if (command.reviews() != null) {
-            command.reviews().forEach(review ->
-                    integrationService.createReview(new ReviewCreateCommand(courseId, review.author(), review.subject(), review.content())).subscribe());
-        }
-        if (command.recommendations() != null) {
-            command.recommendations().forEach(
-                    red -> integrationService.createRecommendation(new RecommendationCreateCommand(courseId, red.author(), red.rate(), red.content())).subscribe()
-            );
-        }
+        final var course = integrationService.createCourse(new CourseCreateCommand(courseId, command.course().name()));
 
-        return ResponseEntity.created(ApiUtil.buildCreatedLocation(courseId)).build();
+        final var reviews = Flux.fromIterable(Objects.requireNonNullElse(command.reviews(), List.of()))
+                .flatMap(rev -> integrationService.createReview(new ReviewCreateCommand(courseId, rev.author(), rev.subject(), rev.content())))
+                .then();
+
+        final var recommendations = Flux.fromIterable(Objects.requireNonNullElse(command.recommendations(), List.of()))
+                .flatMap(red -> integrationService.createRecommendation(new RecommendationCreateCommand(courseId, red.author(), red.rate(), red.content())))
+                .then();
+
+        return Mono.when(course, reviews, recommendations);
     }
 }

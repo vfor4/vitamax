@@ -1,12 +1,12 @@
 package com.vitamax.review_service.review;
 
 import com.vitamax.review_service.entity.ReviewEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
+public interface ReviewRepository extends ReactiveCrudRepository<ReviewEntity, String> {
+    Flux<ReviewEntity> findByCourseId(String courseId);
 
-public interface ReviewRepository extends JpaRepository<ReviewEntity, String> {
-    List<ReviewEntity> findByCourseId(String courseId);
-
-    void deleteByCourseId(String courseId);
+    Mono<Void> deleteByCourseId(String courseId);
 }

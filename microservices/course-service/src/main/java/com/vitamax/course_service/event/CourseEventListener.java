@@ -4,22 +4,25 @@ import com.vitamax.api.core.course.CourseService;
 import com.vitamax.api.core.course.dto.CourseCreateCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Flux;
 
-import static com.vitamax.api.event.EventConstants.COURSE_QUEUE_NAME;
+import java.util.function.Consumer;
 
-@Service
-@RabbitListener(queues = COURSE_QUEUE_NAME)
-@Slf4j
+@Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class CourseEventListener {
 
     private final CourseService courseService;
 
-    @RabbitHandler
-    public void onCreate(CourseCreateCommand command) {
-        courseService.createCourse(command).subscribe();
+    @Bean
+    public Consumer<Flux<CourseCreateCommand>> course() {
+        return flux -> flux
+                .flatMap(courseService::createCourse)
+                .doOnError(e -> log.error("Failed to process course event", e))
+                .retry()
+                .subscribe();
     }
 }

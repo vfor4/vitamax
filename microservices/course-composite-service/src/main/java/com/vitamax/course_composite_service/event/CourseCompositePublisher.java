@@ -1,44 +1,28 @@
 package com.vitamax.course_composite_service.event;
 
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.vitamax.api.core.course.dto.CourseCreateCommand;
+import com.vitamax.api.core.recommendation.dto.RecommendationCreateCommand;
+import com.vitamax.api.core.review.dto.ReviewCreateCommand;
+import com.vitamax.api.event.EventConstants;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.stereotype.Service;
 
-@Configuration
+@Service
+@RequiredArgsConstructor
 public class CourseCompositePublisher {
 
-    @Bean
-    public Queue course() {
-        return new Queue("course");
+    private final StreamBridge streamBridge;
+
+    public void publishCourse(CourseCreateCommand command) {
+        streamBridge.send(EventConstants.COURSE_BINDING_OUT, command);
     }
 
-//    @Bean
-//    public Queue review() {
-//        return new Queue("review");
-//    }
-
-
-    @Bean
-    public ConnectionFactory connectionFactory() {
-        final var factory = new CachingConnectionFactory();
-        factory.setUsername("user");
-        factory.setPassword("password");
-        return factory;
+    public void publishReview(ReviewCreateCommand command) {
+        streamBridge.send(EventConstants.REVIEW_BINDING_OUT, command);
     }
 
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory factory, Jackson2JsonMessageConverter converter) {
-        final var template = new RabbitTemplate(factory);
-        template.setMessageConverter(converter);
-        return template;
-    }
-
-    @Bean
-    public Jackson2JsonMessageConverter jackson2Converter() {
-        return new Jackson2JsonMessageConverter();
+    public void publishRecommendation(RecommendationCreateCommand command) {
+        streamBridge.send(EventConstants.RECOMMENDATION_BINDING_OUT, command);
     }
 }
