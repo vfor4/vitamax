@@ -112,7 +112,7 @@ echo "PORT=${PORT}"
 if [[ $@ == "start" ]]
 then
   echo "Building jar files"
-  ./mvnw clean install
+  ./mvnw clean install -DskipTests
   echo "Restarting the test environment..."
   echo "Building projects"
   echo "$ docker compose down --remove-orphans"

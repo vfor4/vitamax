@@ -1,5 +1,7 @@
 server.port: 7004
 spring:
+  application:
+    name: review-service
   datasource:
     url: "jdbc:postgresql://localhost:5432/postgres"
     username: "postgres"
@@ -8,6 +10,15 @@ spring:
     database-platform: "org.hibernate.dialect.PostgreSQLDialect"
     hibernate:
       ddl-auto: "none"
+eureka:
+  instance:
+    appname: ${spring.application.name}
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+  client:
+    fetch-registry: false
+    initialInstanceInfoReplicationIntervalSeconds: 10
+    registryFetchIntervalSeconds: 5
 
 ---
 spring:
@@ -17,3 +28,7 @@ spring:
   datasource:
     url: "jdbc:postgresql://postgresql:5432/postgres"
 server.port: 8080
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery:8761/eureka/

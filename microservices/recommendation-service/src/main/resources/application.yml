@@ -6,6 +6,15 @@ spring:
     mongodb:
       host: "127.0.0.1"
       port: 27017
+eureka:
+  instance:
+    appname: ${spring.application.name}
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 5
+  client:
+    initialInstanceInfoReplicationIntervalSeconds: 10
+    registryFetchIntervalSeconds: 5
+
 ---
 spring:
   config:
@@ -16,3 +25,7 @@ spring:
       host: mongodb
       port: 27017
 server.port: 8080
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery:8761/eureka/

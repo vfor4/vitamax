@@ -10,7 +10,7 @@ services:
     build: microservices/course-service
     mem_limit: 512m
     environment:
-      - spring_profiles_active=docker
+      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       mongodb:
         condition: service_healthy
@@ -30,6 +30,13 @@ services:
     depends_on:
       postgresql:
         condition: service_healthy
+  discovery:
+    build: microservices/discovery-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8761:8761"
 
   mongodb:
     image: mongo:noble
