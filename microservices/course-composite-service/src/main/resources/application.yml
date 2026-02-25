@@ -1,28 +1,22 @@
 server.port: 7005
-services:
-  course:
-    host: localhost
-    port: 7002
-  recommendation:
-    host: localhost
-    port: 7003
-  review:
-    host: localhost
-    port: 7004
 spring.application.name: course-composite-service
 logging:
   level:
-    org: DEBUG
+    org: debug
+eureka:
+  client:
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+    register-with-eureka: false
+
+management:
+  endpoint:
+    health:
+      show-details: ALWAYS
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080
-services:
-  course:
-    host: course
-    port: 8080
-  recommendation:
-    host: recommendation
-    port: 8080
-  review:
-    host: review
-    port: 8080
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery:8761/eureka/

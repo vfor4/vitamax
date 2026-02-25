@@ -10,7 +10,6 @@ import com.vitamax.api.core.recommendation.dto.RecommendationUpdateCommand;
 import com.vitamax.api.core.review.dto.Review;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewUpdateCommand;
-import com.vitamax.course_composite_service.config.ServiceProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -24,35 +23,30 @@ import java.util.UUID;
 import static com.vitamax.api.event.EventConstants.COURSE_QUEUE_NAME;
 import static com.vitamax.api.event.EventConstants.RECOMMENDATION_QUEUE_NAME;
 import static com.vitamax.api.event.EventConstants.REVIEW_QUEUE_NAME;
+import static com.vitamax.course_composite_service.constants.ServiceConstants.COURSE_API_V1_URL;
+import static com.vitamax.course_composite_service.constants.ServiceConstants.RECOMMENDATION_API_V1_URL;
+import static com.vitamax.course_composite_service.constants.ServiceConstants.REVIEW_API_V1_URL;
 
 @Service
 @Slf4j
 public class CourseCompositeIntegrationImpl implements CourseCompositeIntegration {
-    private static final String API_COURSE = "/api/v1/course";
-    private static final String API_RECOMMENDATION = "/api/v1/recommendation";
-    private static final String API_REVIEW = "/api/v1/review";
-    private static final String COURSE = "course";
-    private static final String RECOMMENDATION = "recommendation";
-    private static final String REVIEW = "review";
-    private static final String COURSE_ID = "/{courseId}";
-
     private final WebClient webClient;
     private final RabbitTemplate rabbitTemplate;
-    private final ServiceProperties properties;
     private final Scheduler publishScheduler;
 
-    public CourseCompositeIntegrationImpl(final RabbitTemplate rabbitTemplate, final ServiceProperties properties, final Scheduler publishScheduler) {
+    public CourseCompositeIntegrationImpl(
+            final WebClient.Builder webClientBuilder,
+            final RabbitTemplate rabbitTemplate,
+            final Scheduler publishScheduler) {
         this.rabbitTemplate = rabbitTemplate;
         this.publishScheduler = publishScheduler;
-        this.webClient = WebClient.builder().build();
-        this.properties = properties;
+        this.webClient = webClientBuilder.build();
     }
 
     @Override
     public Mono<Course> getCourse(final UUID courseId) {
         log.info("getCourse {}", courseId);
-        final var url = properties.toUrl(COURSE) + API_COURSE + COURSE_ID;
-        return webClient.get().uri(url, courseId).retrieve().bodyToMono(Course.class);
+        return webClient.get().uri(COURSE_API_V1_URL, courseId).retrieve().bodyToMono(Course.class);
     }
 
     @Override
@@ -79,8 +73,7 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     @Override
     public Flux<Recommendation> getRecommendations(final UUID courseId) {
         log.info("getRecommendations {}", courseId);
-        final var url = properties.toUrl(RECOMMENDATION) + API_RECOMMENDATION + COURSE_ID;
-        return webClient.get().uri(url, courseId).retrieve().bodyToFlux(Recommendation.class);
+        return webClient.get().uri(RECOMMENDATION_API_V1_URL, courseId).retrieve().bodyToFlux(Recommendation.class);
     }
 
     @Override
@@ -105,8 +98,7 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     @Override
     public Flux<Review> getReviews(final UUID courseId) {
         log.info("getReviews {}", courseId);
-        final var url = properties.toUrl(REVIEW) + API_REVIEW + COURSE_ID;
-        return webClient.get().uri(url, courseId).retrieve().bodyToFlux(Review.class);
+        return webClient.get().uri(REVIEW_API_V1_URL, courseId).retrieve().bodyToFlux(Review.class);
     }
 
     @Override

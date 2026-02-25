@@ -18,6 +18,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -220,7 +221,7 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
 
     @Test
     void getRecommendation_success_return200() throws Exception {
-        final var entity = createRecommendation();
+        final var entity = createRecommendation().block();
 
         final var uri = get("/api/v1/recommendation/{courseId}", entity.getCourseId());
         final var response = mockMvc.perform(uri).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
@@ -273,7 +274,7 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
 
     @Test
     void updateRecommendation_success_return200() throws Exception {
-        final var entity = createRecommendation();
+        final var entity = createRecommendation().block();
 
         final var uri = put("/api/v1/recommendation")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -327,7 +328,7 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
 
     @Test
     void deleteRecommendations_success_return204() throws Exception {
-        final var entity = createRecommendation();
+        final var entity = createRecommendation().block();
 
         final var uri = delete("/api/v1/recommendation/{courseId}", entity.getRecommendationId());
         mockMvc.perform(uri).andExpect(status().isNoContent()).andExpect(content().string(""));
@@ -342,10 +343,10 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
 
     @Test
     void optimisticLockError() {
-        final var entity = createRecommendation();
+        final var entity = createRecommendation().block();
         // Store the saved entity in two separate entity objects
-        final var entity1 = repository.findById(entity.getId()).get();
-        final var entity2 = repository.findById(entity.getId()).get();
+        final var entity1 = repository.findById(entity.getId()).block();
+        final var entity2 = repository.findById(entity.getId()).block();
 
         // Update the entity using the first entity object
         entity1.setAuthor("n1");
@@ -360,11 +361,11 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
         });
 
         // Get the updated entity from the database and verify its new state
-        final var updatedEntity = repository.findById(entity.getId()).get();
+        final var updatedEntity = repository.findById(entity.getId()).block();
         assertEquals("n1", updatedEntity.getAuthor());
     }
 
-    private RecommendationEntity createRecommendation() {
+    private Mono<RecommendationEntity> createRecommendation() {
         return repository.save(new RecommendationEntity(
                 COURSE_ID,
                 UUID.randomUUID().toString(),

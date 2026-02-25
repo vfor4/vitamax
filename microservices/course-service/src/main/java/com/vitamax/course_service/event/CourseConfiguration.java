@@ -1,8 +1,9 @@
 package com.vitamax.course_service.event;
 
+import com.vitamax.api.event.EventConstants;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -13,11 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class CourseConfiguration {
 
     @Bean
-    public ConnectionFactory connectionFactory() {
-        final var factory = new CachingConnectionFactory();
-        factory.setUsername("user");
-        factory.setPassword("password");
-        return factory;
+    public Queue courseQueue() {
+        return new Queue(EventConstants.COURSE_QUEUE_NAME, false);
     }
 
     @Bean

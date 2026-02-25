@@ -31,10 +31,10 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Mono<Course> createCourse(final CourseCreateCommand command) {
+    public Mono<Void> createCourse(final CourseCreateCommand command) {
         log.debug("create course for command={}", command);
 
-        return repository.save(mapper.toEntity(command)).map(courseEntity -> mapper.toCourse(courseEntity, serviceUtil.getServiceAddress()));
+        return repository.save(mapper.toEntity(command)).then();
     }
 
     @Override

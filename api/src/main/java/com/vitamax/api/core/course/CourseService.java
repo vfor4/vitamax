@@ -79,7 +79,7 @@ public interface CourseService {
             )
     })
     @PostMapping
-    Mono<Course> createCourse(
+    Mono<Void> createCourse(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Course creation command with all required fields",
                     required = true,
