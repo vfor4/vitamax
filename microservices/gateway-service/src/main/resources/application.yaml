@@ -1,0 +1,63 @@
+app.eureka-server: localhost
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: false
+    registry-fetch-interval-seconds: 5
+
+management:
+  endpoint.health.show-details: "ALWAYS"
+  endpoints.web.exposure.include: "*"
+
+spring:
+  main.web-application-type: reactive
+  application.name: gateway-service
+  cloud:
+    gateway:
+      server:
+        webflux:
+          httpclient.connect-timeout: 5000
+          routes:
+            - id: course-composite
+              uri: http://localhost:7005
+              predicates:
+                - Path=/api/**,/openapi/**
+            - id: eureka-web-start
+              uri: http://localhost:8761
+              predicates:
+                - Path=/eureka/web
+              filters:
+                - SetPath=/
+            - id: eureka-web-other
+              uri: http://localhost:8761
+              predicates:
+                - Path=/eureka/**
+
+---
+spring:
+  config.activate.on-profile: docker
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: path_route
+              uri: lb://course-composite-service
+              predicates:
+                - Path=/api/v1/**
+            - id: eureka-web-start
+              uri: http://${app.eureka-service}:8761
+              predicates:
+                - Path=/eureka/web
+              filters:
+                - SetPath=/
+            - id: eureka-web-other
+              uri: http://${app.eureka-service}:8761
+              predicates:
+                - Path=/eureka/**
+app.eureka-service: discovery
+app.course-composite-service: course-composite-service
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery:8761/eureka/
