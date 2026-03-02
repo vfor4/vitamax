@@ -275,7 +275,6 @@ class RecommendationServiceApplicationTests extends MongoIntegrationTest {
     @Test
     void updateRecommendation_success_return200() throws Exception {
         final var entity = createRecommendation().block();
-
         final var uri = put("/api/v1/recommendation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""

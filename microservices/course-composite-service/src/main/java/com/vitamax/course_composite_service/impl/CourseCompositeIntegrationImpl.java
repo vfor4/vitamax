@@ -23,9 +23,9 @@ import java.util.UUID;
 import static com.vitamax.api.event.EventConstants.COURSE_QUEUE_NAME;
 import static com.vitamax.api.event.EventConstants.RECOMMENDATION_QUEUE_NAME;
 import static com.vitamax.api.event.EventConstants.REVIEW_QUEUE_NAME;
-import static com.vitamax.course_composite_service.constants.ServiceConstants.COURSE_API_V1_URL;
-import static com.vitamax.course_composite_service.constants.ServiceConstants.RECOMMENDATION_API_V1_URL;
-import static com.vitamax.course_composite_service.constants.ServiceConstants.REVIEW_API_V1_URL;
+import static com.vitamax.api.constants.ServiceConstants.COURSE_API_V1_URL;
+import static com.vitamax.api.constants.ServiceConstants.RECOMMENDATION_API_V1_URL;
+import static com.vitamax.api.constants.ServiceConstants.REVIEW_API_V1_URL;
 
 @Service
 @Slf4j

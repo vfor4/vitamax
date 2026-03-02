@@ -1,6 +1,5 @@
-package com.vitamax.course_composite_service.config;
+package com.vitamax.gateway_service.actuator;
 
-import com.vitamax.course_composite_service.impl.CourseCompositeHealthService;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.context.annotation.Bean;
@@ -9,9 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.vitamax.course_composite_service.constants.ServiceConstants.COURSE_HOST;
-import static com.vitamax.course_composite_service.constants.ServiceConstants.RECOMMENDATION_HOST;
-import static com.vitamax.course_composite_service.constants.ServiceConstants.REVIEW_HOST;
+import static com.vitamax.api.constants.ServiceConstants.COURSE_HOST;
+import static com.vitamax.api.constants.ServiceConstants.RECOMMENDATION_HOST;
+import static com.vitamax.api.constants.ServiceConstants.REVIEW_HOST;
+
 
 @Configuration
 public class ActuatorHealthConfiguration {

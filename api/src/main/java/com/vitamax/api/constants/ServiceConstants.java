@@ -1,4 +1,4 @@
-package com.vitamax.course_composite_service.constants;
+package com.vitamax.api.constants;
 
 import lombok.experimental.UtilityClass;
 

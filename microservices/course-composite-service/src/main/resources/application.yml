@@ -1,18 +1,21 @@
 server.port: 7005
 spring.application.name: course-composite-service
-logging:
-  level:
-    org: debug
+logging.level.org: debug
 eureka:
   client:
     fetch-registry: true
+    register-with-eureka: true
     registry-fetch-interval-seconds: 5
-    register-with-eureka: false
 
 management:
   endpoint:
     health:
       show-details: ALWAYS
+
+springdoc:
+  swagger-ui.path: /openapi/swagger-ui/index.html
+  api-docs.path: /openapi/v3/api-docs
+
 ---
 spring.config.activate.on-profile: docker
 server.port: 8080
