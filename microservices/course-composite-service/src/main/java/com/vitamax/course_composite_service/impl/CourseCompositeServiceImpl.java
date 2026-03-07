@@ -7,10 +7,8 @@ import com.vitamax.api.composite.course.dto.CourseAggregateCreateCommand;
 import com.vitamax.api.core.course.dto.CourseCreateCommand;
 import com.vitamax.api.core.recommendation.dto.RecommendationCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
-import com.vitamax.api.exception.dto.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -30,13 +28,13 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
     public Mono<CourseAggregate> getCourseComposite(final UUID courseId) {
         log.debug("get course composite for courseId={}", courseId);
 
-        final var courseMono =
-                integrationService.getCourse(courseId)
-                        .switchIfEmpty(Mono.error(new NotFoundException("course not found with id " + courseId)));
+        final var courseMono = integrationService.getCourse(courseId);
+
         final var recommendationsMono =
                 integrationService.getRecommendations(courseId)
                         .collectList()
                         .onErrorReturn(Collections.emptyList());
+
         final var reviewsMono =
                 integrationService.getReviews(courseId)
                         .collectList()
@@ -52,16 +50,15 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
     }
 
     @Override
-    public ResponseEntity<Void> deleteCourseComposite(final UUID courseId) {
+    public Mono<Void> deleteCourseComposite(final UUID courseId) {
         log.debug("delete course composite for courseId={}", courseId);
 
-        integrationService.deleteCourse(courseId);
-        integrationService.deleteRecommendations(courseId);
-        integrationService.deleteReviews(courseId);
-
-        return ResponseEntity.noContent().build();
+        return Mono.when(
+                integrationService.deleteCourse(courseId),
+                integrationService.deleteRecommendations(courseId),
+                integrationService.deleteReviews(courseId)
+        ).then();
     }
-
 
     @Override
     public Mono<Void> createCourseComposite(final CourseAggregateCreateCommand command) {
@@ -72,10 +69,18 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
 
         final var reviews = Flux.fromIterable(Objects.requireNonNullElse(command.reviews(), List.of()))
                 .flatMap(rev -> integrationService.createReview(new ReviewCreateCommand(courseId, rev.author(), rev.subject(), rev.content())))
+                .onErrorResume(e -> {
+                    log.warn("Failed to create review, skipping: {}", e.getMessage());
+                    return Mono.empty();
+                })
                 .then();
 
         final var recommendations = Flux.fromIterable(Objects.requireNonNullElse(command.recommendations(), List.of()))
                 .flatMap(red -> integrationService.createRecommendation(new RecommendationCreateCommand(courseId, red.author(), red.rate(), red.content())))
+                .onErrorResume(e -> {
+                    log.warn("Failed to create recommendation, skipping: {}", e.getMessage());
+                    return Mono.empty();
+                })
                 .then();
 
         return Mono.when(course, reviews, recommendations);

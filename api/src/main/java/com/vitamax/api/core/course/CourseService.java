@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -76,9 +78,15 @@ public interface CourseService {
                     responseCode = "400",
                     description = "Invalid request body or validation error",
                     content = @Content(schema = @Schema(implementation = HttpErrorInfo.class))
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Course already exist",
+                    content = @Content(schema = @Schema(implementation = HttpErrorInfo.class))
             )
     })
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     Mono<Void> createCourse(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Course creation command with all required fields",
@@ -94,12 +102,8 @@ public interface CourseService {
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
-                    description = "Course successfully updated",
-                    content = @Content(
-                            mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Course.class)
-                    )
+                    responseCode = "204",
+                    description = "Course successfully updated"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -113,6 +117,7 @@ public interface CourseService {
             )
     })
     @PutMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     Mono<Void> updateCourse(
             @Parameter(description = "Course update command with fields to update", required = true)
             @RequestBody @Valid CourseUpdateCommand command
@@ -129,6 +134,7 @@ public interface CourseService {
             )
     })
     @DeleteMapping("/{courseId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     Mono<Void> deleteCourse(
             @Parameter(description = "Unique identifier of the course to delete", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable @NotNull UUID courseId

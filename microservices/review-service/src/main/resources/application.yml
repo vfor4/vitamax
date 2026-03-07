@@ -12,11 +12,23 @@ spring:
     username: user
     password: password
   cloud:
+    function:
+      definition: reviewCreate;reviewUpdate;reviewDelete
     stream:
+      default:
+        group: ${spring.application.name}
+        consumer:
+          max-attempts: 3
+          back-off-initial-interval: 1000
+          back-off-max-interval: 10000
+          back-off-multiplier: 2.0
       bindings:
-        review-in-0:
-          destination: review
-          group: review-service
+        reviewCreate-in-0:
+          destination: review.create
+        reviewUpdate-in-0:
+          destination: review.update
+        reviewDelete-in-0:
+          destination: review.delete
 eureka:
   instance:
     appname: ${spring.application.name}

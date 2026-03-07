@@ -6,17 +6,30 @@ spring:
     mongodb:
       host: "127.0.0.1"
       port: 27017
+      auto-index-creation: true
   rabbitmq:
     host: localhost
     port: 5672
     username: user
     password: password
   cloud:
+    function:
+      definition: recommendationCreate;recommendationUpdate;recommendationDelete
     stream:
+      default:
+        group: ${spring.application.name}
+        consumer:
+          max-attempts: 3
+          back-off-initial-interval: 1000
+          back-off-max-interval: 10000
+          back-off-multiplier: 2.0
       bindings:
-        recommendation-in-0:
-          destination: recommendation
-          group: recommendation-service
+        recommendationCreate-in-0:
+          destination: recommendation.create
+        recommendationUpdate-in-0:
+          destination: recommendation.update
+        recommendationDelete-in-0:
+          destination: recommendation.delete
 eureka:
   instance:
     appname: ${spring.application.name}

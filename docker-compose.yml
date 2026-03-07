@@ -71,18 +71,18 @@ services:
       interval: 5s
       timeout: 2s
       retries: 2
+
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
-    restart: on-failure
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    mem_limit: 512m
     environment:
       RABBITMQ_DEFAULT_USER: user
       RABBITMQ_DEFAULT_PASS: password
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   mongo_data:

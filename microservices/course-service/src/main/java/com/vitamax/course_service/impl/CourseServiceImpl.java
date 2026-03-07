@@ -4,6 +4,8 @@ import com.vitamax.api.core.course.CourseService;
 import com.vitamax.api.core.course.dto.Course;
 import com.vitamax.api.core.course.dto.CourseCreateCommand;
 import com.vitamax.api.core.course.dto.CourseUpdateCommand;
+import com.vitamax.api.exception.dto.InvalidInputException;
+import com.vitamax.api.exception.dto.NotFoundException;
 import com.vitamax.course_service.mapper.CourseMapper;
 import com.vitamax.course_service.repository.CourseRepository;
 import com.vitamax.util.ServiceUtil;
@@ -27,6 +29,7 @@ public class CourseServiceImpl implements CourseService {
         log.debug("get found course for courseId={}", courseId);
 
         return repository.findByCourseId(courseId.toString())
+                .switchIfEmpty(Mono.error(new NotFoundException("course not found with id " + courseId)))
                 .map(c -> mapper.toCourse(c, serviceUtil.getServiceAddress()));
     }
 
@@ -34,7 +37,9 @@ public class CourseServiceImpl implements CourseService {
     public Mono<Void> createCourse(final CourseCreateCommand command) {
         log.debug("create course for command={}", command);
 
-        return repository.save(mapper.toEntity(command))
+        return repository.findByCourseId(command.courseId().toString())
+                .flatMap(c -> Mono.error(new InvalidInputException("course already exist with id " + c.getCourseId())))
+                .switchIfEmpty(Mono.defer(() -> repository.save(mapper.toEntity(command))))
                 .then();
     }
 
@@ -43,7 +48,10 @@ public class CourseServiceImpl implements CourseService {
         log.debug("update course for command={}", command);
 
         return repository.findByCourseId(command.courseId().toString())
+                .doOnNext(e -> log.debug("found entity={}", e))
+                .switchIfEmpty(Mono.error(new NotFoundException("course not found with id " + command.courseId())))
                 .flatMap(entity -> repository.save(mapper.toEntity(command, entity)))
+                .doOnSuccess(e -> log.debug("saved entity={}", e))
                 .then();
     }
 
