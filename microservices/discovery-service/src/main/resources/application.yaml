@@ -1,3 +1,4 @@
+server.port: 8761
 spring:
   application:
     name: discovery-service
@@ -9,9 +10,6 @@ logging:
   level:
     com.netflix.eureka: debug
     com.netflix.discovery: debug
-server:
-  port: 8761
-
 eureka:
   client:
     register-with-eureka: false

@@ -3,12 +3,12 @@ services:
     build: microservices/course-composite-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=dev
   course:
     build: microservices/course-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       mongodb:
         condition: service_healthy
@@ -16,7 +16,7 @@ services:
     build: microservices/recommendation-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       mongodb:
         condition: service_healthy
@@ -24,7 +24,7 @@ services:
     build: microservices/review-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       postgresql:
         condition: service_healthy
@@ -32,14 +32,21 @@ services:
     build: microservices/discovery-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=dev
   gateway:
     build: microservices/gateway-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=dev
     ports:
       - "8080:8080"
+  config:
+    build: microservices/config-service
+    mem_limit: 512m
+    env_file:
+      - .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
 
   mongodb:
     image: mongo:noble
@@ -50,7 +57,7 @@ services:
       test: echo 'db.runCommand("ping").ok' | mongosh --quiet
       interval: 5s
       timeout: 2s
-      retries: 2
+      retries: 5
     volumes:
       - mongo_data:/data/db
       - ./data-init/mongodb:/docker-entrypoint-initdb.d

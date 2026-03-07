@@ -1,7 +1,7 @@
 server.port: 7003
 spring:
-  application:
-    name: recommendation-service
+  application.name: recommendation-service
+  config.import: "optional:configserver:"
   data:
     mongodb:
       host: "127.0.0.1"
@@ -31,27 +31,16 @@ spring:
         recommendationDelete-in-0:
           destination: recommendation.delete
 eureka:
-  instance:
-    appname: ${spring.application.name}
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
   client:
-    initialInstanceInfoReplicationIntervalSeconds: 10
-    registryFetchIntervalSeconds: 5
-    service-url:
-      defaultZone: http://username:password@localhost:8761/eureka/
+    fetch-registry: false
 
 ---
-spring:
-  config:
-    activate:
-      on-profile: docker
-  data:
-    mongodb:
-      host: mongodb
-      port: 27017
-server.port: 8080
-eureka:
-  client:
-    service-url:
-      defaultZone: http://discovery:8761/eureka/
+spring.config.activate.on-profile: dev
+spring.cloud.config:
+  uri: http://config:8080
+  fail-fast: true
+  retry:
+    max-attempts: 10
+    initial-interval: 1100
+    max-interval: 1500
+    multiplier: 1.2

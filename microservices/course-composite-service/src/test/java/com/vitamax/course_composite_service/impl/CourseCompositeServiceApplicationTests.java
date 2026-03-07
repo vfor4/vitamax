@@ -29,7 +29,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
         "spring.cloud.discovery.enabled=false"
 })
 @AutoConfigureWebTestClient
-@ActiveProfiles("test")
 @EnableTestBinder
 class CourseCompositeServiceApplicationTests {
     @Autowired
