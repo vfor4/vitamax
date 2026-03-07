@@ -9,14 +9,19 @@ import com.vitamax.api.core.recommendation.dto.RecommendationCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import static com.vitamax.api.constants.ServiceConstants.COURSE_COMPOSITE_URL;
 
 @RestController
 @RequiredArgsConstructor
@@ -61,7 +66,8 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
     }
 
     @Override
-    public Mono<Void> createCourseComposite(final CourseAggregateCreateCommand command) {
+    public Mono<ResponseEntity<Void>> createCourseComposite(final CourseAggregateCreateCommand command,
+                                                            final UriComponentsBuilder uriBuilder) {
         log.debug("create course composite for command={}", command);
         final var courseId = UUID.randomUUID();
 
@@ -72,17 +78,19 @@ public class CourseCompositeServiceImpl implements CourseCompositeService {
                 .onErrorResume(e -> {
                     log.warn("Failed to create review, skipping: {}", e.getMessage());
                     return Mono.empty();
-                })
-                .then();
+                });
 
         final var recommendations = Flux.fromIterable(Objects.requireNonNullElse(command.recommendations(), List.of()))
                 .flatMap(red -> integrationService.createRecommendation(new RecommendationCreateCommand(courseId, red.author(), red.rate(), red.content())))
                 .onErrorResume(e -> {
                     log.warn("Failed to create recommendation, skipping: {}", e.getMessage());
                     return Mono.empty();
-                })
-                .then();
+                });
 
-        return Mono.when(course, reviews, recommendations);
+        return Mono.when(course, reviews, recommendations)
+                .thenReturn(ResponseEntity.created(uriBuilder
+                        .path(COURSE_COMPOSITE_URL + "/{courseId}")
+                        .buildAndExpand(courseId)
+                        .toUri()).build());
     }
 }

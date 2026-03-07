@@ -1,131 +1,231 @@
-#!/usr/bin/env bash
-#
-# Sample usage:
-#
-#   HOST=localhost PORT=7001 ./test-em-all.bash
-#
-: ${HOST=localhost}
-: ${PORT=8080}
-: ${COURSE_ID_NOT_FOUND=1fe92fa4-95bc-411a-8f2c-5d502b5f65f8}
-: ${COURSE_ID_MALFORM=1}
+#!/bin/bash
 
+# ============================================================
+#  Integration Test Script
+#  Tests: Course Aggregate API
+# ============================================================
 
-function assertHttpCode() {
-  local expectedHttpCode=$1
-  shift
-  local temp=$(mktemp)
-  local httpCode=$(curl -s -o "$temp" -w "%{http_code}" "$@")
-  local body=$(cat "$temp")
+HOST=${HOST:-localhost}
+PORT=${PORT:-8080}
+HEALTH_URL="http://localhost:8080/actuator/health"
+BASE_URL="http://${HOST}:${PORT}/api/v1/aggregate"
 
-  rm -f "$temp"
+# --- Colours ---
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Colour
 
-  if [ "$httpCode" = "$expectedHttpCode" ]
-  then
-    echo "$body"
+PASS=0
+FAIL=0
+
+# ============================================================
+# Helpers
+# ============================================================
+
+log()     { echo -e "${CYAN}[INFO]${NC}  $*"; }
+success() { echo -e "${GREEN}[PASS]${NC}  $*"; }
+error()   { echo -e "${RED}[FAIL]${NC}  $*"; }
+warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
+
+# Assert two values are equal
+assertEqual() {
+  local expected="$1"
+  local actual="$2"
+  local label="${3:-assertEqual}"
+
+  if [ "$expected" == "$actual" ]; then
+    success "$label → expected='$expected' actual='$actual'"
+    ((PASS++))
   else
-    echo  "Test FAILED, EXPECTED HTTP Code: $expectedHttpCode, GOT: $httpCode, WILL ABORT!"
-    echo  "- Failing command: $@"
-    echo  "- Response Body: $body"
-    exit 1
+    error  "$label → expected='$expected' actual='$actual'"
+    ((FAIL++))
   fi
 }
 
-function assertEqual() {
-  local expected=$1
-  local actual=$2
+# Call endpoint, assert HTTP status code, return body
+assertHttpCode() {
+  local expected_code="$1"
+  local url="$2"
+  local method="${3:-GET}"
+  local body="${4:-}"
 
-  if [ "$actual" = "$expected" ]
-  then
-    echo "Test OK (actual value: $actual)"
+  local response
+  local http_code
+
+  if [ "$method" == "POST" ] && [ -n "$body" ]; then
+    response=$(curl -s -w "\n%{http_code}" \
+      -X POST "$url" \
+      -H "Content-Type: application/json" \
+      -d "$body")
   else
-    echo "Test FAILED, EXPECTED VALUE: $expected, ACTUAL VALUE: $actual, WILL ABORT"
-    exit 1
+    response=$(curl -s -w "\n%{http_code}" "$url")
   fi
-}
 
-function testUrl() {
-  url=$@
-  if $url -ks -f -o /dev/null
-  then
-    return 0
+  http_code=$(echo "$response" | tail -n1)
+  body_only=$(echo "$response" | sed '$d')
+
+  if [ "$http_code" == "$expected_code" ]; then
+    success "HTTP $expected_code ← $method $url" >&2
+    ((PASS++))
   else
-    return 1
-  fi;
+    error  "HTTP $expected_code expected but got $http_code ← $method $url" >&2
+    ((FAIL++))
+  fi
+
+  echo "$body_only"
 }
 
-function waitForService() {
-  url=$@
-  echo -n "Wait for: $url ... "
-  n=0
-  until testUrl $url
-  do
-    n=$((n + 1))
-    if [[ $n == 10 ]]
-    then
-      echo " Give up"
-      exit 1
-    else
-      sleep 3
-      echo -n ", retry #$n "
+# ============================================================
+# Step 1: Wait for Health Actuator
+# ============================================================
+
+waitForHealth() {
+  local url="$HEALTH_URL"
+  local max_retries=${MAX_RETRIES:-20}
+  local wait_seconds=${RETRY_INTERVAL:-5}
+  local attempt=1
+
+  log "Waiting for service health at: $url"
+  log "Max retries: $max_retries | Interval: ${wait_seconds}s"
+
+  while [ $attempt -le $max_retries ]; do
+    log "Attempt $attempt/$max_retries..."
+
+    http_code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+
+    if [ "$http_code" == "200" ]; then
+      success "Service is UP (HTTP 200) after $attempt attempt(s)"
+      return 0
     fi
+
+    warn "Service not ready yet (HTTP $http_code). Retrying in ${wait_seconds}s..."
+    sleep "$wait_seconds"
+    ((attempt++))
   done
-  echo "DONE, continues..."
+
+  error "Service did not become healthy after $((max_retries * wait_seconds))s. Giving up."
+  exit 1
 }
 
-function createComposite() {
-  local composite=$1
+# ============================================================
+# Step 2: POST — Create Course Aggregate
+# ============================================================
 
-  local LOCATION
-  LOCATION=$(curl -s -D - -o /dev/null \
-    -X POST "http://$HOST:$PORT/api/v1/aggregate/course" \
+createCourseAggregate() {
+  log "Creating course aggregate..."
+
+  local body='{
+    "course": {
+      "name": "course-bash-script"
+    },
+    "recommendations": [
+      { "author": "author 1", "rate": 1, "content": "content 1" }
+    ],
+    "reviews": [
+      { "author": "author 1", "subject": "subject 1", "content": "content 1" }
+    ]
+  }'
+
+  local response
+  response=$(curl -s -D - -X POST "${BASE_URL}/course" \
     -H "Content-Type: application/json" \
-    --data "$composite" \
-    | grep -i '^Location:' | awk '{print $2}' | tr -d '\r')
+    -d "$body")
 
-  # extract UUID (last path segment)
-  local COURSE_ID
-  COURSE_ID=$(basename "$LOCATION")
+  # Extract Location header value e.g. http://localhost:8080/course-composite/abc-123
+  local location
+  location=$(echo "$response" | grep -i "^location:" | tr -d '\r' | awk '{print $2}')
 
-  echo "$COURSE_ID"
+  # Extract the aggregate/course ID from response
+  aggregateId=$(echo "$location" | awk -F'/' '{print $NF}')
+  if [ -z "$aggregateId" ] || [ "$aggregateId" == "null" ]; then
+    error "Could not extract aggregateId from POST response"
+    echo "Response body: $response"
+    ((FAIL++))
+    exit 1
+  fi
+
+  success "Course created with id = $aggregateId"
 }
 
-function setupTestdata() {
-  local body='{"course": { "name": "course-bash-script" },
-         "recommendations": [
-               { "author": "author 1", "rate": 1, "content": "content 1" }
-           ],
-           "reviews": [
-               { "author": "author 1", "subject": "subject 1", "content": "content 1" }
-           ]
-       }'
-  local location=$(createComposite "$body")
-  echo "$location"
+# ============================================================
+# Step 3: GET — Verify Course Aggregate
+# ============================================================
+
+verifyCourseAggregate() {
+  log "Fetching and verifying course aggregate (id=$aggregateId)..."
+
+  local response
+  response=$(assertHttpCode 200 "${BASE_URL}/course/${aggregateId}")
+
+  echo "$response"
+
+  # Assert course ID matches
+  assertEqual "$aggregateId" "$(echo "$response" | jq -r '.course.courseId')" \
+    "course.courseId matches"
+
+  # Assert exactly 1 recommendation
+  assertEqual 1 "$(echo "$response" | jq '.recommendations | length')" \
+    "recommendations count = 1"
+
+  # Assert exactly 1 review
+  assertEqual 1 "$(echo "$response" | jq '.reviews | length')" \
+    "reviews count = 1"
 }
 
-set -e
+# ============================================================
+# Results Summary
+# ============================================================
 
-echo "Start Tests:" $(date +"%Y/%m/%d %H:%M:%S")
+printSummary() {
+  echo ""
+  echo "============================================"
+  echo -e "  Results: ${GREEN}$PASS passed${NC} | ${RED}$FAIL failed${NC}"
+  echo "============================================"
 
-echo "HOST=${HOST}"
-echo "PORT=${PORT}"
+  if [ $FAIL -eq 0 ]; then
+    success "All tests passed! ✅"
+    exit 0
+  else
+    error "$FAIL test(s) failed ❌"
+    exit 1
+  fi
+}
+die() {
+  echo -e "\n❌ ERROR: $1"
+  echo "   Command failed at line ${BASH_LINENO[0]}"
+  exit 1
+}
+# ============================================================
+# Run
+# ============================================================
+
+echo ""
+echo "============================================"
+echo "   Course Aggregate Integration Tests"
+echo "============================================"
+echo ""
 
 if [[ $@ == "start" ]]
 then
-  echo "Building jar files"
-  ./mvnw clean install -DskipTests
-  echo "Restarting the test environment..."
-  echo "Building projects"
-  echo "$ docker compose down --remove-orphans"
-  docker compose down --remove-orphans --volumes
-  echo "$ docker compose up -d"
-  docker compose up -d
+  echo "Building jar files..."
+  ./mvnw clean install || die "Maven build failed"
+
+  echo "Tearing down docker environment..."
+  docker compose down --remove-orphans --volumes || die "docker compose down failed"
+
+  echo "Building and starting containers..."
+  docker compose up -d --build || die "docker compose up failed"
+
+  echo "✅ Environment started successfully"
 fi
 
-waitForService curl -X DELETE http://${HOST}:${PORT}/api/v1/aggregate/course/${COURSE_ID_NOT_FOUND}
 
-aggregateId=$(setupTestdata)
-
-response=$(assertHttpCode 200 "http://${HOST}:${PORT}/api/v1/aggregate/course/${aggregateId}")
-assertEqual $aggregateId $(echo $response | jq -r .course.courseId)
-assertEqual 1 $(echo $response | jq ".recommendations | length")
-assertEqual 1 $(echo $response | jq ".reviews | length")
+waitForHealth
+echo ""
+createCourseAggregate
+echo ""
+verifyCourseAggregate
+echo ""
+printSummary

@@ -1,16 +1,15 @@
 server.port: 7004
 spring:
-  application:
-    name: review-service
+  application.name: review-service
+  config.import: "optional:configserver:"
   r2dbc:
     url: "r2dbc:postgresql://localhost:5432/postgres"
     username: "postgres"
     password: "postgres"
   rabbitmq:
-    host: localhost
-    port: 5672
     username: user
     password: password
+    port: 5672
   cloud:
     function:
       definition: reviewCreate;reviewUpdate;reviewDelete
@@ -29,27 +28,16 @@ spring:
           destination: review.update
         reviewDelete-in-0:
           destination: review.delete
-eureka:
-  instance:
-    appname: ${spring.application.name}
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
-  client:
-    fetch-registry: false
-    initialInstanceInfoReplicationIntervalSeconds: 10
-    registryFetchIntervalSeconds: 5
-    service-url:
-      defaultZone: http://username:password@localhost:8761/eureka/
+
+eureka.client.fetch-registry: false
 
 ---
-spring:
-  config:
-    activate:
-      on-profile: docker
-  datasource:
-    url: "jdbc:postgresql://postgresql:5432/postgres"
-server.port: 8080
-eureka:
-  client:
-    service-url:
-      defaultZone: http://discovery:8761/eureka/
+spring.config.activate.on-profile: dev
+spring.cloud.config:
+  uri: http://config:8080
+  fail-fast: true
+  retry:
+    max-attempts: 10
+    initial-interval: 1100
+    max-interval: 1500
+    multiplier: 1.2
