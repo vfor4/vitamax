@@ -14,16 +14,29 @@ spring:
     mongodb:
       host: "127.0.0.1"
       port: 27017
+      auto-index-creation: true
   rabbitmq:
     username: user
     password: password
     port: 5672
   cloud:
+    function:
+      definition: courseCreate;courseUpdate;courseDelete
     stream:
+      default:
+        group: ${spring.application.name}
+        consumer:
+          max-attempts: 3
+          back-off-initial-interval: 1000
+          back-off-max-interval: 10000
+          back-off-multiplier: 2.0
       bindings:
-        course-in-0:
-          destination: course
-          group: course-service
+        courseCreate-in-0:
+          destination: course.create
+        courseUpdate-in-0:
+          destination: course.update
+        courseDelete-in-0:
+          destination: course.delete
 eureka:
   instance:
     appname: ${spring.application.name}

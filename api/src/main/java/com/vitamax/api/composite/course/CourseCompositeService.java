@@ -13,14 +13,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -89,7 +90,8 @@ public interface CourseCompositeService {
             )
     })
     @DeleteMapping("/{courseId}")
-    ResponseEntity<Void> deleteCourseComposite(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    Mono<Void> deleteCourseComposite(
             @Parameter(description = "Unique identifier of the course to delete", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable @NotNull UUID courseId
     );
@@ -115,6 +117,7 @@ public interface CourseCompositeService {
             )
     })
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     Mono<Void> createCourseComposite(
             @Parameter(description = "Course creation command containing all required course data", required = true)
             @RequestBody @Valid CourseAggregateCreateCommand createCommand

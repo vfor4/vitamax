@@ -4,6 +4,7 @@ import com.vitamax.api.core.recommendation.RecommendationService;
 import com.vitamax.api.core.recommendation.dto.Recommendation;
 import com.vitamax.api.core.recommendation.dto.RecommendationCreateCommand;
 import com.vitamax.api.core.recommendation.dto.RecommendationUpdateCommand;
+import com.vitamax.api.exception.dto.NotFoundException;
 import com.vitamax.recommendation_service.mapper.RecommendationMapper;
 import com.vitamax.recommendation_service.repository.RecommendationRepository;
 import com.vitamax.util.ServiceUtil;
@@ -44,6 +45,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         log.debug("update recommendation for command={}", command);
 
         return repository.findByRecommendationId(command.recommendationId().toString())
+                .switchIfEmpty(Mono.error(new NotFoundException("recommendation not found with id " + command.recommendationId())))
                 .flatMap(entity -> repository.save(mapper.toEntity(command, entity)))
                 .then();
     }

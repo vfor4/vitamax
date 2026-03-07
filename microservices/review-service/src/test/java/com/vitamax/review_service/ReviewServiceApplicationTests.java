@@ -1,10 +1,13 @@
 package com.vitamax.review_service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vitamax.api.core.review.dto.Review;
-import com.vitamax.common_test.PostgresIntegrationTest;
+import com.vitamax.api.core.review.dto.ReviewCreateCommand;
+import com.vitamax.api.core.review.dto.ReviewUpdateCommand;
 import com.vitamax.review_service.entity.ReviewEntity;
 import com.vitamax.review_service.review.ReviewRepository;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,43 +15,54 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.cloud.stream.binder.test.EnableTestBinder;
+import org.springframework.cloud.stream.binder.test.InputDestination;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(properties = {
-//        "spring.jpa.show-sql=true",
-//        "spring.jpa.properties.hibernate.format_sql=true",
-//        "logging.level.org.hibernate.SQL=DEBUG",
-//        "logging.level.org.hibernate.orm.jdbc.bind=TRACE"
-})
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
-class ReviewServiceApplicationTests extends PostgresIntegrationTest {
-    private static final String COURSE_ID = UUID.randomUUID().toString();
+@Testcontainers
+@AutoConfigureWebTestClient
+@EnableTestBinder
+class ReviewServiceApplicationTests {
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres =
+            new PostgreSQLContainer<>("postgres:16-alpine")
+                    .withDatabaseName("testdb")
+                    .withUsername("postgres")
+                    .withPassword("postgres");
+
+    @Autowired
+    private WebTestClient webTestClient;
+
+    @Autowired
+    private ReviewRepository repository;
+
+    @Autowired
+    private InputDestination inputDestination;
 
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ReviewRepository repository;
 
     static Stream<Arguments> invalidCreateReviewRequests() {
         return Stream.of(
@@ -77,7 +91,7 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                         "author is blank",
                         """
                                 {
-                                  "courseId": "COURSE_1",
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
                                   "author": "",
                                   "subject": "Good",
                                   "content": "Nice course"
@@ -88,7 +102,7 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                         "author is whitespace",
                         """
                                 {
-                                  "courseId": "COURSE_1",
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
                                   "author": "   ",
                                   "subject": "Good",
                                   "content": "Nice course"
@@ -99,7 +113,7 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                         "subject is blank",
                         """
                                 {
-                                  "courseId": "COURSE_1",
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
                                   "author": "John",
                                   "subject": "",
                                   "content": "Nice course"
@@ -110,7 +124,7 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                         "content is blank",
                         """
                                 {
-                                  "courseId": "COURSE_1",
+                                  "courseId": "11111111-1111-1111-1111-111111111111",
                                   "author": "John",
                                   "subject": "Good",
                                   "content": ""
@@ -177,97 +191,91 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
         );
     }
 
-
     @BeforeEach
     void beforeEach() {
-        repository.deleteAll();
+        StepVerifier.create(repository.deleteAll())
+                .verifyComplete();
     }
 
     @Test
-    void getReview_success_return200() throws Exception {
-        final var entity = createReview();
+    void getReview_success_return200() {
+        final var courseId = UUID.randomUUID().toString();
+        StepVerifier.create(createReview(UUID.randomUUID().toString(), courseId, "Author A", "Subject A", "Content A"))
+                .expectNextCount(1)
+                .verifyComplete();
 
-        final var uri = get("/api/v1/review/{courseId}", entity.getCourseId());
-        final var response = mockMvc.perform(uri).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        final var result = objectMapper.readValue(response, Review[].class);
-
-        assertEquals(1, result.length);
-        assertResult(entity, result[0]);
+        webTestClient.get()
+                .uri("/api/v1/review/{courseId}", courseId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Review.class)
+                .value(reviews -> {
+                    assertEquals(1, reviews.size());
+                    final var review = reviews.getFirst();
+                    assertEquals(courseId, review.courseId());
+                    assertEquals("Author A", review.author());
+                    assertEquals("Subject A", review.subject());
+                    assertEquals("Content A", review.content());
+                });
     }
 
     @Test
-    void getReview_notFound_return200() throws Exception {
-        final var uri = get("/api/v1/review/{courseId}", UUID.randomUUID().toString());
-        final var response = mockMvc.perform(uri).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        final var result = objectMapper.readValue(response, Review[].class);
-
-        assertEquals(0, result.length);
+    void getReview_notFound_return200() {
+        webTestClient.get()
+                .uri("/api/v1/review/{courseId}", UUID.randomUUID().toString())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Review.class)
+                .hasSize(0);
     }
 
     @ParameterizedTest(name = "invalid courseId = {0}")
-    @ValueSource(strings = {"   ", "abc", "-1", "0", "550e8400-e29b-41d4-a716-44665544000Z"})
-    void getReview_invalidId_return400(String courseId) throws Exception {
-        final var uri = get("/api/v1/review/{courseId}", courseId);
-        mockMvc.perform(uri).andExpect(status().isBadRequest());
+    @ValueSource(strings = {"abc", "-1", "0", "550e8400-e29b-41d4-a716-44665544000Z"})
+    void getReview_invalidId_return400(String courseId) {
+        webTestClient.get()
+                .uri("/api/v1/review/{courseId}", courseId)
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
     @Test
-    void createReview_success_return201() throws Exception {
-        final var uri = post("/api/v1/review")
+    void createReview_success_return201() {
+        webTestClient.post()
+                .uri("/api/v1/review")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                .bodyValue("""
                         {
                             "courseId": "%s",
                             "author": "Phuoc Nguyen",
                             "subject": "Subject is here",
                             "content": "Content is here"
                         }
-                        """.formatted(COURSE_ID));
-        mockMvc.perform(uri).andExpect(status().isCreated());
+                        """.formatted(UUID.randomUUID().toString()))
+                .exchange()
+                .expectStatus().isCreated();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidCreateReviewRequests")
-    void createReview_invalidRequest_return400(String description, String json) throws Exception {
-        final var uri = post("/api/v1/review")
+    void createReview_invalidRequest_return400(String description, String json) {
+        webTestClient.post()
+                .uri("/api/v1/review")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json);
-        mockMvc.perform(uri).andExpect(status().isBadRequest());
-        assertEquals(0, repository.count());
+                .bodyValue(json)
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        StepVerifier.create(repository.count())
+                .expectNext(0L)
+                .verifyComplete();
     }
 
     @Test
-    void updateReview_success_return200() throws Exception {
-        final var entity = createReview();
-
-        final var uri = put("/api/v1/review")
+    void updateReview_notFound_return404() {
+        webTestClient.put()
+                .uri("/api/v1/review")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {
-                            "courseId": "%s",
-                            "reviewId": "%s",
-                            "author": "%s",
-                            "subject": "Test Subject Updated",
-                            "content": "Test Content Updated"
-                        }
-                        """.formatted(entity.getCourseId(), entity.getReviewId(), entity.getAuthor()));
-        final var response = mockMvc.perform(uri).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        final var result = objectMapper.readValue(response, Review.class);
-
-        assertEquals(entity.getCourseId(), result.courseId());
-        assertEquals(entity.getReviewId(), result.reviewId());
-        assertEquals(entity.getAuthor(), result.author());
-        assertNotEquals(entity.getSubject(), result.subject());
-        assertEquals("Test Subject Updated", result.subject());
-        assertNotEquals(entity.getContent(), result.content());
-        assertEquals("Test Content Updated", result.content());
-    }
-
-    @Test
-    void updateReview_notFound_return404() throws Exception {
-        final var uri = put("/api/v1/review")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                .bodyValue("""
                         {
                             "courseId": "%s",
                             "reviewId": "%s",
@@ -275,75 +283,182 @@ class ReviewServiceApplicationTests extends PostgresIntegrationTest {
                             "subject": "Subject is here",
                             "content": "Content is here"
                         }
-                        """.formatted(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
-        mockMvc.perform(uri).andExpect(status().isNotFound());
-        assertEquals(0, repository.count());
+                        """.formatted(UUID.randomUUID().toString(), UUID.randomUUID().toString()))
+                .exchange()
+                .expectStatus().isNotFound();
+
+        StepVerifier.create(repository.count())
+                .expectNext(0L)
+                .verifyComplete();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidUpdateReviewRequests")
-    void updateReview_invalidRequest_returns400(String description, String json) throws Exception {
-        mockMvc.perform(put("/api/v1/review")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isBadRequest());
-        assertEquals(0, repository.count());
+    void updateReview_invalidRequest_returns400(String description, String json) {
+        webTestClient.put()
+                .uri("/api/v1/review")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(json)
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        StepVerifier.create(repository.count())
+                .expectNext(0L)
+                .verifyComplete();
     }
 
     @Test
-    void deleteReviews_success_return204() throws Exception {
-        final var entity = createReview();
+    void deleteReviews_success_return204() {
+        final var courseId = UUID.randomUUID().toString();
+        StepVerifier.create(createReview(UUID.randomUUID().toString(), courseId, "Author A", "Subject A", "Content A"))
+                .expectNextCount(1)
+                .verifyComplete();
 
-        final var uri = delete("/api/v1/review/{courseId}", entity.getReviewId());
-        mockMvc.perform(uri).andExpect(status().isNoContent()).andExpect(content().string(""));
+        webTestClient.delete()
+                .uri("/api/v1/review/{courseId}", courseId)
+                .exchange()
+                .expectStatus().isNoContent()
+                .expectBody().isEmpty();
+
+        StepVerifier.create(repository.findByCourseId(courseId))
+                .verifyComplete();
     }
 
     @ParameterizedTest(name = "invalid courseId = {0}")
-    @ValueSource(strings = {"   ", "abc", "-1", "0", "550e8400-e29b-41d4-a716-44665544000Z"})
-    void deleteReviews_invalidId_returns400(String courseId) throws Exception {
-        mockMvc.perform(delete("/api/v1/review/{courseId}", courseId))
-                .andExpect(status().isBadRequest());
+    @ValueSource(strings = {"abc", "-1", "0", "550e8400-e29b-41d4-a716-44665544000Z"})
+    void deleteReviews_invalidId_returns400(String courseId) {
+        webTestClient.delete()
+                .uri("/api/v1/review/{courseId}", courseId)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void reviewCreateEvent() throws JsonProcessingException {
+        final var courseId = UUID.randomUUID();
+        final var author = "Author A";
+        final var subject = "Subject A";
+        final var content = "Content A";
+        final var payload = objectMapper.writeValueAsBytes(new ReviewCreateCommand(courseId, author,  subject, content));
+
+        inputDestination.send(
+                MessageBuilder.withPayload(payload)
+                        .setHeader("contentType", MediaType.APPLICATION_JSON_VALUE)
+                        .build(),
+                "review.create"
+        );
+
+        Awaitility.await()
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(() ->
+                        StepVerifier.create(repository.findByCourseId(courseId.toString()))
+                                .expectNextMatches(review ->
+                                        review.getCourseId().equals(courseId.toString()) &&
+                                                review.getAuthor().equals(author) && review.getSubject().equals(subject) && review.getContent().equals(content)
+                                )
+                                .verifyComplete()
+                );
+    }
+
+    @Test
+    void reviewUpdateEvent() throws JsonProcessingException {
+        final var reviewId = UUID.randomUUID();
+        final var courseId = UUID.randomUUID().toString();
+        final var author = "Author A";
+        final var updatedAuthor = "Updated Author A";
+        final var subject = "Subject A";
+        final var updatedSubject = "Updated Subject A";
+        final var content = "Content A";
+        final var updatedContent = "Updated Content A";
+        final var payload = objectMapper.writeValueAsBytes(new ReviewUpdateCommand(reviewId, updatedAuthor,  updatedSubject, updatedContent));
+
+        StepVerifier.create(createReview(reviewId.toString(), courseId, author, subject, content))
+                .expectNextCount(1)
+                .verifyComplete();
+
+        inputDestination.send(
+                MessageBuilder.withPayload(payload)
+                        .setHeader("contentType", MediaType.APPLICATION_JSON_VALUE)
+                        .build(),
+                "review.update"
+        );
+
+        Awaitility.await()
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(() ->
+                        StepVerifier.create(repository.findByCourseId(courseId))
+                                .expectNextMatches(review ->
+                                        review.getReviewId().equals(reviewId.toString()) &&
+                                        review.getCourseId().equals(courseId) &&
+                                        review.getAuthor().equals(updatedAuthor) &&
+                                        review.getSubject().equals(updatedSubject) &&
+                                        review.getContent().equals(updatedContent)
+                                )
+                                .verifyComplete()
+                );
+    }
+
+    @Test
+    void reviewDeleteEvent() throws JsonProcessingException {
+        final var courseId = UUID.randomUUID().toString();
+        StepVerifier.create(createReview(UUID.randomUUID().toString(), courseId, "Author A", "Subject A", "Content A"))
+                .expectNextCount(1)
+                .verifyComplete();
+
+        inputDestination.send(
+                MessageBuilder.withPayload(objectMapper.writeValueAsBytes(courseId))
+                        .setHeader("contentType", MediaType.APPLICATION_JSON_VALUE)
+                        .build(),
+                "review.delete"
+        );
+
+        Awaitility.await()
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(() ->
+                        StepVerifier.create(repository.findByCourseId(courseId))
+                                .expectNextCount(0)
+                                .verifyComplete()
+                        );
+
+
     }
 
     @Test
     void optimisticLockError() {
-        final var entity = createReview();
-        // Store the saved entity in two separate entity objects
-        final var entity1 = repository.findById(entity.getReviewId()).get();
-        final var entity2 = repository.findById(entity.getReviewId()).get();
+        final var courseId = UUID.randomUUID().toString();
 
-        // Update the entity using the first entity object
-        entity1.setAuthor("n1");
-        repository.save(entity1);
+        final var conflictSave = createReview(UUID.randomUUID().toString(), courseId, "Author A", "Subject A", "Content A")
+                .flatMap(saved -> repository.findById(saved.getReviewId())
+                        .zipWith(repository.findById(saved.getReviewId())))
+                .flatMap(tuple -> {
+                    final var entity1 = tuple.getT1();
+                    final var entity2 = tuple.getT2();
 
-        // Update the entity using the second entity object.
-        // This should fail since the second entity now holds an old version
-        // number, that is, an Optimistic Lock Error
-        assertThrows(OptimisticLockingFailureException.class, () -> {
-            entity2.setAuthor("n2");
-            repository.save(entity2);
-        });
+                    entity1.setAuthor("n1");
+                    return repository.save(entity1)
+                            .thenReturn(entity2);
+                })
+                .flatMap(entity2 -> {
+                    entity2.setAuthor("n2");
+                    return repository.save(entity2);
+                });
 
-        // Get the updated entity from the database and verify its new state
-        final var updatedEntity = repository.findById(entity.getReviewId()).get();
-        assertEquals("n1", updatedEntity.getAuthor());
+        StepVerifier.create(conflictSave)
+                .expectError(OptimisticLockingFailureException.class)
+                .verify();
+
+        StepVerifier.create(repository.findByCourseId(courseId).single())
+                .assertNext(updatedEntity -> assertEquals("n1", updatedEntity.getAuthor()))
+                .verifyComplete();
     }
 
-    private ReviewEntity createReview() {
+    private Mono<ReviewEntity> createReview(String reviewId, String courseId, String author, String subject, String content) {
         return repository.save(new ReviewEntity(
-                COURSE_ID,
-                UUID.randomUUID().toString(),
-                UUID.randomUUID().toString(),
-                UUID.randomUUID().toString(),
-                UUID.randomUUID().toString()
+                reviewId,
+                courseId,
+                author,
+                subject,
+                content
         ));
-    }
-
-    private void assertResult(final ReviewEntity entity, final Review result) {
-        assertEquals(entity.getReviewId(), result.reviewId());
-        assertEquals(entity.getCourseId(), result.courseId());
-        assertEquals(entity.getAuthor(), result.author());
-        assertEquals(entity.getSubject(), result.subject());
-        assertEquals(entity.getContent(), result.content());
     }
 }

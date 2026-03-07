@@ -10,12 +10,24 @@ spring:
   cloud:
     stream:
       bindings:
-        course-out-0:
-          destination: course
-        review-out-0:
-          destination: review
-        recommendation-out-0:
-          destination: recommendation
+        courseCreate-out-0:
+          destination: course.create
+        courseUpdate-out-0:
+          destination: course.update
+        courseDelete-out-0:
+          destination: course.delete
+        reviewCreate-out-0:
+          destination: review.create
+        reviewUpdate-out-0:
+          destination: review.update
+        reviewDelete-out-0:
+          destination: review.delete
+        recommendationCreate-out-0:
+          destination: recommendation.create
+        recommendationUpdate-out-0:
+          destination: recommendation.update
+        recommendationDelete-out-0:
+          destination: recommendation.delete
 logging.level.org: debug
 eureka:
   client:
@@ -29,7 +41,7 @@ management:
       show-details: ALWAYS
 
 springdoc:
-  swagger-ui.path: /openapi/swagger-ui/index.html
+  swagger-ui.path: /openapi/swagger-ui.html
   api-docs.path: /openapi/v3/api-docs
 
 ---

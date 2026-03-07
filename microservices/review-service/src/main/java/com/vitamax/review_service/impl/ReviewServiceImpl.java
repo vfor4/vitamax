@@ -4,6 +4,7 @@ import com.vitamax.api.core.review.ReviewService;
 import com.vitamax.api.core.review.dto.Review;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewUpdateCommand;
+import com.vitamax.api.exception.dto.NotFoundException;
 import com.vitamax.review_service.mapper.ReviewMapper;
 import com.vitamax.review_service.review.ReviewRepository;
 import com.vitamax.util.ServiceUtil;
@@ -45,6 +46,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.debug("update review with command={}", command);
 
         return repository.findById(command.reviewId().toString())
+                .switchIfEmpty(Mono.error(new NotFoundException("review not found with id " + command.reviewId())))
                 .flatMap(entity -> repository.save(mapper.toEntity(command, entity)))
                 .then();
     }

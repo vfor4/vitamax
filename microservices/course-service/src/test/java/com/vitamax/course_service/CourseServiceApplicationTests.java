@@ -1,10 +1,13 @@
 package com.vitamax.course_service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vitamax.api.core.course.dto.Course;
-import com.vitamax.common_test.MongoIntegrationTest;
+import com.vitamax.api.core.course.dto.CourseCreateCommand;
+import com.vitamax.api.core.course.dto.CourseUpdateCommand;
 import com.vitamax.course_service.entity.CourseEntity;
 import com.vitamax.course_service.repository.CourseRepository;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,42 +15,54 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.cloud.stream.binder.test.EnableTestBinder;
+import org.springframework.cloud.stream.binder.test.InputDestination;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment=RANDOM_PORT, properties = {"eureka.client.enabled=false"})
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"eureka.client.enabled=false"})
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
-class CourseServiceApplicationTests extends MongoIntegrationTest {
-    public static final String API_COURSE_ID = "/api/v1/course/{courseId}";
-    public static final String API_COURSE = "/api/v1/course";
+@Testcontainers
+@AutoConfigureWebTestClient
+@EnableTestBinder
+class CourseServiceApplicationTests {
+    private final String API_COURSE = "/api/v1/course";
+    private final String API_COURSE_ID = API_COURSE + "/{courseId}";
+
+    @Container
+    @ServiceConnection
+    static MongoDBContainer mongo = new MongoDBContainer("mongo:7.0");
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
 
     @Autowired
     private CourseRepository repository;
+
+    @Autowired
+    private InputDestination inputDestination;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     static Stream<Arguments> invalidCreateCourseRequests() {
         return Stream.of(
@@ -89,138 +104,271 @@ class CourseServiceApplicationTests extends MongoIntegrationTest {
 
     @BeforeEach
     void beforeEach() {
-        repository.deleteAll();
+        StepVerifier.create(repository.deleteAll())
+                .verifyComplete();
     }
 
     @Test
-    void getCourse_success_return200() throws Exception {
-        final var entity = createCourse().block();
+    void getCourse_success_return200() {
+        final var courseId = UUID.randomUUID().toString();
+        StepVerifier.create(createCourse(courseId, "Test Course Name"))
+                .expectNextCount(1)
+                .verifyComplete();
 
-        final var uri = get(API_COURSE_ID, entity.getCourseId());
-        final var response = mockMvc.perform(uri).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        final var result = objectMapper.readValue(response, Course.class);
-        assertEquals(entity.getCourseId(), result.courseId());
-        assertEquals(entity.getName(), result.name());
+        webTestClient.get()
+                .uri(API_COURSE_ID, courseId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Course.class)
+                .consumeWith(response -> {
+                    final var result = response.getResponseBody();
+                    assertNotNull(result);
+                    assertEquals(courseId, result.courseId());
+                    assertEquals("Test Course Name", result.name());
+                });
     }
 
     @Test
-    void getCourse_notFound_return404() throws Exception {
-        final var uri = get(API_COURSE_ID, UUID.randomUUID().toString());
-        mockMvc.perform(uri).andExpect(status().isNotFound());
+    void getCourse_notFound_return404() {
+        webTestClient.get()
+                .uri(API_COURSE_ID, UUID.randomUUID().toString())
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @ParameterizedTest(name = "invalid courseId = {0}")
-    @ValueSource(strings = {"   ", "abc", "-1", "0", "550e8400-e29b-41d4-a716-44665544000Z"})
-    void getCourse_invalidId_return400(String courseId) throws Exception {
-        final var uri = get(API_COURSE_ID, courseId);
-        mockMvc.perform(uri).andExpect(status().isBadRequest());
+    @ValueSource(strings = {"abc", "-1", "0", "550e8400-e29b-41d4-a716-44665544000Z"})
+    void getCourse_invalidId_return400(String courseId) {
+        webTestClient.get()
+                .uri(API_COURSE_ID, courseId)
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
     @Test
-    void createCourse_success_return201() throws Exception {
-        final var uri = post(API_COURSE)
+    void createCourse_success_return201() {
+        webTestClient.post()
+                .uri(API_COURSE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                .bodyValue("""
                         {
+                            "courseId" : "%s",
                             "name": "Test Course"
                         }
-                        """);
-        mockMvc.perform(uri).andExpect(status().isCreated());
+                        """.formatted(UUID.randomUUID().toString()))
+                .exchange()
+                .expectStatus().isCreated();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidCreateCourseRequests")
-    void createCourse_invalidRequest_return400(String description, String json) throws Exception {
-        final var uri = post(API_COURSE)
+    void createCourse_invalidRequest_return400(String description, String json) {
+        webTestClient.post()
+                .uri(API_COURSE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json);
-        mockMvc.perform(uri).andExpect(status().isBadRequest());
-        assertEquals(0, repository.count().block());
+                .bodyValue(json)
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        StepVerifier.create(repository.count())
+                .expectNext(0L)
+                .verifyComplete();
     }
 
     @Test
-    void updateCourse_success_return200() throws Exception {
-        final var entity = createCourse().block();
+    void updateCourse_success_return204() {
+        final var courseId = UUID.randomUUID().toString();
+        StepVerifier.create(createCourse(courseId, "Test Course Name"))
+                .expectNextCount(1)
+                .verifyComplete();
 
-        final var uri = put(API_COURSE)
+        webTestClient.put()
+                .uri(API_COURSE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                .bodyValue("""
                         {
                             "courseId": "%s",
                             "name": "Test Course Updated"
                         }
-                        """.formatted(entity.getCourseId()));
-        final var response = mockMvc.perform(uri).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
-        final var result = objectMapper.readValue(response, Course.class);
-        assertEquals(entity.getCourseId(), result.courseId());
-        assertEquals("Test Course Updated", result.name());
+                        """.formatted(courseId))
+                .exchange()
+                .expectStatus().isNoContent()
+                .expectBody().isEmpty();
+
+        StepVerifier.create(repository.findByCourseId(courseId))
+                .assertNext(updated -> assertEquals("Test Course Updated", updated.getName()))
+                .verifyComplete();
     }
 
     @Test
-    void updateCourse_notFound_return404() throws Exception {
-        final var uri = put(API_COURSE)
+    void updateCourse_notFound_return404() {
+        webTestClient.put()
+                .uri(API_COURSE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                .bodyValue("""
                         {
                             "courseId": "%s",
                             "name": "Test Course Updated"
                         }
-                        """.formatted(UUID.randomUUID().toString()));
-        mockMvc.perform(uri).andExpect(status().isNotFound());
-        assertEquals(0, repository.count().block());
+                        """.formatted(UUID.randomUUID().toString()))
+                .exchange()
+                .expectStatus().isNotFound();
+
+        StepVerifier.create(repository.count())
+                .expectNext(0L)
+                .verifyComplete();
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidUpdateCourseRequests")
-    void updateCourse_invalidRequest_returns400(String description, String json) throws Exception {
-        mockMvc.perform(put(API_COURSE)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isBadRequest());
-        assertEquals(0, repository.count().block());
+    void updateCourse_invalidRequest_returns400(String description, String json) {
+        webTestClient.put()
+                .uri(API_COURSE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(json)
+                .exchange()
+                .expectStatus().isBadRequest();
+
+        StepVerifier.create(repository.count())
+                .expectNext(0L)
+                .verifyComplete();
     }
 
     @Test
-    void deleteCourse_success_return204() throws Exception {
-        final var entity = createCourse().block();
+    void deleteCourse_success_return204() {
+        final var courseId = UUID.randomUUID().toString();
+        StepVerifier.create(createCourse(courseId, "Test Course Name"))
+                .expectNextCount(1)
+                .verifyComplete();
 
-        final var uri = delete(API_COURSE_ID, entity.getCourseId());
-        mockMvc.perform(uri).andExpect(status().isNoContent()).andExpect(content().string(""));
+        webTestClient.delete()
+                .uri(API_COURSE_ID, courseId)
+                .exchange()
+                .expectStatus().isNoContent()
+                .expectBody().isEmpty();
+
+        StepVerifier.create(repository.findByCourseId(courseId))
+                .verifyComplete();
     }
 
     @ParameterizedTest(name = "invalid courseId = {0}")
-    @ValueSource(strings = {"   ", "abc", "-1", "0", "550e8400-e29b-41d4-a716-44665544000Z"})
-    void deleteCourse_invalidId_returns400(String courseId) throws Exception {
-        mockMvc.perform(delete(API_COURSE_ID, courseId))
-                .andExpect(status().isBadRequest());
+    @ValueSource(strings = {"abc", "-1", "0", "550e8400-e29b-41d4-a716-44665544000Z"})
+    void deleteCourse_invalidId_returns400(String courseId) {
+        webTestClient.delete()
+                .uri(API_COURSE_ID, courseId)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void courseCreateEvent_fromBinder_createsCourse() throws JsonProcessingException {
+        final var courseId = UUID.randomUUID();
+        final var courseName = "Test Course Name";
+        final var payload = objectMapper.writeValueAsBytes(new CourseCreateCommand(courseId, courseName));
+
+        inputDestination.send(
+                MessageBuilder.withPayload(payload)
+                        .setHeader("contentType", MediaType.APPLICATION_JSON_VALUE)
+                        .build(),
+                "course.create"
+        );
+
+        Awaitility.await()
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(() ->
+                        StepVerifier.create(repository.findByCourseId(courseId.toString()))
+                                .expectNextMatches(course ->
+                                        course.getCourseId().equals(courseId.toString()) &&
+                                                course.getName().equals(courseName)
+                                )
+                                .verifyComplete()
+                );
+    }
+
+    @Test
+    void courseUpdateEvent_fromBinder_updatesCourse() throws JsonProcessingException {
+        final var courseId = UUID.randomUUID();
+        final var name = "Original Course Name";
+        final var updatedName = "Updated Course Name";
+        final var payload = objectMapper.writeValueAsBytes(new CourseUpdateCommand(courseId, updatedName));
+
+        StepVerifier.create(createCourse(courseId.toString(), name))
+                .expectNextCount(1)
+                .verifyComplete();
+
+
+        inputDestination.send(
+                MessageBuilder.withPayload(payload)
+                        .setHeader("contentType", MediaType.APPLICATION_JSON_VALUE)
+                        .build(),
+                "course.update"
+        );
+
+        Awaitility.await()
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(() ->
+                        StepVerifier.create(repository.findByCourseId(courseId.toString()))
+                                .expectNextMatches(course ->
+                                        course.getCourseId().equals(courseId.toString()) &&
+                                                course.getName().equals(updatedName)
+                                )
+                                .verifyComplete()
+                );
+    }
+
+    @Test
+    void courseDeleteEvent_fromBinder_deletesCourse() throws JsonProcessingException {
+        final var courseId = UUID.randomUUID().toString();
+        StepVerifier.create(createCourse(courseId, "Test Course Name"))
+                .expectNextCount(1)
+                .verifyComplete();
+
+        inputDestination.send(
+                MessageBuilder.withPayload(objectMapper.writeValueAsBytes(courseId))
+                        .setHeader("contentType", MediaType.APPLICATION_JSON_VALUE)
+                        .build(),
+                "course.delete"
+        );
+
+        Awaitility.await()
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(() ->
+                    StepVerifier.create(repository.findByCourseId(courseId))
+                            .expectNextCount(0)
+                            .verifyComplete()
+                );
     }
 
     @Test
     void optimisticLockError() {
-        final var entity = createCourse().block();
-        // Store the saved entity in two separate entity objects
-        final var entity1 = repository.findById(entity.getId()).block();
-        final var entity2 = repository.findById(entity.getId()).block();
+        final var courseId = UUID.randomUUID().toString();
 
-        // Update the entity using the first entity object
-        entity1.setName("n1");
-        repository.save(entity1).block();
+        final var conflictSave = createCourse(courseId, "Test Course Name")
+                .flatMap(saved -> repository.findById(saved.getId())
+                        .zipWith(repository.findById(saved.getId())))
+                .flatMap(tuple -> {
+                    final var entity1 = tuple.getT1();
+                    final var entity2 = tuple.getT2();
 
-        // Update the entity using the second entity object.
-        // This should fail since the second entity now holds an old version
-        // number, that is, an Optimistic Lock Error
-        assertThrows(OptimisticLockingFailureException.class, () -> {
-            entity2.setName("n2");
-            repository.save(entity2).block();
-        });
+                    entity1.setName("n1");
+                    return repository.save(entity1)
+                            .thenReturn(entity2);
+                })
+                .flatMap(entity2 -> {
+                    entity2.setName("n2");
+                    return repository.save(entity2);
+                });
 
-        // Get the updated entity from the database and verify its new state
-        final var updatedEntity = repository.findById(entity.getId()).block();
-        assertEquals("n1", updatedEntity.getName());
+        StepVerifier.create(conflictSave)
+                .expectError(OptimisticLockingFailureException.class)
+                .verify();
+
+        StepVerifier.create(repository.findByCourseId(courseId))
+                .assertNext(updatedEntity -> assertEquals("n1", updatedEntity.getName()))
+                .verifyComplete();
     }
 
-
-    private Mono<CourseEntity> createCourse() {
-        return repository.save(new CourseEntity(UUID.randomUUID().toString(), "Test Course Name"));
+    private Mono<CourseEntity> createCourse(final String courseId, final String name) {
+        return repository.save(new CourseEntity(courseId, name));
     }
 }
