@@ -38,6 +38,8 @@ eureka:
   client:
     initialInstanceInfoReplicationIntervalSeconds: 10
     registryFetchIntervalSeconds: 5
+    service-url:
+      defaultZone: http://username:password@localhost:8761/eureka/
 
 ---
 spring:

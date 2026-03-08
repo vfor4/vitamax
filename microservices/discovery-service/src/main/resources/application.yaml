@@ -1,6 +1,10 @@
 spring:
   application:
     name: discovery-service
+  security:
+    user:
+      name: username
+      password: password
 logging:
   level:
     com.netflix.eureka: debug
