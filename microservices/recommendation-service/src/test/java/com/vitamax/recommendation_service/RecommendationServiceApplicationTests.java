@@ -446,9 +446,13 @@ class RecommendationServiceApplicationTests {
                 "recommendation.delete"
         );
 
-        StepVerifier.create(repository.findByCourseId(courseId).count())
-                .expectNext(0L)
-                .verifyComplete();
+        Awaitility.await()
+                .atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(() ->
+                    StepVerifier.create(repository.findByCourseId(courseId).count())
+                            .expectNext(0L)
+                            .verifyComplete()
+                );
     }
 
     @Test
