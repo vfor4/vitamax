@@ -10,7 +10,7 @@ spring:
     config:
       server:
         git:
-          uri: file:///home/vu/coding/vitamax-config
+          uri: file:///home/pnguyen/dev/vitamax-config
 ---
 spring:
   config.activate.on-profile: dev

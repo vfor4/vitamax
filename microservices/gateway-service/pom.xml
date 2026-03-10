@@ -20,7 +20,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.vitamax</groupId>
-			<artifactId>api</artifactId>
+			<artifactId>util</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>

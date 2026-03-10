@@ -2,7 +2,7 @@ server.port: 7002
 spring.application.name: course-service
 
 spring:
-  config.import: "optional:configserver:"
+  config.import: "optional:configserver:http://localhost:8080"
   data:
     mongodb:
       host: "127.0.0.1"

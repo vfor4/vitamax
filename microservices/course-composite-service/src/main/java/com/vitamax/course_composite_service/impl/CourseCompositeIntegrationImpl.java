@@ -29,9 +29,9 @@ import static com.vitamax.api.event.EventConstants.RECOMMENDATION_CREATE_OUT_0;
 import static com.vitamax.api.event.EventConstants.RECOMMENDATION_DELETE_OUT_0;
 import static com.vitamax.api.event.EventConstants.RECOMMENDATION_UPDATE_OUT_0;
 import static com.vitamax.api.event.EventConstants.REVIEW_CREATE_OUT_0;
-import static com.vitamax.api.constants.ServiceConstants.COURSE_API_V1_URL;
-import static com.vitamax.api.constants.ServiceConstants.RECOMMENDATION_API_V1_URL;
-import static com.vitamax.api.constants.ServiceConstants.REVIEW_API_V1_URL;
+import static com.vitamax.util.constants.ServiceConstants.COURSE_API_V1_URL;
+import static com.vitamax.util.constants.ServiceConstants.RECOMMENDATION_API_V1_URL;
+import static com.vitamax.util.constants.ServiceConstants.REVIEW_API_V1_URL;
 import static com.vitamax.api.event.EventConstants.REVIEW_DELETE_OUT_0;
 import static com.vitamax.api.event.EventConstants.REVIEW_UPDATE_OUT_0;
 

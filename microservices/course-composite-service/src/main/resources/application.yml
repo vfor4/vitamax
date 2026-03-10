@@ -1,7 +1,7 @@
 server.port: 7005
 spring.application.name: course-composite-service
 spring:
-  config.import: "optional:configserver:"
+  config.import: "optional:configserver:http://localhost:8080"
   cloud:
     stream:
       bindings:
@@ -30,7 +30,16 @@ spring:
 springdoc:
   swagger-ui.path: /openapi/swagger-ui.html
   api-docs.path: /openapi/v3/api-docs
-
+jwt:
+  secret: eW91ci1zZWNyZXQta2V5LW1pbi0zMi1jaGFycy1sb25nISE=
+  expiration: 300000
+  default-scopes:
+    - course:read
+    - course:write
+    - review:read
+    - review:write
+    - recommendation:read
+    - recommendation:write
 ---
 spring.config.activate.on-profile: dev
 spring.cloud.config:

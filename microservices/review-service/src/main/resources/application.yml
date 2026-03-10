@@ -1,7 +1,7 @@
 server.port: 7004
 spring:
   application.name: review-service
-  config.import: "optional:configserver:"
+  config.import: "optional:configserver:http://localhost:8080"
   r2dbc:
     url: "r2dbc:postgresql://localhost:5432/postgres"
     username: "postgres"

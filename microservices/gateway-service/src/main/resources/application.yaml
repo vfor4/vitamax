@@ -1,3 +1,4 @@
+server.port: 8888
 app.eureka-server: localhost
 eureka.client.register-with-eureka: false
 management:
@@ -5,7 +6,7 @@ management:
   endpoints.web.exposure.include: "*"
 spring:
   application.name: gateway-service
-  config.import: "optional:configserver:"
+  config.import: "optional:configserver:http://localhost:8080"
   main.web-application-type: reactive
   cloud:
     gateway:
