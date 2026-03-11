@@ -16,8 +16,8 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    environment: dev
 
     steps:
     - uses: actions/checkout@v4
@@ -27,6 +27,12 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
+    - name: Create .env file
+      run: |
+        cat > .env << 'EOF'
+        GIT_HOST_KEY=${{ secrets.GIT_HOST_KEY }}
+        GIT_PRIVATE_KEY=${{ secrets.GIT_PRIVATE_KEY }}
+        EOF
     - name: Make script executable
       run: chmod +x test-all.script
     - name: Run test script
