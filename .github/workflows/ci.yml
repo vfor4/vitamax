@@ -27,7 +27,9 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Build and Test
-      run: mvn -B clean verify
+    - name: Make script executable
+      run: chmod +x test-all.script
+    - name: Run test script
+      run: ./test-all.script start
 
       
