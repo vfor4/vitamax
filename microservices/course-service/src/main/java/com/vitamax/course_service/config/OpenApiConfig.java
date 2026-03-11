@@ -1,4 +1,4 @@
-package com.vitamax.api.config;
+package com.vitamax.course_service.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -16,5 +16,6 @@ import org.springframework.context.annotation.Configuration;
     scheme = "bearer",
     bearerFormat = "JWT"
 )
-public class SwaggerConfig {
+public class OpenApiConfig {
+    // No @Bean needed — annotations do all the work
 }
