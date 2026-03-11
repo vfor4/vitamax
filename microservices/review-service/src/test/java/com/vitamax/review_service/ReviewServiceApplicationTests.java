@@ -6,7 +6,7 @@ import com.vitamax.api.core.review.dto.Review;
 import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewUpdateCommand;
 import com.vitamax.review_service.entity.ReviewEntity;
-import com.vitamax.review_service.review.ReviewRepository;
+import com.vitamax.review_service.repository.ReviewRepository;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
