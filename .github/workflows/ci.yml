@@ -27,6 +27,10 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
+    - name: Create .env file
+      run: |
+        echo "DB_PASSWORD=${{ secrets.GIT_HOST_KEY }}" >> .env
+        echo "DB_USERNAME=${{ secrets.GIT_PRIVATE_KEY }}" >> .env
     - name: Make script executable
       run: chmod +x test-all.script
     - name: Run test script
