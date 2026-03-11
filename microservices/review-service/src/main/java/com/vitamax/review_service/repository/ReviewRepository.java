@@ -1,4 +1,4 @@
-package com.vitamax.review_service.review;
+package com.vitamax.review_service.repository;
 
 import com.vitamax.review_service.entity.ReviewEntity;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
