@@ -1,5 +1,8 @@
 server.port: 7005
 spring.application.name: course-composite-service
+logging:
+  level:
+    root: debug
 spring:
   config.import: "optional:configserver:"
   cloud:

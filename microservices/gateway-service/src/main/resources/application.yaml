@@ -3,6 +3,9 @@ eureka.client.register-with-eureka: false
 management:
   endpoint.health.show-details: "ALWAYS"
   endpoints.web.exposure.include: "*"
+logging:
+  level:
+    root: debug
 spring:
   application.name: gateway-service
   config.import: "optional:configserver:"
@@ -17,6 +20,14 @@ spring:
               uri: http://localhost:7005
               predicates:
                 - Path=/api/**,/openapi/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: course-composite-circuit-breaker
+                    fallbackUri: forward:/fallback
+                    statusCodes:
+                      - 500
+                      - 404
             - id: eureka-web-start
               uri: http://localhost:8761
               predicates:

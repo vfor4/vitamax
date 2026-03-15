@@ -12,7 +12,6 @@ import static com.vitamax.api.constants.ServiceConstants.COURSE_HOST;
 import static com.vitamax.api.constants.ServiceConstants.RECOMMENDATION_HOST;
 import static com.vitamax.api.constants.ServiceConstants.REVIEW_HOST;
 
-
 @Configuration
 public class ActuatorHealthConfiguration {
 
