@@ -29,10 +29,8 @@ jobs:
         cache: maven
     - name: Create .env file
       run: |
-        cat > .env << 'EOF'
-        GIT_HOST_KEY=${{ secrets.GIT_HOST_KEY }}
-        GIT_PRIVATE_KEY=${{ secrets.GIT_PRIVATE_KEY }}
-        EOF
+        printf 'GIT_HOST_KEY=%s\n' "${{ secrets.GIT_HOST_KEY }}" >> .env
+        printf 'GIT_PRIVATE_KEY=%s\n' "${{ secrets.GIT_PRIVATE_KEY }}" >> .env
     - name: Make script executable
       run: chmod +x test-all.script
     - name: Run test script
