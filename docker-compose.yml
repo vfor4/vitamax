@@ -43,10 +43,10 @@ services:
   config:
     build: microservices/config-service
     mem_limit: 512m
-    env_file:
-      - .env
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+      - GIT_HOST_KEY=${GIT_HOST_KEY}
+      - GIT_PRIVATE_KEY=${GIT_PRIVATE_KEY}
 
   mongodb:
     image: mongo:noble
