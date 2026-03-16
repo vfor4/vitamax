@@ -6,7 +6,7 @@ import com.vitamax.api.core.review.dto.ReviewCreateCommand;
 import com.vitamax.api.core.review.dto.ReviewUpdateCommand;
 import com.vitamax.api.exception.dto.NotFoundException;
 import com.vitamax.review_service.mapper.ReviewMapper;
-import com.vitamax.review_service.review.ReviewRepository;
+import com.vitamax.review_service.repository.ReviewRepository;
 import com.vitamax.util.ServiceUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
