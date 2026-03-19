@@ -1,8 +1,7 @@
 package com.vitamax.gateway_service.actuator;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.stereotype.Service;
@@ -16,8 +15,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 @Service
+@Slf4j
 public class CourseCompositeHealthService {
-    private static final Logger log = LoggerFactory.getLogger(CourseCompositeHealthService.class);
     private static final String ACTUATOR_HEALTH_ENDPOINT = "/actuator/health";
     private static final String STATUS = "status";
 

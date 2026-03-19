@@ -7,7 +7,7 @@
 
 HOST=${HOST:-localhost}
 PORT=${PORT:-8080}
-HEALTH_URL="http://localhost:8080/actuator/health"
+HEALTH_URL="http://${HOST}:${PORT}/actuator/health"
 BASE_URL="http://${HOST}:${PORT}/api/v1/aggregate"
 
 # --- Colours ---
