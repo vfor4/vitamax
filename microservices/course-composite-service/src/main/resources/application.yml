@@ -1,28 +1,18 @@
 server.port: 7005
-spring.application.name: course-composite-service
 spring:
-  config.import: "optional:configserver:"
+  application.name: course-composite-service
   cloud:
-    stream:
-      bindings:
-        courseCreate-out-0:
-          destination: course.create
-        courseUpdate-out-0:
-          destination: course.update
-        courseDelete-out-0:
-          destination: course.delete
-        reviewCreate-out-0:
-          destination: review.create
-        reviewUpdate-out-0:
-          destination: review.update
-        reviewDelete-out-0:
-          destination: review.delete
-        recommendationCreate-out-0:
-          destination: recommendation.create
-        recommendationUpdate-out-0:
-          destination: recommendation.update
-        recommendationDelete-out-0:
-          destination: recommendation.delete
+    config.enabled: false
+    stream.bindings:
+      courseCreate-out-0.destination: course.create
+      courseUpdate-out-0.destination: course.update
+      courseDelete-out-0.destination: course.delete
+      reviewCreate-out-0.destination: review.create
+      reviewUpdate-out-0.destination: review.update
+      reviewDelete-out-0.destination: review.delete
+      recommendationCreate-out-0.destination: recommendation.create
+      recommendationUpdate-out-0.destination: recommendation.update
+      recommendationDelete-out-0.destination: recommendation.delete
   rabbitmq:
     username: user
     password: password
@@ -30,14 +20,17 @@ spring:
 springdoc:
   swagger-ui.path: /openapi/swagger-ui.html
   api-docs.path: /openapi/v3/api-docs
-
----
-spring.config.activate.on-profile: dev
-spring.cloud.config:
-  uri: http://config:8080
-  fail-fast: true
-  retry:
-    max-attempts: 10
-    initial-interval: 1100
-    max-interval: 1500
-    multiplier: 1.2
+eureka:
+  instance:
+    appname: ${spring.application.name}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+  client:
+    healthcheck.enabled: true
+    initial-instance-info-replication-interval-seconds: 10
+    registry-fetch-interval-seconds: 10
+    service-url.defaultZone: http://username:password@localhost:8761/eureka/
+logging:
+  level:
+    com.netflix.eureka: info
+    com.netflix.discovery: info

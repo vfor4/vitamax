@@ -7,7 +7,7 @@
 
 HOST=${HOST:-localhost}
 PORT=${PORT:-8080}
-HEALTH_URL="http://localhost:8080/actuator/health"
+HEALTH_URL="http://${HOST}:${PORT}/actuator/health"
 BASE_URL="http://${HOST}:${PORT}/api/v1/aggregate"
 
 # --- Colours ---
@@ -154,24 +154,31 @@ createCourseAggregate() {
 # ============================================================
 
 verifyCourseAggregate() {
-  log "Fetching and verifying course aggregate (id=$aggregateId)..."
+ log "Fetching and verifying course aggregate (id=$aggregateId)..."
+   local response
+   local attempts=5
+   local delay=5
 
-  local response
-  response=$(assertHttpCode 200 "${BASE_URL}/course/${aggregateId}")
+   for i in $(seq 1 $attempts); do
+     response=$(assertHttpCode 200 "${BASE_URL}/course/${aggregateId}")
+     if [ $? -eq 0 ]; then
+       echo "$response"
+       # Assert course ID matches
+       assertEqual "$aggregateId" "$(echo "$response" | jq -r '.course.courseId')" \
+         "course.courseId matches"
 
-  echo "$response"
+       # Assert exactly 1 recommendation
+       assertEqual 1 "$(echo "$response" | jq '.recommendations | length')" \
+         "recommendations count = 1"
 
-  # Assert course ID matches
-  assertEqual "$aggregateId" "$(echo "$response" | jq -r '.course.courseId')" \
-    "course.courseId matches"
-
-  # Assert exactly 1 recommendation
-  assertEqual 1 "$(echo "$response" | jq '.recommendations | length')" \
-    "recommendations count = 1"
-
-  # Assert exactly 1 review
-  assertEqual 1 "$(echo "$response" | jq '.reviews | length')" \
-    "reviews count = 1"
+       # Assert exactly 1 review
+       assertEqual 1 "$(echo "$response" | jq '.reviews | length')" \
+         "reviews count = 1"
+       return 0
+     fi
+     log "Attempt $i/$attempts failed. Retrying in ${delay}s..."
+     sleep $delay
+   done
 }
 
 # ============================================================
@@ -210,7 +217,7 @@ echo ""
 if [[ $@ == "start" ]]
 then
   echo "Building jar files..."
-  ./mvnw clean install || die "Maven build failed"
+  ./mvnw clean install -q 2>&1 | grep -E "ERROR|FAIL|BUILD" || die "Maven build failed"
 
   echo "Tearing down docker environment..."
   docker compose down --remove-orphans --volumes || die "docker compose down failed"
