@@ -13,7 +13,7 @@ import com.vitamax.api.core.review.dto.ReviewUpdateCommand;
 import com.vitamax.api.exception.dto.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -55,9 +55,9 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     public Mono<Course> getCourse(final UUID courseId) {
         log.info("getCourse {}", courseId);
         return webClient.get().uri(COURSE_API_V1_URL, courseId).retrieve()
-                .onStatus(statusCode -> statusCode.isSameCodeAs(HttpStatusCode.valueOf(404)), response ->
-                        response.bodyToMono(String.class)
-                                .map(body -> new NotFoundException("Course not found: " + courseId))
+                .onStatus(
+                        status -> status == HttpStatus.NOT_FOUND,
+                        response -> Mono.error(new NotFoundException("Course not found: " + courseId))
                 )
                 .bodyToMono(Course.class);
     }

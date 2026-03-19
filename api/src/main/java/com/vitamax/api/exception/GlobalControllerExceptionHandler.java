@@ -11,14 +11,13 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@RestControllerAdvice
 @Slf4j
 public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHandler {
+
     @ExceptionHandler(NotFoundException.class)
     public Mono<ResponseEntity<HttpErrorInfo>> handleNotFoundExceptions(final ServerWebExchange request, final NotFoundException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(createHttpErrorInfo(HttpStatus.NOT_FOUND, request, ex.getMessage())));
