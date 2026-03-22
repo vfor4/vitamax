@@ -1,4 +1,4 @@
-package com.vitamax.api.constants;
+package com.vitamax.util.constants;
 
 import lombok.experimental.UtilityClass;
 

@@ -8,19 +8,6 @@ spring:
   cloud:
     config.enabled: false
     gateway.server.webflux:
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "http://localhost:8888"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
       httpclient.connect-timeout: 5000
       routes:
         - id: course-composite
@@ -34,7 +21,6 @@ spring:
                 fallbackUri: forward:/fallback
                 statusCodes:
                   - 500
-                  - 404
         - id: eureka-web-start
           uri: http://localhost:8761
           predicates:
@@ -54,21 +40,8 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         wait-duration-in-open-state: 5s
         failure-rate-threshold: 60
-        ignore-failure-predicate: com.vitamax.gateway_service.resilience.predicate.ServerExceptionPredicate
   timelimiter:
     instances:
       course-composite-circuit-breaker:
         timeout-duration: 10s
-eureka:
-  instance:
-    appname: ${spring.application.name}
-    lease-renewal-interval-in-seconds: 10
-    lease-expiration-duration-in-seconds: 30
-  client:
-    healthcheck.enabled: true
-    initial-instance-info-replication-interval-seconds: 10
-    registry-fetch-interval-seconds: 10
-    service-url.defaultZone: http://username:password@localhost:8761/eureka/
-  level:
-    com.netflix.eureka: info
-    com.netflix.discovery: info
+eureka.client.service-url.defaultZone: http://username:password@localhost:8761/eureka/

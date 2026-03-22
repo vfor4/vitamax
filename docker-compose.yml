@@ -62,7 +62,7 @@ services:
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: 5s
-      timeout: 2s
+      timeout: 5s
       retries: 5
 
   mongodb:

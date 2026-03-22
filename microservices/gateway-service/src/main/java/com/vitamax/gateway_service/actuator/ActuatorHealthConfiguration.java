@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.vitamax.api.constants.ServiceConstants.COURSE_HOST;
-import static com.vitamax.api.constants.ServiceConstants.RECOMMENDATION_HOST;
-import static com.vitamax.api.constants.ServiceConstants.REVIEW_HOST;
+import static com.vitamax.util.constants.ServiceConstants.COURSE_HOST;
+import static com.vitamax.util.constants.ServiceConstants.RECOMMENDATION_HOST;
+import static com.vitamax.util.constants.ServiceConstants.REVIEW_HOST;
 
 @Configuration
 public class ActuatorHealthConfiguration {

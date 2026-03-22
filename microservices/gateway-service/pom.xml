@@ -20,9 +20,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.vitamax</groupId>
-			<artifactId>api</artifactId>
+			<artifactId>util</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
