@@ -18,19 +18,7 @@ spring:
     password: password
     port: 5672
 springdoc:
-  swagger-ui.path: /openapi/swagger-ui.html
+  swagger-ui:
+    path: /openapi/swagger-ui.html
   api-docs.path: /openapi/v3/api-docs
-eureka:
-  instance:
-    appname: ${spring.application.name}
-    lease-renewal-interval-in-seconds: 10
-    lease-expiration-duration-in-seconds: 30
-  client:
-    healthcheck.enabled: true
-    initial-instance-info-replication-interval-seconds: 10
-    registry-fetch-interval-seconds: 10
-    service-url.defaultZone: http://username:password@localhost:8761/eureka/
-logging:
-  level:
-    com.netflix.eureka: info
-    com.netflix.discovery: info
+eureka.client.service-url.defaultZone: http://username:password@localhost:8761/eureka/

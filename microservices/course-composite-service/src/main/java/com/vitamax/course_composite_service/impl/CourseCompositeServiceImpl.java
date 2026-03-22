@@ -15,13 +15,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.vitamax.api.constants.ServiceConstants.COURSE_COMPOSITE_URL;
+import static com.vitamax.util.constants.ServiceConstants.COURSE_COMPOSITE_URL;
 
 @RestController
 @RequiredArgsConstructor

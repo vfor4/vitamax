@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-import static com.vitamax.api.constants.ServiceConstants.COURSE_COMPOSITE_URL;
+import static com.vitamax.util.constants.ServiceConstants.COURSE_COMPOSITE_URL;
 
 @RequestMapping(value = COURSE_COMPOSITE_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Course Composite", description = "API for managing course aggregates including all related course data")
