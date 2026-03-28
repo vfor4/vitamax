@@ -1,4 +1,7 @@
-server.port: 8888
+server:
+  port: 8443
+  ssl:
+    bundle: gateway-bundle
 app.eureka-server: localhost
 management:
   endpoint.health.show-details: "ALWAYS"
@@ -29,6 +32,13 @@ spring:
           uri: http://localhost:8761
           predicates:
             - Path=/eureka/**
+  ssl:
+    bundle:
+      pem:
+        gateway-bundle:
+          keystore:
+            certificate: classpath:/certificates/cert.pem
+            private-key: classpath:/certificates/key.pem
 resilience4j:
   circuitbreaker:
     instances:
