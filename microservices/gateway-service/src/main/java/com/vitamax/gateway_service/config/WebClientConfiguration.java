@@ -1,4 +1,4 @@
-package com.vitamax.gateway_service.config;
+package com.vitamax.gateway_service.actuator;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfiguration {
 
     @Bean
-    @LoadBalanced
-    public WebClient.Builder webClientBuilder() {
+    public WebClient.Builder loadBalancedWebClientBuilder() {
         return WebClient.builder();
     }
 }
