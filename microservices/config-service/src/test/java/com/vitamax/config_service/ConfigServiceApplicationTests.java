@@ -1,10 +1,10 @@
-package com.vitamax.config;
+package com.vitamax.config_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ConfigApplicationTests {
+class ConfigServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

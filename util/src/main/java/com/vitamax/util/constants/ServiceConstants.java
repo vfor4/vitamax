@@ -1,8 +1,5 @@
 package com.vitamax.util.constants;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
 public class ServiceConstants {
     public static final String COURSE_HOST = "http://course-service";
     public static final String RECOMMENDATION_HOST = "http://recommendation-service";

@@ -6,7 +6,7 @@
 # ============================================================
 
 HOST=${HOST:-localhost}
-PORT=${PORT:-8080}
+PORT=${PORT:-8443}
 HEALTH_URL="https://${HOST}:${PORT}/actuator/health"
 BASE_URL="https://${HOST}:${PORT}/api/v1/aggregate"
 CERT_FILE="${CERT_FILE:-microservices/gateway-service/src/main/resources/certificates/cert.pem}"
