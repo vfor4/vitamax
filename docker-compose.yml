@@ -1,6 +1,7 @@
 services:
   course-composite:
     build: microservices/course-composite-service
+    image: hands-on/product-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=dev
@@ -44,6 +45,7 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
   gateway:
     build: microservices/gateway-service
+    image: vitamax/gateway-service:1.0
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=dev

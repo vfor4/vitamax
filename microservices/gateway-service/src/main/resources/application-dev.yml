@@ -1,4 +1,5 @@
 spring:
+  cloud.config.enabled: true
   config.import: "configserver:http://config:8080"
   cloud.config:
     enabled: true

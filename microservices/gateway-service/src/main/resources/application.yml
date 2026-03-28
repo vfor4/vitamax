@@ -1,5 +1,4 @@
 server.port: 8888
-app.eureka-server: localhost
 management:
   endpoint.health.show-details: "ALWAYS"
   endpoints.web.exposure.include: "*"
@@ -42,4 +41,3 @@ resilience4j:
     instances:
       course-composite-circuit-breaker:
         timeout-duration: 10s
-eureka.client.service-url.defaultZone: http://username:password@localhost:8761/eureka/
