@@ -1,6 +1,7 @@
 package com.vitamax.gateway_service.actuator;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -16,15 +17,12 @@ import java.util.function.Supplier;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class CourseCompositeHealthService {
     private static final String ACTUATOR_HEALTH_ENDPOINT = "/actuator/health";
     private static final String STATUS = "status";
 
     private final WebClient webClient;
-
-    public CourseCompositeHealthService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.build();
-    }
 
     public Mono<Health> getActuatorHealth(final String host) {
         return webClient.get().uri(host + ACTUATOR_HEALTH_ENDPOINT).retrieve()

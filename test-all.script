@@ -7,8 +7,10 @@
 
 HOST=${HOST:-localhost}
 PORT=${PORT:-8080}
-HEALTH_URL="http://${HOST}:${PORT}/actuator/health"
-BASE_URL="http://${HOST}:${PORT}/api/v1/aggregate"
+HEALTH_URL="https://${HOST}:${PORT}/actuator/health"
+BASE_URL="https://${HOST}:${PORT}/api/v1/aggregate"
+CERT_FILE="${CERT_FILE:-microservices/gateway-service/src/main/resources/certificates/cert.pem}"
+TLS_ARGS=(--cacert "$CERT_FILE")
 
 # --- Colours ---
 GREEN='\033[0;32m'
@@ -55,12 +57,12 @@ assertHttpCode() {
   local http_code
 
   if [ "$method" == "POST" ] && [ -n "$body" ]; then
-    response=$(curl -s -w "\n%{http_code}" \
+    response=$(curl "${TLS_ARGS[@]}" -s -w "\n%{http_code}" \
       -X POST "$url" \
       -H "Content-Type: application/json" \
       -d "$body")
   else
-    response=$(curl -s -w "\n%{http_code}" "$url")
+    response=$(curl "${TLS_ARGS[@]}" -s -w "\n%{http_code}" "$url")
   fi
 
   http_code=$(echo "$response" | tail -n1)
@@ -93,7 +95,7 @@ waitForHealth() {
   while [ $attempt -le $max_retries ]; do
     log "Attempt $attempt/$max_retries..."
 
-    http_code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+    http_code=$(curl "${TLS_ARGS[@]}" -s -o /dev/null -w "%{http_code}" "$url")
 
     if [ "$http_code" == "200" ]; then
       success "Service is UP (HTTP 200) after $attempt attempt(s)"
@@ -129,7 +131,7 @@ createCourseAggregate() {
   }'
 
   local response
-  response=$(curl -s -D - -X POST "${BASE_URL}/course" \
+  response=$(curl "${TLS_ARGS[@]}" -s -D - -X POST "${BASE_URL}/course" \
     -H "Content-Type: application/json" \
     -d "$body")
 

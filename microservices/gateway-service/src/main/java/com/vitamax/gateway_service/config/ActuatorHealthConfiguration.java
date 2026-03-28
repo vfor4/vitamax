@@ -1,5 +1,7 @@
-package com.vitamax.gateway_service.actuator;
+package com.vitamax.gateway_service.config;
 
+import com.vitamax.gateway_service.actuator.CourseCompositeHealthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.context.annotation.Bean;
@@ -13,13 +15,10 @@ import static com.vitamax.util.constants.ServiceConstants.RECOMMENDATION_HOST;
 import static com.vitamax.util.constants.ServiceConstants.REVIEW_HOST;
 
 @Configuration
+@RequiredArgsConstructor
 public class ActuatorHealthConfiguration {
 
     private final CourseCompositeHealthService service;
-
-    public ActuatorHealthConfiguration(final CourseCompositeHealthService service) {
-        this.service = service;
-    }
 
     @Bean
     public CompositeReactiveHealthContributor healthContributor() {
