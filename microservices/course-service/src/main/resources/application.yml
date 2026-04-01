@@ -3,15 +3,19 @@ spring:
   application.name: course-service
   data:
     mongodb:
-      host: "127.0.0.1"
-      port: 27017
+      host: ${MONGODB_HOST:localhost}
+      username: ${MONGODB_USERNAME:username}
+      password: ${MONGODB_PASSWORD:password}
+      database: course
+      port: ${MONGODB_PORT:27017}
+      authentication-database: admin
       auto-index-creation: true
   rabbitmq:
-    username: user
-    password: password
-    port: 5672
+    host: ${RABBITMQ_HOST:localhost}
+    username: ${RABBITMQ_USER:user}
+    password: ${RABBITMQ_PWD:password}
+    port: ${RABBITMQ_PORT:5672}
   cloud:
-    config.enabled: false
     function.definition: courseCreate;courseUpdate;courseDelete
     stream:
       default:

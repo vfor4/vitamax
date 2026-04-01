@@ -2,15 +2,15 @@ server.port: 7004
 spring:
   application.name: review-service
   r2dbc:
-    url: "r2dbc:postgresql://localhost:5432/postgres"
-    username: "postgres"
-    password: "postgres"
+    url: "r2dbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/postgres"
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
   rabbitmq:
-    username: user
-    password: password
-    port: 5672
+    host: ${RABBITMQ_HOST:localhost}
+    username: ${RABBITMQ_USER:user}
+    password: ${RABBITMQ_PWD:password}
+    port: ${RABBITMQ_PORT:5672}
   cloud:
-    config.enabled: false
     function.definition: reviewCreate;reviewUpdate;reviewDelete
     stream:
       default:

@@ -3,13 +3,18 @@ spring:
   application.name: recommendation-service
   data:
     mongodb:
-      host: "127.0.0.1"
-      port: 27017
+      host: ${MONGODB_HOST:localhost}
+      username: ${MONGODB_USERNAME:username}
+      password: ${MONGODB_PASSWORD:password}
+      database: course
+      port: ${MONGODB_PORT:27017}
+      authentication-database: admin
       auto-index-creation: true
   rabbitmq:
-    port: 5672
-    username: user
-    password: password
+    host: ${RABBITMQ_HOST:localhost}
+    username: ${RABBITMQ_USER:user}
+    password: ${RABBITMQ_PWD:password}
+    port: ${RABBITMQ_PORT:5672}
   cloud:
     config.enabled: false
     function.definition: recommendationCreate;recommendationUpdate;recommendationDelete

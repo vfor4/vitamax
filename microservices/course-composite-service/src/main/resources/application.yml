@@ -2,7 +2,6 @@ server.port: 7005
 spring:
   application.name: course-composite-service
   cloud:
-    config.enabled: false
     stream.bindings:
       courseCreate-out-0.destination: course.create
       courseUpdate-out-0.destination: course.update
@@ -14,9 +13,10 @@ spring:
       recommendationUpdate-out-0.destination: recommendation.update
       recommendationDelete-out-0.destination: recommendation.delete
   rabbitmq:
-    username: user
-    password: password
-    port: 5672
+    host: ${RABBITMQ_HOST:localhost}
+    username: ${RABBITMQ_USER:user}
+    password: ${RABBITMQ_PWD:password}
+    port: ${RABBITMQ_PORT:5762}
 springdoc:
   swagger-ui:
     path: /openapi/swagger-ui.html
