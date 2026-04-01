@@ -22,7 +22,7 @@ public class ActuatorHealthConfiguration {
     }
 
     @Bean
-    public CompositeReactiveHealthContributor healthContributor() {
+    public CompositeReactiveHealthContributor downstreamServices() {
         final Map<String, ReactiveHealthIndicator> map = new LinkedHashMap<>();
 
         map.put("course", () -> service.getActuatorHealth(COURSE_HOST));

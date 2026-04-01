@@ -28,7 +28,6 @@
         <module>microservices/review-service</module>
         <module>microservices/course-composite-service</module>
         <module>microservices/gateway-service</module>
-        <module>microservices/config-service</module>
         <module>api</module>
         <module>util</module>
     </modules>

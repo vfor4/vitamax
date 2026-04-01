@@ -5,7 +5,6 @@ management:
 spring:
   application.name: gateway-service
   cloud:
-    config.enabled: false
     gateway.server.webflux:
       httpclient.connect-timeout: 5000
       routes:
@@ -18,16 +17,6 @@ spring:
               args:
                 name: course-composite-circuit-breaker
                 fallbackUri: forward:/fallback
-        - id: eureka-web-start
-          uri: http://localhost:8761
-          predicates:
-            - Path=/eureka/web
-          filters:
-            - SetPath=/
-        - id: eureka-web-other
-          uri: http://localhost:8761
-          predicates:
-            - Path=/eureka/**
 resilience4j:
   circuitbreaker:
     instances:

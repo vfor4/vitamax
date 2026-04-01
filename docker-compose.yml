@@ -1,75 +1,55 @@
 services:
   course-composite:
     build: microservices/course-composite-service
-    image: hands-on/product-service
+    image: vitamax/course-composite-service:1.0
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=dev
-    depends_on:
-      config:
-        condition: service_healthy
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=files:/config/
   course:
     build: microservices/course-service
+    image: vitamax/course-service:1.0
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=files:/config/
     depends_on:
       mongodb:
-        condition: service_healthy
-      config:
         condition: service_healthy
   recommendation:
     build: microservices/recommendation-service
+    image: vitamax/recommendation-service:1.0
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=files:/config/
     depends_on:
       mongodb:
         condition: service_healthy
-      config:
-        condition: service_healthy
   review:
     build: microservices/review-service
+    image: vitamax/review-service:1.0
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       postgresql:
         condition: service_healthy
-      config:
-        condition: service_healthy
-  discovery:
-    build: microservices/discovery-service
-    mem_limit: 512m
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
   gateway:
     build: microservices/gateway-service
     image: vitamax/gateway-service:1.0
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=files:/config/
     ports:
       - "8080:8080"
-    depends_on:
-      config:
-        condition: service_healthy
-  config:
-    build: microservices/config-service
-    mem_limit: 512m
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - GIT_HOST_KEY=${GIT_HOST_KEY}
-      - GIT_PRIVATE_KEY=${GIT_PRIVATE_KEY}
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   mongodb:
     image: mongo:noble
     mem_limit: 512m
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: username
+      MONGO_INITDB_ROOT_PASSWORD: password
     ports:
       - "27017:27017"
     healthcheck:
