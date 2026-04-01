@@ -20,6 +20,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.time.Duration;
 import java.util.UUID;
 
 import static com.vitamax.api.event.EventConstants.COURSE_CREATE_OUT_0;
@@ -54,12 +55,14 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     @Override
     public Mono<Course> getCourse(final UUID courseId) {
         log.info("getCourse {}", courseId);
-        return webClient.get().uri(COURSE_API_V1_URL, courseId).retrieve()
+        return webClient.get().uri(COURSE_API_V1_URL, courseId)
+                .retrieve()
                 .onStatus(
                         status -> status == HttpStatus.NOT_FOUND,
                         response -> Mono.error(new NotFoundException("Course not found: " + courseId))
                 )
-                .bodyToMono(Course.class);
+                .bodyToMono(Course.class)
+                .timeout(Duration.ofSeconds(5));
     }
 
     @Override
@@ -86,7 +89,11 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     @Override
     public Flux<Recommendation> getRecommendations(final UUID courseId) {
         log.info("getRecommendations {}", courseId);
-        return webClient.get().uri(RECOMMENDATION_API_V1_URL, courseId).retrieve().bodyToFlux(Recommendation.class);
+        return webClient.get()
+                .uri(RECOMMENDATION_API_V1_URL, courseId)
+                .retrieve()
+                .bodyToFlux(Recommendation.class)
+                .timeout(Duration.ofSeconds(5));
     }
 
     @Override
@@ -113,7 +120,11 @@ public class CourseCompositeIntegrationImpl implements CourseCompositeIntegratio
     @Override
     public Flux<Review> getReviews(final UUID courseId) {
         log.info("getReviews {}", courseId);
-        return webClient.get().uri(REVIEW_API_V1_URL, courseId).retrieve().bodyToFlux(Review.class);
+        return webClient.get()
+                .uri(REVIEW_API_V1_URL, courseId)
+                .retrieve()
+                .bodyToFlux(Review.class)
+                .timeout(Duration.ofSeconds(5));
     }
 
     @Override

@@ -13,7 +13,6 @@ spring:
         jwt:
           jwk-set-uri: http://${app.auth.host}:${app.auth.port}/oauth2/jwks
   cloud:
-    config.enabled: false
     gateway.server.webflux:
       trusted-proxies: ".*"
       httpclient.connect-timeout: 5000
@@ -31,16 +30,6 @@ spring:
               args:
                 name: course-composite-circuit-breaker
                 fallbackUri: forward:/fallback
-        - id: eureka-web-start
-          uri: http://${app.eureka.host}:8761
-          predicates:
-            - Path=/eureka/web
-          filters:
-            - SetPath=/
-        - id: eureka-web-other
-          uri: http://${app.eureka.host}:8761
-          predicates:
-            - Path=/eureka/**
   ssl:
     bundle:
       pem:
