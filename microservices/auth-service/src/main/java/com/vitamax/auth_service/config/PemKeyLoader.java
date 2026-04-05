@@ -1,6 +1,6 @@
 package com.vitamax.auth_service.config;
 
-import org.springframework.core.io.Resource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
@@ -13,42 +13,38 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 @Component
+@RequiredArgsConstructor
 public class PemKeyLoader {
     private final ResourceLoader resourceLoader;
 
-    public PemKeyLoader(final ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
-
     public RSAPrivateKey loadPrivateKey(final String location) {
         try {
-            final byte[] keyBytes = decodePem(readResource(location), "PRIVATE KEY");
+            final var keyBytes = decodePem(readResource(location), "PRIVATE KEY");
             return (RSAPrivateKey) KeyFactory.getInstance("RSA")
                     .generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             throw new IllegalStateException("failed to load private key from " + location, ex);
         }
     }
 
     public RSAPublicKey loadPublicKey(final String location) {
         try {
-            final byte[] keyBytes = decodePem(readResource(location), "PUBLIC KEY");
+            final var keyBytes = decodePem(readResource(location), "PUBLIC KEY");
             return (RSAPublicKey) KeyFactory.getInstance("RSA")
                     .generatePublic(new X509EncodedKeySpec(keyBytes));
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             throw new IllegalStateException("failed to load public key from " + location, ex);
         }
     }
 
     private String readResource(final String location) throws Exception {
-        final Resource resource = resourceLoader.getResource(location);
-        try (var inputStream = resource.getInputStream()) {
+        try (final var inputStream = resourceLoader.getResource(location).getInputStream()) {
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 
     private byte[] decodePem(final String pem, final String keyType) {
-        final String normalized = pem
+        final var normalized = pem
                 .replace("-----BEGIN " + keyType + "-----", "")
                 .replace("-----END " + keyType + "-----", "")
                 .replaceAll("\\s", "");

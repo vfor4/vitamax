@@ -7,25 +7,25 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
-import java.util.List;
 import java.util.UUID;
 
 @Configuration
@@ -36,13 +36,21 @@ public class AuthorizationServerConfig {
     public org.springframework.security.web.SecurityFilterChain authorizationServerSecurityFilterChain(
             final HttpSecurity http
     ) throws Exception {
-        final OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
-        http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+        final var authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
+        final var endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
+        http
                 .with(authorizationServerConfigurer, Customizer.withDefaults())
+                .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
-                .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .httpBasic(Customizer.withDefaults())
-                .formLogin(AbstractHttpConfigurer::disable);
+                .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher));
+
+        http.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(Customizer.withDefaults());
+
+        http
+                .exceptionHandling(exceptions ->
+                        exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                )
+                .oauth2ResourceServer(t -> t.jwt(Customizer.withDefaults()));
         return http.build();
     }
 
@@ -53,34 +61,54 @@ public class AuthorizationServerConfig {
     ) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/actuator/health/**", "/error").permitAll()
-                        .anyRequest().denyAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(form -> form.disable());
+                .formLogin(Customizer.withDefaults());
         return http.build();
     }
 
     @Bean
-    public RegisteredClientRepository registeredClientRepository(
-            final AuthClientProperties authClientProperties,
-            final PasswordEncoder passwordEncoder
-    ) {
-        final List<RegisteredClient> clients = authClientProperties.clients()
-                .stream()
-                .map(client -> RegisteredClient.withId(UUID.randomUUID().toString())
-                        .clientId(client.clientId())
-                        .clientSecret(passwordEncoder.encode(client.clientSecret()))
-                        .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                        .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-                        .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                        .tokenSettings(TokenSettings.builder()
-                                .accessTokenTimeToLive(Duration.ofHours(1))
-                                .build())
-                        .scopes(scopes -> scopes.addAll(client.scopes()))
-                        .build())
-                .toList();
-        return new InMemoryRegisteredClientRepository(clients);
+    UserDetailsService users() {
+        final var user = User.builder()
+                .username("username")
+                .password(passwordEncoder().encode("password"))
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user);
+    }
+
+    @Bean
+    public RegisteredClientRepository registeredClientRepository(final PasswordEncoder passwordEncoder) {
+        final var clientCredentials = RegisteredClient
+                .withId(UUID.randomUUID().toString())
+                .clientId("client-credentials")
+                .clientSecret(passwordEncoder.encode("client-credentials-secret"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(1)).build())
+                .scope("api:read")
+                .scope("api:write")
+                .build();
+
+        final var authorizationCode = RegisteredClient
+                .withId(UUID.randomUUID().toString())
+                .clientId("authorization-code")
+                .clientSecret(passwordEncoder.encode("authorization-code-secret"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .redirectUri("https://my.redirect.uri")
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofHours(1)).build())
+                .scope(OidcScopes.OPENID)
+                .scope("api:read")
+                .scope("api:write")
+                .build();
+
+        return new InMemoryRegisteredClientRepository(clientCredentials,  authorizationCode);
     }
 
     @Bean
@@ -89,17 +117,12 @@ public class AuthorizationServerConfig {
     }
 
     @Bean
-    public JWKSource<SecurityContext> jwkSource(
-            final AuthClientProperties authClientProperties,
-            final PemKeyLoader pemKeyLoader
-    ) {
-        final RSAPrivateKey privateKey = pemKeyLoader.loadPrivateKey(authClientProperties.privateKeyLocation());
-        final RSAPublicKey publicKey = pemKeyLoader.loadPublicKey(authClientProperties.publicKeyLocation());
-        final RSAKey rsaKey = new RSAKey.Builder(publicKey)
-                .privateKey(privateKey)
-                .keyID(authClientProperties.keyId())
+    public JWKSource<SecurityContext> jwkSource(final PemKeyLoader pemKeyLoader) {
+        final var rsaKey = new RSAKey
+                .Builder(pemKeyLoader.loadPublicKey("classpath:certificates/public.pem"))
+                .privateKey(pemKeyLoader.loadPrivateKey("classpath:certificates/private.pem"))
+                .keyID("auth-key-id")
                 .build();
-        final JWKSet jwkSet = new JWKSet(rsaKey);
-        return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
+        return (jwkSelector, securityContext) -> jwkSelector.select(new JWKSet(rsaKey));
     }
 }

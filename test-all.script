@@ -11,8 +11,8 @@ HEALTH_URL="https://${HOST}:${PORT}/actuator/health"
 TOKEN_URL="https://${HOST}:${PORT}/oauth2/token"
 BASE_URL="https://${HOST}:${PORT}/api/v1/aggregate"
 CERT_FILE="${CERT_FILE:-microservices/gateway-service/src/main/resources/certificates/cert.pem}"
-AUTH_CLIENT_ID="${AUTH_CLIENT_ID:-gateway-client}"
-AUTH_CLIENT_SECRET="${AUTH_CLIENT_SECRET:-gateway-secret}"
+AUTH_CLIENT_ID="client-credentials"
+AUTH_CLIENT_SECRET="client-credentials-secret"
 TLS_ARGS=(--cacert "$CERT_FILE")
 
 # --- Colours ---
