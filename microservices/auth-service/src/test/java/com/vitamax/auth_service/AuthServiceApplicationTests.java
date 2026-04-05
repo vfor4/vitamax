@@ -25,7 +25,7 @@ class AuthServiceApplicationTests {
     @Test
     void shouldIssueAccessTokenFromClientCredentialsGrant() throws Exception {
         mockMvc.perform(post("/oauth2/token")
-                        .with(httpBasic("gateway-client", "gateway-secret"))
+                        .with(httpBasic("client-credentials", "client-credentials-secret"))
                         .param("grant_type", "client_credentials")
                         .param("scope", "api:read api:write"))
                 .andExpect(status().isOk())

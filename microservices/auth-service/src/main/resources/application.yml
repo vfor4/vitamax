@@ -4,13 +4,6 @@ spring:
   cloud:
     config.enabled: false
 auth:
-  key-id: vitamax-auth-key
   private-key-location: classpath:certificates/private.pem
   public-key-location: classpath:certificates/public.pem
-  clients:
-    - client-id: gateway-client
-      client-secret: gateway-secret
-      scopes:
-        - api:read
-        - api:write
 eureka.client.service-url.defaultZone: http://username:password@localhost:8761/eureka/

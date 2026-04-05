@@ -2,7 +2,6 @@ server:
   port: 8443
   ssl:
     bundle: gateway-bundle
-app.eureka-server: localhost
 management:
   endpoint.health.show-details: "ALWAYS"
   endpoints.web.exposure.include: "*"
@@ -21,7 +20,7 @@ spring:
         - id: auth-service
           uri: http://${app.auth.host}:${app.auth.port}
           predicates:
-            - Path=/oauth2/**,/.well-known/**
+            - Path=/oauth2/**,/.well-known/**,/login/**
         - id: course-composite
           uri: ${app.course-composite-service.uri}
           predicates:
