@@ -17,6 +17,7 @@
         <module>microservices/discovery-service</module>
         <module>microservices/gateway-service</module>
         <module>microservices/config-service</module>
+        <module>microservices/auth-service</module>
         <module>api</module>
         <module>util</module>
     </modules>

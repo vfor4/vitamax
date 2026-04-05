@@ -8,13 +8,22 @@ management:
   endpoints.web.exposure.include: "*"
 spring:
   application.name: gateway-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${app.auth.host}:${app.auth.port}/oauth2/jwks
   cloud:
     config.enabled: false
     gateway.server.webflux:
       httpclient.connect-timeout: 5000
       routes:
+        - id: auth-service
+          uri: http://${app.auth.host}:${app.auth.port}
+          predicates:
+            - Path=/oauth2/**,/.well-known/**
         - id: course-composite
-          uri: http://localhost:7005
+          uri: ${app.course-composite-service.uri}
           predicates:
             - Path=/api/**,/openapi/**
           filters:
@@ -23,13 +32,13 @@ spring:
                 name: course-composite-circuit-breaker
                 fallbackUri: forward:/fallback
         - id: eureka-web-start
-          uri: http://localhost:8761
+          uri: http://${app.eureka.host}:8761
           predicates:
             - Path=/eureka/web
           filters:
             - SetPath=/
         - id: eureka-web-other
-          uri: http://localhost:8761
+          uri: http://${app.eureka.host}:8761
           predicates:
             - Path=/eureka/**
   ssl:
@@ -52,4 +61,12 @@ resilience4j:
     instances:
       course-composite-circuit-breaker:
         timeout-duration: 10s
-eureka.client.service-url.defaultZone: http://username:password@localhost:8761/eureka/
+eureka.client.service-url.defaultZone: http://username:password@${app.eureka.host}:8761/eureka/
+app:
+  eureka:
+    host: localhost
+  auth:
+    host: localhost
+    port: 9000
+  course-composite-service:
+    uri: http://localhost:7005
