@@ -29,3 +29,6 @@ spring:
         recommendationDelete-in-0:
           destination: recommendation.delete
 eureka.client.service-url.defaultZone: http://username:password@localhost:8761/eureka/
+app.auth:
+  authorize-uri: https://localhost:8443/oauth2/authorize
+  token-uri: https://localhost:8443/oauth2/token

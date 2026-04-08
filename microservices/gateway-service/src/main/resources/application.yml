@@ -15,14 +15,15 @@ spring:
   cloud:
     config.enabled: false
     gateway.server.webflux:
+      trusted-proxies: ".*"
       httpclient.connect-timeout: 5000
       routes:
         - id: auth-service
           uri: http://${app.auth.host}:${app.auth.port}
           predicates:
-            - Path=/oauth2/**,/.well-known/**,/login/**
+            - Path=/oauth2/**,/.well-known/**,/login/**,/token/**,/default-ui.css,/error
         - id: course-composite
-          uri: ${app.course-composite-service.uri}
+          uri: ${app.course-composite.uri}
           predicates:
             - Path=/api/**,/openapi/**
           filters:
@@ -67,5 +68,5 @@ app:
   auth:
     host: localhost
     port: 9000
-  course-composite-service:
+  course-composite:
     uri: http://localhost:7005
