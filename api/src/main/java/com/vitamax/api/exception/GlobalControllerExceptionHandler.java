@@ -3,7 +3,8 @@ package com.vitamax.api.exception;
 import com.vitamax.api.exception.dto.HttpErrorInfo;
 import com.vitamax.api.exception.dto.InvalidInputException;
 import com.vitamax.api.exception.dto.NotFoundException;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -15,8 +16,8 @@ import org.springframework.web.reactive.result.method.annotation.ResponseEntityE
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@Slf4j
 public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
 
     @ExceptionHandler(NotFoundException.class)
     public Mono<ResponseEntity<HttpErrorInfo>> handleNotFoundExceptions(final ServerWebExchange request, final NotFoundException ex) {
