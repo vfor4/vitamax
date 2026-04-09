@@ -1,0 +1,9 @@
+spring:
+  config.import: "configserver:http://config:8080"
+  cloud.config:
+    enabled: true
+    retry:
+      max-attempts: 10
+      initial-interval: 1100
+      max-interval: 1500
+      multiplier: 1.2

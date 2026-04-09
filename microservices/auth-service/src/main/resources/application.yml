@@ -1,0 +1,11 @@
+server:
+  port: 9000
+  forward-headers-strategy: framework
+spring:
+  application.name: auth-service
+  cloud:
+    config.enabled: false
+auth:
+  private-key-location: classpath:certificates/private.pem
+  public-key-location: classpath:certificates/public.pem
+eureka.client.service-url.defaultZone: http://username:password@localhost:8761/eureka/

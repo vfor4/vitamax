@@ -1,4 +1,12 @@
 services:
+  auth:
+    build: microservices/auth-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    depends_on:
+      config:
+        condition: service_healthy
   course-composite:
     build: microservices/course-composite-service
     mem_limit: 512m

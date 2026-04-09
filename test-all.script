@@ -8,8 +8,11 @@
 HOST=${HOST:-localhost}
 PORT=${PORT:-8443}
 HEALTH_URL="https://${HOST}:${PORT}/actuator/health"
+TOKEN_URL="https://${HOST}:${PORT}/oauth2/token"
 BASE_URL="https://${HOST}:${PORT}/api/v1/aggregate"
 CERT_FILE="${CERT_FILE:-microservices/gateway-service/src/main/resources/certificates/cert.pem}"
+AUTH_CLIENT_ID="client-credentials"
+AUTH_CLIENT_SECRET="client-credentials-secret"
 TLS_ARGS=(--cacert "$CERT_FILE")
 
 # --- Colours ---
@@ -21,6 +24,7 @@ NC='\033[0m' # No Colour
 
 PASS=0
 FAIL=0
+ACCESS_TOKEN=""
 
 # ============================================================
 # Helpers
@@ -56,13 +60,19 @@ assertHttpCode() {
   local response
   local http_code
 
+  local curl_args=("${TLS_ARGS[@]}" -s -w "\n%{http_code}" "$url")
+
+  if [ -n "$ACCESS_TOKEN" ]; then
+    curl_args+=(-H "Authorization: Bearer $ACCESS_TOKEN")
+  fi
+
   if [ "$method" == "POST" ] && [ -n "$body" ]; then
-    response=$(curl "${TLS_ARGS[@]}" -s -w "\n%{http_code}" \
-      -X POST "$url" \
+    response=$(curl "${curl_args[@]}" \
+      -X POST \
       -H "Content-Type: application/json" \
       -d "$body")
   else
-    response=$(curl "${TLS_ARGS[@]}" -s -w "\n%{http_code}" "$url")
+    response=$(curl "${curl_args[@]}" -X "$method")
   fi
 
   http_code=$(echo "$response" | tail -n1)
@@ -77,6 +87,42 @@ assertHttpCode() {
   fi
 
   echo "$body_only"
+}
+
+fetchAccessToken() {
+  log "Requesting OAuth2 access token from: $TOKEN_URL"
+
+  local response
+  response=$(curl "${TLS_ARGS[@]}" -s -w "\n%{http_code}" \
+    -X POST "$TOKEN_URL" \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -u "${AUTH_CLIENT_ID}:${AUTH_CLIENT_SECRET}" \
+    -d "grant_type=client_credentials" \
+    -d "scope=api:read api:write")
+
+  local http_code
+  http_code=$(echo "$response" | tail -n1)
+  local body_only
+  body_only=$(echo "$response" | sed '$d')
+
+  if [ "$http_code" != "200" ]; then
+    error "Token request failed with HTTP $http_code"
+    echo "$body_only"
+    ((FAIL++))
+    exit 1
+  fi
+
+  ACCESS_TOKEN=$(echo "$body_only" | jq -r '.access_token')
+
+  if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" == "null" ]; then
+    error "Token response did not include access_token"
+    echo "$body_only"
+    ((FAIL++))
+    exit 1
+  fi
+
+  success "Access token acquired"
+  ((PASS++))
 }
 
 # ============================================================
@@ -132,6 +178,7 @@ createCourseAggregate() {
 
   local response
   response=$(curl "${TLS_ARGS[@]}" -s -D - -X POST "${BASE_URL}/course" \
+    -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
     -d "$body")
 
@@ -232,6 +279,8 @@ fi
 
 
 waitForHealth
+echo ""
+fetchAccessToken
 echo ""
 createCourseAggregate
 echo ""
