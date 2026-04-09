@@ -67,9 +67,6 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - GIT_HOST_KEY=${GIT_HOST_KEY}
       - GIT_PRIVATE_KEY=${GIT_PRIVATE_KEY}
-      - VITAMAX_CONFIG_PATH=${VITAMAX_CONFIG_PATH}
-    volumes:
-      - ${VITAMAX_CONFIG_PATH}:${VITAMAX_CONFIG_PATH}
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: 5s

@@ -24,6 +24,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import java.time.Duration;
@@ -34,7 +35,7 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Order(1)
-    public org.springframework.security.web.SecurityFilterChain authorizationServerSecurityFilterChain(
+    public SecurityFilterChain authorizationServerSecurityFilterChain(
             final HttpSecurity http
     ) throws Exception {
         final var authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
@@ -57,7 +58,7 @@ public class AuthorizationServerConfig {
 
     @Bean
     @Order(2)
-    public org.springframework.security.web.SecurityFilterChain applicationSecurityFilterChain(
+    public SecurityFilterChain applicationSecurityFilterChain(
             final HttpSecurity http
     ) throws Exception {
         http
