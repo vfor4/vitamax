@@ -4,4 +4,4 @@ logging:
     org.springframework.web: DEBUG
 management:
   endpoint.health.probes.enabled: true
-  endpoint.health.group.readiness.include: "readinessState, rabbit"
+  endpoint.health.group.readiness.include: "readinessState"

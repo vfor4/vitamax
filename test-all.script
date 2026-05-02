@@ -89,6 +89,20 @@ assertHttpCode() {
   echo "$body_only"
 }
 
+jsonStringField() {
+  local json="$1"
+  local field_name="$2"
+
+  echo "$json" | tr -d '\n' | sed -n "s/.*\"$field_name\"[[:space:]]*:[[:space:]]*\"\([^\"]*\)\".*/\1/p"
+}
+
+jsonArrayObjectCount() {
+  local json="$1"
+  local object_id_field="$2"
+
+  echo "$json" | grep -o "\"$object_id_field\"" | wc -l | tr -d ' '
+}
+
 fetchAccessToken() {
   log "Requesting OAuth2 access token from: $TOKEN_URL"
 
@@ -112,7 +126,7 @@ fetchAccessToken() {
     exit 1
   fi
 
-  ACCESS_TOKEN=$(echo "$body_only" | jq -r '.access_token')
+  ACCESS_TOKEN=$(jsonStringField "$body_only" 'access_token')
 
   if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" == "null" ]; then
     error "Token response did not include access_token"
@@ -213,15 +227,15 @@ verifyCourseAggregate() {
      if [ $? -eq 0 ]; then
        echo "$response"
        # Assert course ID matches
-       assertEqual "$aggregateId" "$(echo "$response" | jq -r '.course.courseId')" \
+       assertEqual "$aggregateId" "$(jsonStringField "$response" 'courseId')" \
          "course.courseId matches"
 
        # Assert exactly 1 recommendation
-       assertEqual 1 "$(echo "$response" | jq '.recommendations | length')" \
+       assertEqual 1 "$(jsonArrayObjectCount "$response" 'recommendationId')" \
          "recommendations count = 1"
 
        # Assert exactly 1 review
-       assertEqual 1 "$(echo "$response" | jq '.reviews | length')" \
+       assertEqual 1 "$(jsonArrayObjectCount "$response" 'reviewId')" \
          "reviews count = 1"
        return 0
      fi

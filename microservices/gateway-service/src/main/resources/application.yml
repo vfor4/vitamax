@@ -51,8 +51,6 @@ resilience4j:
       course-composite-circuit-breaker:
         timeout-duration: 10s
 app:
-  eureka:
-    host: localhost
   auth:
     host: localhost
     port: 9000

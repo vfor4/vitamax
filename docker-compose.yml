@@ -1,55 +1,75 @@
 services:
-  auth:
+  auth-service:
     build: microservices/auth-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_CONFIG_ADDITIONAL_LOCATION=files:/config/
-  course-composite:
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/
+    volumes:
+      - ./k8s/auth/config/application-dev.yml:/config/application-dev.yml:ro
+  course-composite-service:
     build: microservices/course-composite-service
     image: vitamax/course-composite-service:1.0
     mem_limit: 512m
     environment:
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/
       - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_CONFIG_ADDITIONAL_LOCATION=files:/config/
-  course:
+      - RABBITMQ_HOST=rabbitmq
+    volumes:
+      - ./k8s/course-composite/config/application-dev.yml:/config/application-dev.yml:ro
+  course-service:
     build: microservices/course-service
     image: vitamax/course-service:1.0
     mem_limit: 512m
     environment:
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/
       - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_CONFIG_ADDITIONAL_LOCATION=files:/config/
+      - MONGODB_HOST=mongodb
+      - RABBITMQ_HOST=rabbitmq
+    volumes:
+      - ./k8s/course/config/application-dev.yml:/config/application-dev.yml:ro
     depends_on:
       mongodb:
         condition: service_healthy
-  recommendation:
+  recommendation-service:
     build: microservices/recommendation-service
     image: vitamax/recommendation-service:1.0
     mem_limit: 512m
     environment:
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/
       - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_CONFIG_ADDITIONAL_LOCATION=files:/config/
+      - MONGODB_HOST=mongodb
+      - RABBITMQ_HOST=rabbitmq
+    volumes:
+      - ./k8s/recommendation/config/application-dev.yml:/config/application-dev.yml:ro
     depends_on:
       mongodb:
         condition: service_healthy
-  review:
+  review-service:
     build: microservices/review-service
     image: vitamax/review-service:1.0
     mem_limit: 512m
     environment:
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/
       - SPRING_PROFILES_ACTIVE=dev
+      - POSTGRESQL_HOST=postgresql
+      - RABBITMQ_HOST=rabbitmq
+    volumes:
+      - ./k8s/review/config/application-dev.yml:/config/application-dev.yml:ro
     depends_on:
       postgresql:
         condition: service_healthy
-  gateway:
+  gateway-service:
     build: microservices/gateway-service
     image: vitamax/gateway-service:1.0
     mem_limit: 512m
     environment:
+      - SPRING_CONFIG_ADDITIONAL_LOCATION=file:/config/
       - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_CONFIG_ADDITIONAL_LOCATION=files:/config/
+    volumes:
+      - ./k8s/gateway/config/application-dev.yml:/config/application-dev.yml:ro
     ports:
-      - "8443:8443"
+      - "8443:80"
   mongodb:
     image: mongo:noble
     mem_limit: 512m
@@ -59,10 +79,15 @@ services:
     ports:
       - "27017:27017"
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --username username --password password --authenticationDatabase admin --eval \"db.adminCommand('ping').ok === 1 || quit(1)\""
+        ]
       interval: 5s
       timeout: 2s
       retries: 5
+      start_period: 10s
     volumes:
       - mongo_data:/data/db
       - ./data-init/mongodb:/docker-entrypoint-initdb.d

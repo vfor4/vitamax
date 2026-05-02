@@ -16,7 +16,6 @@ spring:
     password: ${RABBITMQ_PWD:password}
     port: ${RABBITMQ_PORT:5672}
   cloud:
-    config.enabled: false
     function.definition: recommendationCreate;recommendationUpdate;recommendationDelete
     stream:
       default:
