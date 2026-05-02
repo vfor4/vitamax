@@ -16,7 +16,7 @@ spring:
     host: ${RABBITMQ_HOST:localhost}
     username: ${RABBITMQ_USER:user}
     password: ${RABBITMQ_PWD:password}
-    port: ${RABBITMQ_PORT:5762}
+    port: ${RABBITMQ_PORT:5672}
 springdoc:
   swagger-ui:
     path: /openapi/swagger-ui.html
